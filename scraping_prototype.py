@@ -14,6 +14,10 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 import random
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import asyncio
+from playwright.async_api import async_playwright
 
 # Base URL of the page (changing only the page number)
 base_url = 'https://edit.tosdr.org/services?page='
@@ -58,11 +62,6 @@ df.to_csv('services_and_ratings.csv')
 # Display the DataFrame
 print(df)
 
-print("hi")
-
-import requests
-from bs4 import BeautifulSoup
-
 # Base URL of the services page (changing only the page number)
 base_url = 'https://edit.tosdr.org/services?page='
 annotate_base_url = 'https://edit.tosdr.org'
@@ -94,20 +93,12 @@ for page_num in range(1, 2):
 for url in annotate_urls:
     print(url)
 
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-
 # URL for the AliExpress annotate page
 annotate_url = 'https://edit.tosdr.org/services/1570/annotate'
 
 # Send a GET request to fetch the content of the page
 response = requests.get(annotate_url)
 soup = BeautifulSoup(response.content, 'html.parser')
-soup
-
-import requests
-from bs4 import BeautifulSoup
 
 # URL for the AliExpress annotate page
 annotate_url = 'https://edit.tosdr.org/services/1570/annotate'
@@ -119,101 +110,6 @@ soup = BeautifulSoup(response.content, 'html.parser')
 # Inspect the structure of the page by printing all 'div' elements
 for div in soup.find_all('div'):
     print(div.prettify())
-
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from bs4 import BeautifulSoup
-import pandas as pd
-import time
-
-# # Path to your ChromeDriver
-# driver_path = '/path/to/chromedriver'
-
-# # Set up the ChromeDriver service
-# service = Service(driver_path)
-# driver = webdriver.Chrome(service=service)
-
-# # URL for the AliExpress annotate page
-# annotate_url = 'https://edit.tosdr.org/services/1570/annotate'
-
-# # Navigate to the page
-# driver.get(annotate_url)
-
-# # Let the page load
-# time.sleep(3)
-
-# # Get page source after JavaScript has rendered
-# page_source = driver.page_source
-
-# # Parse the page with BeautifulSoup
-# soup = BeautifulSoup(page_source, 'html.parser')
-
-# # Close the browser
-# driver.quit()
-
-# # Now, let's try to find the highlighted text and annotations
-# highlighted_texts = []
-# annotations = []
-
-# for annotation_item in soup.find_all('div', class_='annotation'):
-#     highlighted = annotation_item.find('mark')  # Try 'mark' or another tag for highlighted text
-#     if highlighted:
-#         highlighted_texts.append(highlighted.get_text(strip=True))
-
-#     annotation_text = annotation_item.find('div', class_='annotation-text').get_text(strip=True)
-#     annotations.append(annotation_text)
-
-# # Create a DataFrame to hold the results
-# df = pd.DataFrame({
-#     'Highlighted Text': highlighted_texts,
-#     'Annotation': annotations
-# })
-
-# # Display the DataFrame
-# print(df)
-
-#trying this a different way: going through cases.
-
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from bs4 import BeautifulSoup
-import time
-
-# # Path to your ChromeDriver
-# driver_path = '/path/to/chromedriver'
-
-# # Set up the ChromeDriver service
-# service = Service(driver_path)
-# driver = webdriver.Chrome(service=service)
-
-# # URL for the page to scrape
-# url = 'https://edit.tosdr.org/cases'
-
-# # Navigate to the page
-# driver.get(url)
-
-# # Let the page load (adjust the time if needed)
-# time.sleep(3)
-
-# # Get the page source after JavaScript has rendered
-# page_source = driver.page_source
-
-# # Parse the page with BeautifulSoup
-# soup = BeautifulSoup(page_source, 'html.parser')
-
-# # Close the browser
-# driver.quit()
-
-# # Find and print the titles under the "Title" column
-# for row in soup.find_all('tr'):
-#     cols = row.find_all('td')
-#     if len(cols) > 0:
-#         title = cols[0].get_text(strip=True)
-#         print(title)
-
-import asyncio
-from playwright.async_api import async_playwright
-import pandas as pd
 
 # Global variable to store the DataFrame
 df = None
@@ -254,13 +150,6 @@ print(df)
 df.to_csv('tosdr_topics.csv', index=False)
 
 df = pd.read_csv('tosdr_topics.csv')
-df
-
-
-
-import asyncio
-from playwright.async_api import async_playwright
-import pandas as pd
 
 # Async function to scrape cases for each topic
 async def scrape_cases(topic, topic_link, page):
@@ -322,13 +211,6 @@ df.to_csv('tosdr_topics_and_cases.csv', index=False)
 #save info on classification and weight for each Topic Link
 
 df = pd.read_csv('tosdr_topics_and_cases.csv')
-df
-
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-import time
-import random
 
 # Function to scrape classification and weight from the case link
 def scrape_case_details(case_link):
@@ -377,17 +259,9 @@ print(df_cases)
 df_cases.to_csv('tosdr_cases_with_classification_and_weight.csv', index=False)
 
 df = pd.read_csv('tosdr_topics_and_cases.csv')
-df
 
 #smaller df to test the following with
 df_small_test = df.head()
-df_small_test
-
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-import time
-import random
 
 # Function to scrape 'Service', 'Title', and 'Title Link' for approved rows in a case
 def scrape_case_page(case_link):
@@ -443,13 +317,6 @@ df_approved.to_csv('approved_cases.csv', index=False)
 
 #loop through the link for each approved annotation, and just grab the name of the document that it comes from
 df = pd.read_csv('approved_cases.csv')
-df
-
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-import time
-import random
 
 # Function to scrape the source document name and link from the Title Link
 def scrape_source_from_title_link(title_link):
@@ -514,8 +381,6 @@ df_updated = update_with_source_details(df, save_interval=10)
 # Display the updated DataFrame with source information
 print(df_updated)
 
-
-
 """## do all the merges to put all of the csvs created in this doc together."""
 
 df1 = pd.read_csv('tosdr_topics_and_cases.csv')
@@ -523,23 +388,14 @@ df2 = pd.read_csv('tosdr_cases_with_classification_and_weight.csv')
 
 #merge on the column Case Link
 merged_df = pd.merge(df1, df2, on='Case Link', how='inner')
-
-merged_df
-
 df3 = pd.read_csv('updated_cases_with_sources.csv')
-df3
 
 # Perform a left merge to retain all rows from df3
 final_df = pd.merge(merged_df, df3, on='Case Link', how='right')
-final_df
 
 #merge in the ratings
 df4 = pd.read_csv('services_and_ratings.csv')
-df4
-
 extra_final_df = pd.merge(final_df, df4[['Service', 'Rating']], on='Service', how='left')
-extra_final_df
-
 extra_final_df.to_csv('final_output.csv', index=False)
 
 #next step is to figure out pattern in why some annotations don't get picked up. but merge things into a more understandable document first.
