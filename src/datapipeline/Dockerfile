@@ -1,5 +1,8 @@
 FROM python:3.12-slim
 
+# Ensure bash is available
+RUN apt-get update && apt-get install -y bash
+
 ENV PYENV_SHELL=/bin/bash
 
 # Install essential tools and Playwright dependencies
@@ -43,6 +46,8 @@ RUN pipenv run playwright install --with-deps
 # Add the rest of the application files
 ADD . /app
 
-# Set entrypoint and command
+# Ensure pipenv shell is not required to run scripts
+RUN pipenv install --deploy --system
+
+# Set entrypoint to open bash by default
 ENTRYPOINT ["/bin/bash"]
-CMD ["-c", "pipenv shell"]
