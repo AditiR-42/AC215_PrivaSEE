@@ -28,6 +28,7 @@ node_modules/
 
 # Ignore a specific directory and all its contents
 data/temp/
+secrets/
 
 # Ignore everything except specific files in a folder
 data/*
