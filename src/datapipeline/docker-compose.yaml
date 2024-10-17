@@ -1,0 +1,15 @@
+version: '3.12'
+
+services:
+  data-pipeline-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - data-pipeline
+    stdin_open: true
+    tty: true  
+
+networks:
+  data-pipeline:
+    external: true
