@@ -1,53 +1,46 @@
+# Use the official Python 3.12 slim image
 FROM python:3.12-slim
 
-# Ensure bash is available
-RUN apt-get update && apt-get install -y bash
+# Install bash and essential tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash \
+    build-essential \
+    curl \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libdrm2 \
+    libgbm-dev \
+    libgtk-3-0 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    xdg-utils && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV PYENV_SHELL=/bin/bash
+# Upgrade pip and install pipenv
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install pipenv
 
-# Install essential tools and Playwright dependencies
-RUN set -ex; \
-    apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends \
-        build-essential \
-        ca-certificates \
-        curl \
-        libnss3 \
-        libxss1 \
-        libasound2 \
-        libatk1.0-0 \
-        libatk-bridge2.0-0 \
-        libcups2 \
-        libdrm2 \
-        libgbm-dev \
-        libgtk-3-0 \
-        libx11-xcb1 \
-        libxcomposite1 \
-        libxdamage1 \
-        libxrandr2 \
-        xdg-utils && \
-    pip install --no-cache-dir --upgrade pip && \
-    pip install pipenv && \
-    mkdir -p /app
-
-# Set working directory
+# Create application directory
 WORKDIR /app
 
-# Copy Pipfile and Pipfile.lock for dependency management
+# Copy Pipfile and install dependencies
 ADD Pipfile Pipfile.lock /app/
-
-# Install the Python dependencies using Pipenv
 RUN pipenv sync
 
-# Install the Playwright browsers
+# Install Playwright browsers
 RUN pipenv run playwright install --with-deps
 
-# Add the rest of the application files
+# Copy the rest of the application code
 ADD . /app
 
-# Ensure pipenv shell is not required to run scripts
+# Install system-wide dependencies to avoid using pipenv run
 RUN pipenv install --deploy --system
 
-# Set entrypoint to open bash by default
-ENTRYPOINT ["/bin/bash"]
+# Set bash as the default command to keep the container alive
+CMD ["/bin/bash"]
