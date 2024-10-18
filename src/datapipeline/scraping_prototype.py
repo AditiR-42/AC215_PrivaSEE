@@ -21,8 +21,57 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 import asyncio
 from playwright.async_api import async_playwright
+import os
+from google.cloud import storage
 
 print("did imports")
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '../../../secrets/your_service_account_key.json'
+
+# Function to upload a DataFrame directly to GCS (without saving locally)
+def upload_dataframe_to_gcs(bucket_name, df, destination_blob_name):
+    """Uploads a DataFrame directly to a GCS bucket without saving it locally."""
+    
+    # Create an in-memory buffer
+    buffer = io.BytesIO()
+    
+    # Write the DataFrame to this buffer in CSV format
+    df.to_csv(buffer, index=False)
+    
+    # Reset the buffer's position to the beginning
+    buffer.seek(0)
+    
+    # Create a storage client
+    storage_client = storage.Client()
+    
+    # Get the bucket and blob
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    
+    # Upload the buffer's contents to GCS
+    blob.upload_from_file(buffer, content_type='text/csv')
+    
+    print(f"DataFrame uploaded to {destination_blob_name} in bucket {bucket_name}.")
+
+# Function to read a CSV directly from GCS into a pandas DataFrame
+def read_csv_from_gcs(bucket_name, blob_name):
+    """Reads a CSV file from GCS and returns it as a pandas DataFrame."""
+    
+    # Create a storage client
+    storage_client = storage.Client()
+    
+    # Get the bucket and blob
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    
+    # Download the blob's content as a string
+    csv_data = blob.download_as_bytes()
+    
+    # Use io.BytesIO to load the bytes data into a pandas DataFrame
+    data = io.BytesIO(csv_data)
+    df = pd.read_csv(data)
+    
+    return df
 
 # Base URL of the page (changing only the page number)
 base_url = 'https://edit.tosdr.org/services?page='
@@ -62,7 +111,7 @@ df = pd.DataFrame({
 })
 
 #save the df as a csv
-df.to_csv('intermediate_data_files/services_and_ratings.csv')
+upload_dataframe_to_gcs('legal-terms-data', df, 'tosdr-data/raw/intermediate_data_files/services_and_ratings.csv')
 
 # Display the DataFrame
 print(df)
@@ -152,9 +201,9 @@ df.rename(columns={'Title': 'Topic', 'Link': 'topic_link'}, inplace=True)
 print(df)
 
 # Save the DataFrame to a CSV file
-df.to_csv('intermediate_data_files/tosdr_topics.csv', index=False)
+upload_dataframe_to_gcs('legal-terms-data', df, 'tosdr-data/raw/intermediate_data_files/tosdr_topics.csv')
 
-df = pd.read_csv('intermediate_data_files/tosdr_topics.csv')
+df = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/tosdr_topics.csv')
 
 # Async function to scrape cases for each topic
 async def scrape_cases(topic, topic_link, page):
@@ -211,11 +260,11 @@ df = asyncio.run(scrape_page())
 print(df)
 
 # Save the DataFrame to a CSV file
-df.to_csv('intermediate_data_files/tosdr_topics_and_cases.csv', index=False)
+upload_dataframe_to_gcs('legal-terms-data', df, 'tosdr-data/raw/intermediate_data_files/topics_and_cases.csv')
 
 #save info on classification and weight for each Topic Link
 
-df = pd.read_csv('intermediate_data_files/tosdr_topics_and_cases.csv')
+df = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/tosdr_topics_and_cases.csv')
 
 # Function to scrape classification and weight from the case link
 def scrape_case_details(case_link):
@@ -252,7 +301,7 @@ def scrape_page(df):
     return pd.DataFrame(all_data)
 
 # Load your initial DataFrame
-df = pd.read_csv('intermediate_data_files/tosdr_topics_and_cases.csv')
+df = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/tosdr_topics_and_cases.csv')
 
 # Run the scraping function
 df_cases = scrape_page(df)
@@ -261,9 +310,9 @@ df_cases = scrape_page(df)
 print(df_cases)
 
 # Save the DataFrame to a CSV file
-df_cases.to_csv('intermediate_data_files/tosdr_cases_with_classification_and_weight.csv', index=False)
+upload_dataframe_to_gcs('legal-terms-data', df_cases, 'tosdr-data/raw/intermediate_data_files/tosdr_cases_with_classification_and_weight.csv')
 
-df = pd.read_csv('intermediate_data_files/tosdr_topics_and_cases.csv')
+df = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/tosdr_topics_and_cases.csv')
 
 # Function to scrape 'Service', 'Title', and 'Title Link' for all rows in a case (even if not approved)
 def scrape_case_page(case_link):
@@ -335,10 +384,10 @@ df_all = scrape_all_rows(df)
 print(df_all)
 
 # Optionally, save to a CSV
-df_all.to_csv('intermediate_data_files/all_cases.csv', index=False)
+upload_dataframe_to_gcs('legal-terms-data', df_all, 'tosdr-data/raw/intermediate_data_files/all_cases.csv')
 
 #loop through the link for each annotation, and just grab the name of the document that it comes from
-df = pd.read_csv('intermediate_data_files/all_cases.csv')
+df = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/all_cases.csv')
 
 # Function to scrape the source document name and link from the Title Link
 def scrape_source_from_title_link(title_link):
@@ -392,12 +441,12 @@ def update_with_source_details(df, save_interval=10):
         # Save progress every 'save_interval' rows
         if (i + 1) % save_interval == 0:
             df_temp = pd.DataFrame(updated_data)
-            df_temp.to_csv('intermediate_data_files/updated_cases_with_sources.csv', index=False)
+            upload_dataframe_to_gcs('legal-terms-data', df_temp, 'tosdr-data/raw/intermediate_data_files/updated_cases_with_sources.csv')
             print(f"Saved progress at row {i + 1}.")
 
     # Final save when the loop is complete
     df_final = pd.DataFrame(updated_data)
-    df_final.to_csv('intermediate_data_files/updated_cases_with_sources.csv', index=False)
+    upload_dataframe_to_gcs('legal-terms-data', df_final, 'tosdr-data/raw/intermediate_data_files/updated_cases_with_sources.csv')
     print("Final save completed.")
 
     return df_final
@@ -408,7 +457,7 @@ df_updated = update_with_source_details(df, save_interval=10)
 print(df_updated)
 
 #load in updated_cases_with_sources
-df = pd.read_csv("intermediate_data_files/updated_cases_with_sources.csv")
+df = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/updated_cases_with_sources.csv')
 
 # Create a new DataFrame with unique Source Links
 unique_source_links = pd.DataFrame(df['Source Link'].unique(), columns=['Source Link'])
@@ -416,9 +465,9 @@ unique_source_links = pd.DataFrame(df['Source Link'].unique(), columns=['Source 
 # Reset the index for the new DataFrame (optional)
 unique_source_links.reset_index(drop=True, inplace=True)
 
-unique_source_links.to_csv('intermediate_data_files/unique_doc_links.csv')
+upload_dataframe_to_gcs('legal-terms-data', unique_source_links, 'tosdr-data/raw/intermediate_data_files/unique_doc_links.csv')
 
-df = pd.read_csv("intermediate_data_files/unique_doc_links.csv")
+df = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/unique_doc_links.csv')
 
 # Your login credentials
 USERNAME = ""  # Replace with your username or email
@@ -478,17 +527,17 @@ async def scrape_all_sources(df):
 
         # Save the DataFrame every 10 rows
         if (i + 1) % 10 == 0:
-            df.to_csv(f'intermediate_data_files/document_text_partial.csv', index=False)
+            upload_dataframe_to_gcs('legal-terms-data', df, 'tosdr-data/raw/intermediate_data_files/document_text_partial.csv')
             print(f"Saved partial DataFrame after processing {i + 1} rows.")
 
         # Add a random sleep between requests to avoid being blocked
         await asyncio.sleep(random.uniform(0.1, 2))
 
     # Save the final DataFrame after all rows have been processed
-    df.to_csv('intermediate_data_files/document_text_for_unique_links.csv', index=False)
+    upload_dataframe_to_gcs('legal-terms-data', df, 'tosdr-data/raw/intermediate_data_files/document_text_for_unique_links.csv')
 
 #continue, starting at rows we don't have yet
-df = pd.read_csv('intermediate_data_files/document_text_partial.csv')
+df = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/document_text_partial.csv')
 # Keep only rows where 'document_text' is empty
 df = df[df['document_text'].isna() | (df['document_text'] == '')]
 
@@ -554,22 +603,22 @@ async def scrape_all_sources(df):
 
         # Save the DataFrame every 10 rows
         if (i + 1) % 10 == 0:
-            df.to_csv(f'intermediate_data_files/document_text_partial_try_again.csv', index=False)
+            upload_dataframe_to_gcs('legal-terms-data', df, 'tosdr-data/raw/intermediate_data_files/document_text_partial_try_again.csv')
             print(f"Saved partial DataFrame after processing {i + 1} rows.")
 
         # Add a random sleep between requests to avoid being blocked
         await asyncio.sleep(random.uniform(0.1, 2))
 
     # Save the final DataFrame after all rows have been processed
-    df.to_csv('intermediate_data_files/document_text_for_unique_links_try_again.csv', index=False)
+    upload_dataframe_to_gcs('legal-terms-data', df, 'tosdr-data/raw/intermediate_data_files/document_text_for_unique_links_try_again.csv')
 
 # Assuming df is already loaded in your environment
 # Run the scraping function on your already loaded DataFrame
 asyncio.run(scrape_all_sources(df))
 
 #append the two csvs together.
-file1 = pd.read_csv('intermediate_data_files/document_text_partial.csv')
-file2 = pd.read_csv('intermediate_data_files/document_text_for_unique_links_try_again.csv')
+file1 = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/document_text_partial.csv')
+file2 = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/document_text_for_unique_links_try_again.csv')
 
 # Merge the two DataFrames on column 'A', using an outer join
 combined = pd.merge(file1, file2, on='Source Link', how='outer', suffixes=('_file1', '_file2'))
@@ -581,9 +630,9 @@ combined['document_text'] = combined['document_text_file1'].combine_first(combin
 final_output = combined[['Source Link', 'document_text']]
 
 # Save the result to a new CSV file
-final_output.to_csv('intermediate_data_files/combined_full_html_content.csv', index=False)
+upload_dataframe_to_gcs('legal-terms-data', final_output, 'tosdr-data/raw/intermediate_data_files/combined_full_html_content.csv')
 
-df = pd.read_csv('intermediate_data_files/combined_full_html_content.csv')
+df = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/combined_full_html_content.csv')
 
 # Ensure that the columns are of type string
 df['document_text'] = df['document_text'].astype(str)
@@ -609,23 +658,30 @@ def extract_text(row):
 # Apply the function to each row in the DataFrame
 df['document_text_shortened'] = df.apply(extract_text, axis=1)
 df  = df[['Source Link', 'document_text_shortened']]
-df.to_csv('intermediate_data_files/document_text_for_unique_links.csv')
-
+upload_dataframe_to_gcs('legal-terms-data', df, 'tosdr-data/raw/intermediate_data_files/document_text_for_unique_links.csv')
 
 # do all the merges to put all of the csvs created in this doc together.
 
-df1 = pd.read_csv('intermediate_data_files/tosdr_topics_and_cases.csv')
-df2 = pd.read_csv('intermediate_data_files/tosdr_cases_with_classification_and_weight.csv')
+df1 = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/tosdr_topics_and_cases.csv')
+df2 = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/tosdr_cases_with_classification_and_weight.csv')
 
 #merge on the column Case Link
 merged_df = pd.merge(df1, df2, on='Case Link', how='inner')
-df3 = pd.read_csv('intermediate_data_files/updated_cases_with_sources.csv')
+df3a = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/updated_cases_with_sources.csv')
+df3b = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/all_cases.csv')
 
+
+#make sure title link is a string in both - this is the different part.
+df3a['Title Link'] = df3a['Title Link'].astype(str)
+df3b['Title Link'] = df3b['Title Link'].astype(str)
+
+df3 = pd.merge(df3a, df3b[['Status', 'Title Link']], on='Title Link' , how='left')
+print(df3)
 # Perform a left merge to retain all rows from df3
 final_df = pd.merge(merged_df, df3, on='Case Link', how='right')
 
 #merge in the ratings
-df4 = pd.read_csv('intermediate_data_files/services_and_ratings.csv')
+df4 = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/services_and_ratings.csv')
 final_df = pd.merge(final_df, df4[['Service', 'Rating']], on='Service', how='left')
 print(final_df['Source Link'].count())
 
@@ -633,9 +689,9 @@ print(final_df['Source Link'].count())
 final_df['Source Link'] = final_df['Source Link'].astype(str)
 print(final_df['Source Link'].count())
 
-df5 = pd.read_csv('intermediate_data_files/document_text_for_unique_links.csv')
+df5 = read_csv_from_gcs('legal-terms-data', 'tosdr-data/raw/intermediate_data_files/document_text_for_unique_links.csv')
 df5['Source Link'] = df5['Source Link'].astype(str)
 
 extra_final_df = pd.merge(final_df, df5[['Source Link', 'document_text_shortened']], on='Source Link', how='left')
 print(extra_final_df['document_text_shortened'].count())
-extra_final_df.to_csv('final_output.csv', index=False)
+upload_dataframe_to_gcs('legal-terms-data', extra_final_df, 'tosdr-data/raw/final_output.csv')
