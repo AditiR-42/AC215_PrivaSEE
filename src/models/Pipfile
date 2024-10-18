@@ -11,6 +11,9 @@ selenium = "*"
 playwright = "*"
 google-cloud-storage = "*"
 torch = "*"
+scikit-learn = "*"
+transformers = "*"
+gcsfs = "*"
 
 [dev-packages]
 
