@@ -2,18 +2,11 @@
 __pycache__/
 *.pyc
 
-# Ignore node_modules folder (JavaScript projects)
-node_modules/
-
 # Ignore MacOS system files
 .DS_Store
 
 # Ignore log files
 *.log
-
-# Ignore temporary files
-*.swp
-*.tmp
 
 # Ignore build directories
 /dist/
@@ -24,12 +17,6 @@ node_modules/
 
 # Ignore all .csv files but keep specific ones
 *.csv
-!important_data.csv
 
 # Ignore a specific directory and all its contents
-data/temp/
 secrets/
-
-# Ignore everything except specific files in a folder
-data/*
-!data/config.json
