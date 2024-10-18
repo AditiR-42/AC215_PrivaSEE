@@ -14,7 +14,11 @@ In this milestone, we have the components for data management, including version
 1. One container scrapes the ToS;DR annotation to obtain the 1GB dataset that we use for further model training. CSV files with various attributes (i.e. annotations, terms and condition documents, grades, etc) stored in the specified GCS location. For more specification, view the layout in `Versioned Data Strategy`. 
 2. The other container cleans the original raw data scraped, where the updated CSV datasets are stored in GCP as well. 
 
-**Model Container** Glo/Yeab
+**Model Container** 
+The Model Container operates within our GCP architecture, specifically designed to train, validate, and deploy the machine learning models using the cleaned and processed datasets provided by the Data Pipeline Containers.  This contains the model training feature.
+
+Model Training: Utilizes the latest cleaned datasets stored in GCP from the Data Pipeline Containers to train our BERT base model.
+
 
 ### Data Pipeline Overview
 1. `src/datapipeline/scraping_prototype.py` This script is a web scraping prototype from the ToS;DR dataset. It processes pre-annotated information done by the API regarding various cases, their terms and conditions, the corresponding ratings, and etc. The preprocessed information has been cleaned and condensed for easier model training. 
@@ -27,7 +31,9 @@ In this milestone, we have the components for data management, including version
 ### Model Overiew
 1. `/src/models/Pipfile` This file contains the various packages needed to help with preprocessing.
 2. `src/models/Dockerfile` Our Dockerfile follow standard conventions. More information on how to run the docker file can be followed below in virtual environment setup. 
-3. Sammi add in more info after glo gives the files!!
+3. `/src/models/modeling_functions.py` Includes reusable modeling functions that are used across various modeling stages. These functions are geared towards setting up data structures for training, including data loaders and custom PyTorch datasets, and operationalizing the training loop and evaluation metrics.
+
+4. `/src/models/multi_class_model.py`Includes the definition of the `PrivacyDataset` class for handling data loading and preprocessing, including text chunking to fit within BERT’s maximum sequence length, and a custom `collate_fn` to handle batches of data.
 
 ### Versioned Data Strategy
 Data versioning is maintained on GCP through different folder categorization. The various folders keep track of where the scraped and clean data are, along with which we will be using for various stages of our work. Currently, most of the work is being done with data found under the `tosdr-data` folder, and the `opp115_data` folder holds data that will be useful in future milestones. 
