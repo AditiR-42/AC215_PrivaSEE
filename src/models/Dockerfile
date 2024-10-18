@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 # Ensure bash is available
 RUN apt-get update && apt-get install -y bash
@@ -48,6 +48,9 @@ ADD . /app
 
 # Ensure pipenv shell is not required to run scripts
 RUN pipenv install --deploy --system
+
+# Install PyTorch
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 # Set entrypoint to open bash by default
 ENTRYPOINT ["/bin/bash"]
