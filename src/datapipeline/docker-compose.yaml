@@ -1,5 +1,3 @@
-version: '3.12'
-
 services:
   data-pipeline-cli:
     build:
