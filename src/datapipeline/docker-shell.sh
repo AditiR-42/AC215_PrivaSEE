@@ -4,8 +4,8 @@ set -e  # Exit on any error
 
 # Define variables
 NETWORK_NAME="data-containerization-network"
-CONTAINER_NAME="data-label-studio"
-IMAGE_NAME="custom-label-studio:latest"
+CONTAINER_NAME="data-containerization-studio"
+IMAGE_NAME="custom-containerization-studio:latest"
 
 # Step 1: Create the Docker network if it doesn't exist
 docker network inspect "$NETWORK_NAME" >/dev/null 2>&1 || docker network create "$NETWORK_NAME"
