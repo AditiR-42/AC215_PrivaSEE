@@ -5,15 +5,17 @@ set -e
 # Define variables
 NETWORK_NAME="data-modeling-network"
 CONTAINER_NAME="data-modeling"  
-IMAGE_NAME="your-docker-image:latest"  
+IMAGE_NAME="data-modeling:latest"  
 
 # Create the network if it doesn't exist
 docker network inspect "$NETWORK_NAME" >/dev/null 2>&1 || docker network create "$NETWORK_NAME"
 
 # Build the Docker image (if using a local Dockerfile)
+echo "Building Docker image..."
 docker build -t "$IMAGE_NAME" .
 
 # Remove the existing container if it exists
+echo "Stopping and removing existing container (if any)..."
 docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
 
 # Run the container
