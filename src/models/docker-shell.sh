@@ -12,7 +12,7 @@ docker network inspect "$NETWORK_NAME" >/dev/null 2>&1 || docker network create 
 
 # Build the Docker image (if using a local Dockerfile)
 echo "Building Docker image..."
-docker build -t "$IMAGE_NAME" -f Dockerfile .
+docker build -t "$IMAGE_NAME" .
 
 # Remove the existing container if it exists
 echo "Stopping and removing existing container (if any)..."
