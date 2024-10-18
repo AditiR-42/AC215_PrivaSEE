@@ -1,13 +1,13 @@
 services:
-  data-pipeline-cli:
+  models-cli:
     build:
       context: .
       dockerfile: Dockerfile
     networks:
-      - data-pipeline
+      - models
     stdin_open: true
     tty: true  
 
 networks:
-  data-pipeline:
+  models:
     external: true
