@@ -3,12 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - ../secrets:/secrets
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/model-containerization.json
-      - GCP_PROJECT=ac215-privasee
-      - GCP_ZONE=us-central1-a
     networks:
       - models
     stdin_open: true
