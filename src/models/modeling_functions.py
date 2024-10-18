@@ -78,3 +78,25 @@ def collate_fn(batch):
         "attention_mask": attention_masks,
         "labels": labels
     }
+### Training Loop
+def train(model, dataloader, optimizer, loss_fn, epochs=3):
+    model.train()
+    for epoch in range(epochs):
+        total_loss = 0
+        for batch in dataloader:
+            optimizer.zero_grad()
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch["attention_mask"].to(device)
+            labels = batch["labels"].to(device)
+
+            # Forward pass
+            outputs = model(input_ids, attention_mask=attention_mask)
+            loss = loss_fn(outputs.logits, labels)
+
+            # Backward pass and optimization
+            loss.backward()
+            optimizer.step()
+            total_loss += loss.item()
+
+        avg_loss = total_loss / len(dataloader)
+        print(f"Epoch {epoch + 1}, Loss: {avg_loss:.4f}")
