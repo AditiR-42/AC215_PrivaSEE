@@ -1,0 +1,13 @@
+services:
+  models-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - models
+    stdin_open: true
+    tty: true  
+
+networks:
+  models:
+    external: true
