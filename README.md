@@ -26,19 +26,16 @@ Model Training: Utilizes the latest cleaned datasets stored in GCP from the Data
 2. `/src/datapipeline/Pipfile` This file contains the various packages needed to help with preprocessing.
 3. `src/datapipeline/Dockerfile` Our Dockerfile follow standard conventions. More information on how to run the docker file can be followed below in virtual environment setup. 
 4. `src/datapipeline/docker-compose.yaml` This yaml file supports the docker-shell-compose.sh script. 
-5. `src/datapipeline/docker-shell-compose.sh` The shell script ensures that the data-pipeline network is created if it doesn’t already exist, builds the Docker image from the Dockerfile, and uses docker-compose to run the data-pipeline-cli service defined in the docker-compose.yaml. **Please check the running docker file to learn more about this.** 
-6. `src/datapipeline/docker-shell.sh` This script creates a custom network, builds a custom-label-studio Docker image, and resets existing containers to ensure a fresh setup.
-7. `src/datapipeline/data_cleaning_functions.py` This script cleans the data scrapped from the scraping prototype. 
-8. `src/datapipeline/retrieving_opp215_data.py` This is a placeholder file for work we will do next milestone. 
+5. `src/datapipeline/docker-shell.sh` This script creates a custom network, builds a custom-label-studio Docker image, and resets existing containers to ensure a fresh setup.
+6. `src/datapipeline/data_cleaning_functions.py` This script cleans the data scrapped from the scraping prototype. 
+7. `src/datapipeline/retrieving_opp215_data.py` This is a placeholder file for work we will do next milestone. 
 
 ### Model Overiew
 1. `/src/models/Pipfile` This file contains the various packages needed to help with preprocessing.
 2. `src/models/Dockerfile` Our Dockerfile follow standard conventions. More information on how to run the docker file can be followed below in virtual environment setup. 
 3. `/src/models/modeling_functions.py` Includes reusable modeling functions that are used across various modeling stages. These functions are geared towards setting up data structures for training, including data loaders and custom PyTorch datasets, and operationalizing the training loop and evaluation metrics.
 4. `/src/models/multi_class_model.py`Includes the definition of the `PrivacyDataset` class for handling data loading and preprocessing, including text chunking to fit within BERT’s maximum sequence length, and a custom `collate_fn` to handle batches of data.
-5. `src/datapipeline/docker-compose.yaml` This yaml file supports the docker-shell-compose.sh script. 
-6. `src/datapipeline/docker-shell-compose.sh` The shell script ensures that the data-pipeline network is created if it doesn’t already exist, builds the Docker image from the Dockerfile, and uses docker-compose to run the data-pipeline-cli service defined in the docker-compose.yaml. **Please check the running docker file to learn more about this.** 
-7. `src/datapipeline/docker-shell.sh` This script creates a custom network, builds a custom-label-studio Docker image, and resets existing containers to ensure a fresh setup.
+6. `src/datapipeline/docker-shell.sh` This script creates a custom network, builds a custom-label-studio Docker image, and resets existing containers to ensure a fresh setup.
 
 
 ### Versioned Data Strategy
@@ -68,12 +65,19 @@ Please see the attached [link](https://www.figma.com/proto/2vH2YvNCwrQwaWzuAyjBR
 ### Virtual Environment Setup
 Virtual environment is set up in Docker, ensuring smoother dependency management, isolation of libraries, and consistent execution across different systems.
 #### Running Docker 
-To run Dockerfile in both the datapipeline container and the models container:
+To run Dockerfile in the datapipeline container, make sure to be in `\src\datapipeline`::
 1. Run the command `bash docker-shell.sh`
 2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
 ![Image](reports/docker-screenshot.png)
 
-**Note:** both container folders currently contains a `docker-shell-compose.sh` file that can orchestrate the build of multiple containers, however that is not set up entirely yet because we are still working on our containers. It is mainly listed as a placeholder file for now. 
+To run Dockerfile in the models container, make sure to be in `\src\models`:
+1. Run the command `bash docker-shell.sh`
+2. Check that the docker built by running `docker container ls`. You should see something like this:
+![Image](reports/docker-container.png)
+3. To enter the docker container, run `docker exec -it data-modeling-studio /bin/bash`
+2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
+![Image](reports/models-docker.png)
+
 
 ### Notebooks/Reports
 Both folders here contains code that is not part of the container. Notebooks contains the original `.ipynb` files used to run the code, however, are also converted into `.py` files in the containers. Reports contains the write up from previous milestones. 
