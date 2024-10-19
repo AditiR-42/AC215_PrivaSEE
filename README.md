@@ -65,7 +65,7 @@ Please see the attached [link](https://www.figma.com/proto/2vH2YvNCwrQwaWzuAyjBR
 ### Virtual Environment Setup
 Virtual environment is set up in Docker, ensuring smoother dependency management, isolation of libraries, and consistent execution across different systems.
 #### Running Docker 
-To run Dockerfile in the datapipeline container, make sure to be in `/src/datapipeline`::
+To run Dockerfile in the datapipeline container, make sure to be in `/src/datapipeline`:
 1. Run the command `bash docker-shell.sh`
 2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
 ![Image](reports/docker-screenshot.png)
