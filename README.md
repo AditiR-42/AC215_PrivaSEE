@@ -74,15 +74,11 @@ Please see the attached [link](https://www.figma.com/proto/2vH2YvNCwrQwaWzuAyjBR
 ### Virtual Environment Setup
 Virtual environment is set up in Docker, ensuring smoother dependency management, isolation of libraries, and consistent execution across different systems.
 #### Running Docker 
-To run Dockerfile in the datapipeline container, make sure to be in `/src/datapipeline`::
+To run Dockerfile in either container, make sure to be in `/src/desired-container`::
 1. Run the command `bash docker-shell.sh`
 2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
 ![Image](reports/docker-screenshot.png)
 
-To run Dockerfile in the models container, make sure to be in `/src/models`:
-1. Run the command `bash docker-shell.sh`
-2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
-![Image](reports/models-docker.png)
 
 ### Notebooks/Reports
 Both folders here contains code that is not part of the container. Notebooks contains the original `.ipynb` files used to run the code, however, are also converted into `.py` files in the containers. Reports contains the write up from previous milestones. 
