@@ -1,17 +1,13 @@
+# Use Python slim base image
 FROM python:3.11-slim
 
-# Ensure bash is available
+# Ensure bash is installed
 RUN apt-get update && apt-get install -y bash
 
-ENV PYENV_SHELL=/bin/bash
-
 # Install essential tools and Playwright dependencies
-RUN set -ex; \
-    apt-get update && \
-    apt-get upgrade -y && \
+RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         build-essential \
-        ca-certificates \
         curl \
         libnss3 \
         libxss1 \
@@ -37,20 +33,17 @@ WORKDIR /app
 # Copy Pipfile and Pipfile.lock for dependency management
 ADD Pipfile Pipfile.lock /app/
 
-# Install the Python dependencies using Pipenv
+# Install Python dependencies using Pipenv
 RUN pipenv sync
 
-# Install the Playwright browsers
+# Install Playwright browsers
 RUN pipenv run playwright install --with-deps
 
-# Add the rest of the application files
+# Copy the rest of the application files
 ADD . /app
-
-# Ensure pipenv shell is not required to run scripts
-RUN pipenv install --deploy --system
 
 # Install PyTorch
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-# Set entrypoint to open bash by default
-CMD ["/bin/bash"]
+# Set bash as the entrypoint to keep the container running interactively
+ENTRYPOINT ["/bin/bash"]
