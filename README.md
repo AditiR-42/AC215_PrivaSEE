@@ -22,9 +22,9 @@ Model Training: Utilizes the latest cleaned datasets stored in GCP from the Data
 
 ### Data Pipeline Overview
 In this milestone, we worked on updating our model training approach and proceeded to start fine-tuning data. 
-1. `src/datapipeline/clean_data.py` *New* This script performs data cleaning operations, including HTML tag removal and URL filtering, and provides functions to upload or read datasets from GCP.
-2. `src/datapipeline/create_gemini_tuning_datasets.py` *New* This script prepares datasets for Gemini model tuning by processing privacy-related CSV data, generating JSONL files, and uploading them to GCP.
-3. `src/datapipeline/create_vertexai_datasets.py` *New* This script generates training, validation, and testing datasets in JSONL format for Vertex AI, using grouped and labeled privacy issue data from a CSV, and uploads them to GCP. 
+1. `src/datapipeline/clean_data.py` <mark>*New*</mark> This script performs data cleaning operations, including HTML tag removal and URL filtering, and provides functions to upload or read datasets from GCP.
+2. `src/datapipeline/create_gemini_tuning_datasets.py` <mark>*New*</mark> This script prepares datasets for Gemini model tuning by processing privacy-related CSV data, generating JSONL files, and uploading them to GCP.
+3. `src/datapipeline/create_vertexai_datasets.py` <mark>*New*</mark> This script generates training, validation, and testing datasets in JSONL format for Vertex AI, using grouped and labeled privacy issue data from a CSV, and uploads them to GCP. 
 4. `src/datapipeline/data_cleaning_functions.py` This script cleans the data scrapped from the scraping prototype. 
 5. `src/datapipeline/docker-compose.yaml` This yaml file supports the docker-shell-compose.sh script. 
 6. `src/datapipeline/docker-shell.sh` This script creates a custom network, builds a custom-label-studio Docker image, and resets existing containers to ensure a fresh setup.
@@ -43,7 +43,7 @@ In this milestone, we worked on updating our model training approach and proceed
 ### Versioned Data Strategy
 Data versioning is maintained on GCP through different folder categorization. The various folders keep track of where the scraped and clean data are, along with which we will be using for various stages of our work. In milestone2, most of the work was completed in the `legal-terms-data` bucket. In this milestone, we did finetuning of our dataset, along with utilizing a new training platform, Vertex AI, due to limitations from previous models. 
 ```
-├── cloud-ai-platform-9509774c-e619-4d85-a500-b2179d109f91/
+├── cloud-ai-platform-9509774c-e619-4d85-a500-b2179d109f91/ <mark>*New*</mark>
     ├── dataset-2466856041741025280/
     │   ├── preprocessed_examples/    
     ├── dataset-3605703797512339456/
@@ -73,7 +73,7 @@ Please see the attached [link](https://www.figma.com/proto/2vH2YvNCwrQwaWzuAyjBR
 
 ### Virtual Environment Setup
 Virtual environment is set up in Docker, ensuring smoother dependency management, isolation of libraries, and consistent execution across different systems.
-#### Running Docker 
+#### Running Docker <mark>*New*</mark>
 To run Dockerfile in either container, make sure to be in `/src/desired-container`:
 1. Run the command `bash docker-shell.sh`
 2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
@@ -83,5 +83,5 @@ To run Dockerfile in either container, make sure to be in `/src/desired-containe
 ### Notebooks/Reports
 Both folders here contains code that is not part of the container. Notebooks contains the original `.ipynb` files used to run the code, however, are also converted into `.py` files in the containers. Reports contains the write up from previous milestones. 
 
-### Midterm Presentation
+### Midterm Presentation <mark>*New*</mark>
 Filename: midterm_presentation/PrivaSee_Midterm.pdf
