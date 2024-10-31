@@ -10,8 +10,12 @@ pandas = "*"
 selenium = "*"
 playwright = "*"
 google-cloud-storage = "*"
+torch = "*"
+scikit-learn = "*"
+transformers = "*"
+gcsfs = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "3.11"
