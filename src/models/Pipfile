@@ -14,6 +14,9 @@ torch = "*"
 scikit-learn = "*"
 transformers = "*"
 gcsfs = "*"
+google-cloud-aiplatform = "*"
+pymupdf = "*"
+pdfplumber = "*"
 
 [dev-packages]
 
