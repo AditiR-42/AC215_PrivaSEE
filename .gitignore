@@ -14,9 +14,11 @@ __pycache__/
 
 # Ignore environment files (for secrets)
 .env
+src/models/myenv
 
 # Ignore all .csv files but keep specific ones
 *.csv
 
 # Ignore a specific directory and all its contents
 secrets/
+apple.pdf
