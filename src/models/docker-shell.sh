@@ -38,6 +38,7 @@ docker run -d \
   --network "$NETWORK_NAME" \
   -p 8080:8080 \
   -v "$(pwd)/../secrets:/secrets" \
+  -v "$PDF_PATH:$MOUNT_PATH/$(basename "$PDF_PATH")" \
   -e GOOGLE_APPLICATION_CREDENTIALS="/secrets/model-containerization.json" \
   -e GCP_PROJECT="ac215-privasee" \
   -e GCP_ZONE="us-central1-a" \
