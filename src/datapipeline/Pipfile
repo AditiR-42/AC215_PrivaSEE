@@ -10,6 +10,8 @@ pandas = "*"
 selenium = "*"
 playwright = "*"
 google-cloud-storage = "*"
+google-play-scraper = "*"
+fuzzywuzzy = "*"
 
 [dev-packages]
 
