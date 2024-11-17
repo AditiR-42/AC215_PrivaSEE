@@ -1,82 +1,95 @@
 import pytest
-import os
 import fitz
 from unittest.mock import patch, MagicMock
-from get_issues import (
-    extract_text_from_pdf,
-    initialize_vertex_ai,
-    call_gemini_model,
-    validate_found_issues,
-    process_pdf_privacy_issues
-)
-from google.api_core.exceptions import NotFound
+from get_issues import extract_text_from_pdf, process_pdf_privacy_issues
 
-# Fixture to create a sample PDF with known text for testing
+# Fixture to create a temporary PDF with known content for testing
 @pytest.fixture
-def mock_pdf_path_with_text(tmp_path):
-    # Fixture to create a temporary PDF for testing extraction
-    pdf_path = tmp_path / "test_text.pdf"
-    doc = fitz.open()  # create a new PDF
+def mock_pdf_with_content(tmp_path):
+    pdf_path = tmp_path / "mock_test.pdf"
+    doc = fitz.open()  # Create a new PDF document
     page = doc.new_page()
-    text_content = "This is a test PDF with known text content."
-    page.insert_text((72, 72), text_content)
+    test_content = "This is a test PDF containing text."
+    page.insert_text((72, 72), test_content)
     doc.save(pdf_path)
     doc.close()
-    return str(pdf_path), text_content
+    return str(pdf_path), test_content
 
-# Unit test: Testing PDF text extraction functionality
-def test_extract_text_from_pdf(mock_pdf_path_with_text):
-    pdf_path, expected_text = mock_pdf_path_with_text
+
+# Unit Test: Test PDF text extraction
+def test_extract_text_from_pdf(mock_pdf_with_content):
+    pdf_path, expected_text = mock_pdf_with_content
     extracted_text = extract_text_from_pdf(pdf_path)
-    assert extracted_text.strip() == expected_text, "The extracted content should match the known PDF text."
+    assert extracted_text.strip() == expected_text, "Extracted text should match the content of the PDF."
 
-# Unit test: Mock Vertex AI initialization
-def test_initialize_vertex_ai():
-    with patch("vertexai.init") as mock_init:
-        initialize_vertex_ai("project_id", "us-central1")
-        mock_init.assert_called_once_with(project="project_id", location="us-central1")
 
-# Unit test: Testing API call to the Gemini model for successful connection
-def test_call_gemini_model_successful_connection():
-    input_text = "Sample text with privacy issues."
+# Unit Test: Test Vertex AI initialization and chat response with mocks
+def test_process_pdf_privacy_issues(mock_pdf_with_content):
+    pdf_path, test_content = mock_pdf_with_content
+    project_id = "mock_project_id"
+    location_id = "mock_location"
+    endpoint_id = "mock_endpoint"
+
     mock_response = MagicMock()
-    mock_response.text = "Issue 1\nIssue 2\nIssue 3"
-    
-    with patch("get_issues.GenerativeModel") as MockGenerativeModel:
+    mock_response.text = "Mocked response about privacy issues."
+
+    with patch("get_issues.vertexai.init") as mock_init, \
+         patch("get_issues.GenerativeModel") as MockGenerativeModel, \
+         patch("builtins.print") as mock_print:
+
+        # Mock the Vertex AI initialization
+        mock_init.return_value = None
+
+        # Mock the generative model and chat session
         mock_model_instance = MockGenerativeModel.return_value
-        mock_model_instance.generate_content.return_value = mock_response
+        mock_model_instance.start_chat.return_value.send_message.return_value = mock_response
 
-        issues = call_gemini_model(input_text)
-        
-        # Verify successful connection response
-        assert issues == ["Issue 1", "Issue 2", "Issue 3"], "Should match the simulated response."
-        MockGenerativeModel.assert_called_once_with("gemini-1.5-flash-002")
+        # Call the function
+        process_pdf_privacy_issues(pdf_path, project_id, location_id, endpoint_id)
 
-# Unit test: Testing API call to the Gemini model for a 404 error
-def test_call_gemini_model_404_error():
-    input_text = "Sample text with privacy issues."
-    
-    with patch("get_issues.GenerativeModel") as MockGenerativeModel:
+        # Verify Vertex AI initialization
+        mock_init.assert_called_once_with(project=project_id, location=location_id)
+
+        # Verify the model and chat methods were called
+        MockGenerativeModel.assert_called_once_with(
+            f"projects/{project_id}/locations/{location_id}/endpoints/{endpoint_id}"
+        )
+        mock_model_instance.start_chat.return_value.send_message.assert_called_once()
+
+        # Verify the printed output
+        mock_print.assert_any_call("Model Response:")
+        mock_print.assert_any_call(mock_response.text)
+
+
+# End-to-End Test: Simulate an integration flow
+def test_end_to_end_process(mock_pdf_with_content):
+    pdf_path, test_content = mock_pdf_with_content
+    project_id = "mock_project_id"
+    location_id = "mock_location"
+    endpoint_id = "mock_endpoint"
+
+    mock_response = MagicMock()
+    mock_response.text = "Identified privacy issue: Example Issue"
+
+    with patch("get_issues.vertexai.init") as mock_init, \
+         patch("get_issues.GenerativeModel") as MockGenerativeModel, \
+         patch("builtins.print") as mock_print:
+
+        # Mock Vertex AI initialization
+        mock_init.return_value = None
+
+        # Mock generative model and chat session
         mock_model_instance = MockGenerativeModel.return_value
-        mock_model_instance.generate_content.side_effect = NotFound("404 error: Model not found.")
-        
-        with pytest.raises(NotFound, match="404 error: Model not found."):
-            call_gemini_model(input_text)
+        mock_model_instance.start_chat.return_value.send_message.return_value = mock_response
 
-# Unit test: Validate that found issues are processed correctly
-def test_validate_found_issues():
-    issues = ["Issue 1", "Issue 2"]
-    validated_issues = validate_found_issues(issues)
-    assert validated_issues == issues, "Validated issues should match the input issues."
+        # Run the process function
+        process_pdf_privacy_issues(pdf_path, project_id, location_id, endpoint_id)
 
-# System test: End-to-end test of process_pdf_privacy_issues function
-def test_process_pdf_privacy_issues(mock_pdf_path_with_text):
-    pdf_path, _ = mock_pdf_path_with_text
-    with patch("get_issues.call_gemini_model") as mock_call_gemini_model:
-        mock_call_gemini_model.return_value = ["Issue 1", "Issue 2"]
-        
-        with patch("builtins.print") as mock_print:
-            process_pdf_privacy_issues(pdf_path, "project_id", "us-central1")
-            mock_print.assert_any_call("Validated Found Issues to be graded:")
-            mock_print.assert_any_call("- Issue 1")
-            mock_print.assert_any_call("- Issue 2")
+        # Verify all critical components executed correctly
+        mock_init.assert_called_once_with(project=project_id, location=location_id)
+        MockGenerativeModel.assert_called_once()
+        mock_model_instance.start_chat.return_value.send_message.assert_called_once()
+
+        # Validate final response was printed
+        mock_print.assert_any_call("Model Response:")
+        mock_print.assert_any_call(mock_response.text)
