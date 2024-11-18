@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 from transformers import BertForSequenceClassification, BertTokenizer, AdamW
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MultiLabelBinarizer
+from models import multi_class_model
+
 
 # Create synthetic data for testing
 def create_synthetic_data():
@@ -22,7 +24,7 @@ def create_synthetic_data():
 
 # Mock pandas.read_csv before importing multi_class_model
 with patch('pandas.read_csv', return_value=create_synthetic_data()):
-    import models.multi_class_model  # Import after mocking
+    import multi_class_model  # Import after mocking
 
 # Now you can write your tests using the imported module
 def test_data_loading_and_preprocessing():
