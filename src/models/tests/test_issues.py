@@ -33,8 +33,8 @@ def test_process_pdf_privacy_issues(mock_pdf_with_content):
     mock_response = MagicMock()
     mock_response.text = "Mocked response about privacy issues."
 
-    with patch("get_issues.vertexai.init") as mock_init, \
-         patch("get_issues.GenerativeModel") as MockGenerativeModel, \
+    with patch("models.get_issues.vertexai.init") as mock_init, \
+         patch("models.get_issues.GenerativeModel") as MockGenerativeModel, \
          patch("builtins.print") as mock_print:
 
         # Mock the Vertex AI initialization
