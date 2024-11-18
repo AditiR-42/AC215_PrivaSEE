@@ -71,8 +71,8 @@ def test_end_to_end_process(mock_pdf_with_content):
     mock_response = MagicMock()
     mock_response.text = "Identified privacy issue: Example Issue"
 
-    with patch("get_issues.vertexai.init") as mock_init, \
-         patch("get_issues.GenerativeModel") as MockGenerativeModel, \
+    with patch("models.get_issues.vertexai.init") as mock_init, \
+         patch("models.get_issues.GenerativeModel") as MockGenerativeModel, \
          patch("builtins.print") as mock_print:
 
         # Mock Vertex AI initialization
