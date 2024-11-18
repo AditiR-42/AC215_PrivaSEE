@@ -22,7 +22,7 @@ def create_synthetic_data():
 
 # Mock pandas.read_csv before importing multi_class_model
 with patch('pandas.read_csv', return_value=create_synthetic_data()):
-    import multi_class_model  # Import after mocking
+    import models.multi_class_model  # Import after mocking
 
 # Now you can write your tests using the imported module
 def test_data_loading_and_preprocessing():

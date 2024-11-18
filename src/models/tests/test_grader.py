@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 from io import StringIO
-from privacy_grader import load_weights_from_csv, PrivacyGrader, PrivacyReport, Grade
+from models.privacy_grader import load_weights_from_csv, PrivacyGrader, PrivacyReport, Grade
 
 
 # to  test do PYTHONPATH=$(pwd) pytest tests/test_grader.py
