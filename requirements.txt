@@ -4,3 +4,4 @@ PyMuPDF==1.21.1
 pandas==1.5.3
 torch==2.2.2
 google-cloud-aiplatform==1.24.0
+numpy<2.0
