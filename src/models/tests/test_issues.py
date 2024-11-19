@@ -35,7 +35,7 @@ def test_extract_text_from_pdf(mock_pdf_with_content):
 
 
 # Unit Test: Test Vertex AI initialization and chat response with mocks
-def test_process_pdf_privacy_issues(mock_pdf_with_content):
+def test_process_pdf_privacy_issues(mock_pdf_with_content, mock_csv_file):
     pdf_path, test_content = mock_pdf_with_content
     project_id = "mock_project_id"
     location_id = "mock_location"
@@ -74,7 +74,7 @@ def test_process_pdf_privacy_issues(mock_pdf_with_content):
 
 
 # End-to-End Test: Simulate an integration flow
-def test_end_to_end_process(mock_pdf_with_content):
+def test_end_to_end_process(mock_pdf_with_content, mock_csv_file):
     pdf_path, test_content = mock_pdf_with_content
     project_id = "mock_project_id"
     location_id = "mock_location"

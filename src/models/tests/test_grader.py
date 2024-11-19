@@ -112,8 +112,8 @@ def test_validate_issues(grader):
 def test_calculate_category_scores(grader):
     """Test calculation of category scores."""
     valid_issues = [
-        "this service takes credit for your content",
-        "the app requires broad device permissions"
+        "Ownership: this service takes credit for your content",
+        "Device Permissions: the app requires broad device permissions"
     ]
     result = grader._calculate_category_scores(valid_issues)
     expected_scores = {
@@ -150,9 +150,9 @@ def test_get_grade(grader):
 def test_grade_privacy_issues(grader):
     """Test grading privacy issues and generating a report."""
     found_issues = [
-        "This service takes credit for your content",
-        "The app requires broad device permissions",
-        "Unknown issue"
+        "Ownership: This service takes credit for your content",
+        "Device Permissions: The app requires broad device permissions",
+        "Unknown Issue: Unknown issue"
     ]
     report = grader.grade_privacy_issues(found_issues)
 
