@@ -14,7 +14,7 @@ __pycache__/
 
 # Ignore environment files (for secrets)
 .env
-src/models/myenv
+src/myenv
 
 # Ignore all .csv files but keep specific ones
 *.csv
