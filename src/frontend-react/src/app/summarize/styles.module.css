@@ -3,6 +3,9 @@
     display: block;
     font-weight: bold;
     margin-bottom: 0.5rem;
+    font-family: 'Source Sans Pro', sans-serif; /* Updated font */
+    font-size: 16px;
+    color: #ffffff; /* Matching text color */
 }
 
 /* Input styling */
@@ -11,11 +14,12 @@
     width: 100%;
     cursor: pointer;
     padding: 0.5rem;
-    font-size: 1rem;
+    font-family: 'Source Sans Pro', sans-serif; /* Updated font */
+    font-size: 16px;
     border-radius: 4px;
     border: 1px solid #ccc;
-    background-color: #2d2d2d;
-    color: #fff;
+    background-color: #2c2c2c; /* Matching background */
+    color: #ffffff; /* Matching text color */
 }
 
 /* Ensure the container starts below the navbar */
@@ -25,9 +29,10 @@
     align-items: center;
     justify-content: flex-start;
     min-height: 100vh;
-    padding-top: 100px; /* Adjust based on navbar height */
-    background-color: #121212;
+    padding-top: 120px; /* Increased padding to move down */
+    background-color: #232323; /* Matching hero section background */
     color: #ffffff;
+    font-family: 'Source Sans Pro', sans-serif; /* Matching font */
 }
 
 /* Main section styling */
@@ -36,33 +41,39 @@
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    margin-top: 40px; /* Optional additional spacing */
 }
 
 /* Title styling */
 .title {
-    font-size: 2rem;
+    font-family: 'Playfair Display', serif; /* Updated font */
+    font-size: 48px; /* Matching hero title size */
     font-weight: bold;
     margin-bottom: 2rem;
-    color: #ffffff;
+    color: #ffffff; /* Matching text color */
 }
 
 /* Button styling */
 .uploadButton {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #ffffff;
     background-color: #007bff;
+    color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px; /* Updated border radius for a softer look */
+    padding: 12px 24px; /* Adjusted padding for better visual weight */
+    font-size: 16px;
+    font-family: 'Source Sans Pro', sans-serif; /* Updated font */
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 1rem;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.uploadButton:last-of-type {
+    margin-right: 0;
 }
 
 .uploadButton:hover {
     background-color: #0056b3;
+    transition: background-color 0.3s ease; /* Added smooth hover effect */
 }
 
 /* Progress bar styling */
@@ -85,10 +96,12 @@
 .gradeResult {
     margin-top: 2rem;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 18px; /* Slightly larger for better readability */
     color: #ffffff;
+    font-family: 'Source Sans Pro', sans-serif; /* Updated font */
 }
 
+/* Preformatted text (code-like sections) */
 .preformatted {
     text-align: left;
     background: #1e1e1e;
@@ -97,4 +110,19 @@
     overflow-x: auto;
     color: #ffffff;
     font-family: "Courier New", Courier, monospace;
+    font-size: 14px; /* Matching font size for smaller text */
+}
+
+/* Loading overlay for matching styles */
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure it overlays all other content */
 }

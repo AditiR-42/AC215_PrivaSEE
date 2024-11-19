@@ -10,6 +10,7 @@ import DataService from "../../services/DataService";
 import { uuid } from "../../services/Common";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ThreeDots } from 'react-loader-spinner'; // Add the loader component
 import styles from "./styles.module.css";
 
 export default function ChatPage() {
@@ -25,15 +26,19 @@ export default function ChatPage() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [isTyping, setIsTyping] = useState(false);
     const [selectedModel, setSelectedModel] = useState(model);
+    const [isLoading, setIsLoading] = useState(false); // Add loading state
 
     const fetchChat = async (id) => {
         try {
+            setIsLoading(true); // Start loading
             setChat(null);
             const response = await DataService.GetChat(model, id);
             setChat(response.data);
         } catch (error) {
             console.error('Error fetching chat:', error);
             setChat(null);
+        } finally {
+            setIsLoading(false); // Stop loading
         }
     };
 
@@ -47,6 +52,7 @@ export default function ChatPage() {
             setHasActiveChat(false);
         }
     }, [chat_id]);
+
     useEffect(() => {
         setSelectedModel(model);
     }, [model]);
@@ -69,6 +75,7 @@ export default function ChatPage() {
         const startChat = async (message) => {
             try {
                 setIsTyping(true);
+                setIsLoading(true); // Start loading
                 setChat(tempChatMessage(message)); // Temporarily show user input
     
                 console.log('Sending message to backend:', message.content);
@@ -95,6 +102,8 @@ export default function ChatPage() {
                 alert('Something went wrong. Please try again.'); // Show error in alert
                 toast.error('Something went wrong. Please try again.');
                 setIsTyping(false);
+            } finally {
+                setIsLoading(false); // Stop loading
             }
         };
     
@@ -105,6 +114,7 @@ export default function ChatPage() {
         const continueChat = async (id, message) => {
             try {
                 setIsTyping(true);
+                setIsLoading(true); // Start loading
                 setChat(tempChatMessage(message));
 
                 const response = await DataService.ContinueChatWithLLM(model, id, message);
@@ -124,6 +134,8 @@ export default function ChatPage() {
                         { role: 'assistant', content: 'Failed to continue the chat. Please try again.' },
                     ],
                 }));
+            } finally {
+                setIsLoading(false); // Stop loading
             }
         };
 
@@ -140,6 +152,13 @@ export default function ChatPage() {
 
     return (
         <div className={styles.container}>
+            {/* Loading overlay */}
+            {isLoading && (
+                <div className={styles.loadingOverlay}>
+                    <ThreeDots color="#007bff" height={80} width={80} />
+                </div>
+            )}
+
             {!hasActiveChat && (
                 <section className={styles.hero}>
                     <div className={styles.heroContent}>
