@@ -8,10 +8,9 @@ import styles from './Header.module.css';
 
 const navItems = [
     { name: 'Home', path: '/', sectionId: '', icon: <Home fontSize="small" /> },
-    { name: 'About', path: '/', sectionId: 'about', icon: <Info fontSize="small" /> },
-    { name: 'Podcasts', path: '/podcasts', sectionId: 'podcasts', icon: <Podcasts fontSize="small" /> },
-    { name: 'Newsletters', path: '/newsletters', sectionId: 'newsletters', icon: <Email fontSize="small" /> },
-    { name: 'Cheese Assistant', path: '/chat', sectionId: '', icon: <SmartToy fontSize="small" /> }
+    { name: 'Summarize', path: '/summarize', sectionId: '', icon: <Podcasts fontSize="small" /> },
+    // { name: 'Grade', path: '/grade', sectionId: 'newsletters', icon: <Email fontSize="small" /> },
+    { name: 'Recommend', path: '/recommend', sectionId: '', icon: <SmartToy fontSize="small" /> }
 ];
 
 export default function Header() {
