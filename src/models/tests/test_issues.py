@@ -1,7 +1,7 @@
 import pytest
 import fitz
 from unittest.mock import patch, MagicMock
-from get_issues import extract_text_from_pdf, process_pdf_privacy_issues
+from models.get_issues import extract_text_from_pdf, process_pdf_privacy_issues
 
 # Fixture to create a temporary PDF with known content for testing
 @pytest.fixture
@@ -33,8 +33,8 @@ def test_process_pdf_privacy_issues(mock_pdf_with_content):
     mock_response = MagicMock()
     mock_response.text = "Mocked response about privacy issues."
 
-    with patch("get_issues.vertexai.init") as mock_init, \
-         patch("get_issues.GenerativeModel") as MockGenerativeModel, \
+    with patch("models.get_issues.vertexai.init") as mock_init, \
+         patch("models.get_issues.GenerativeModel") as MockGenerativeModel, \
          patch("builtins.print") as mock_print:
 
         # Mock the Vertex AI initialization
@@ -71,8 +71,8 @@ def test_end_to_end_process(mock_pdf_with_content):
     mock_response = MagicMock()
     mock_response.text = "Identified privacy issue: Example Issue"
 
-    with patch("get_issues.vertexai.init") as mock_init, \
-         patch("get_issues.GenerativeModel") as MockGenerativeModel, \
+    with patch("models.get_issues.vertexai.init") as mock_init, \
+         patch("models.get_issues.GenerativeModel") as MockGenerativeModel, \
          patch("builtins.print") as mock_print:
 
         # Mock Vertex AI initialization

@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, BertForSequenceClassification, AdamW
-from modeling_functions import PrivacyDataset, collate_fn  # Replace 'modeling_functions' with actual module name
+from models.modeling_functions import PrivacyDataset, collate_fn  # Replace 'modeling_functions' with actual module name
 
 # Mock data for testing
 @pytest.fixture
