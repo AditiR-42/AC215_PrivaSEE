@@ -1,7 +1,9 @@
+import os
 import pandas as pd
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
+from get_issues import process_pdf_privacy_issues
 
 def load_weights_from_csv(filepath: str) -> Dict[str, float]:
     """Load category weights from CSV file into format needed by grader."""
@@ -123,13 +125,22 @@ class PrivacyGrader:
 
         # Group valid issues by their parent categories
         issues_by_category: Dict[str, List[str]] = {}
-        for issue in valid_issues:
-            category = self.mapping_df[
-                self.mapping_df['privacy_issue'] == issue
-                ]['parent_issue'].iloc[0]
-            if category not in issues_by_category:
-                issues_by_category[category] = []
-            issues_by_category[category].append(issue)
+        for item in valid_issues:
+            # Split the item into parent issue and privacy issue
+            if ':' not in item:
+                print(f"Warning: Invalid issue format '{item}'. Skipping.")
+                continue
+            parent_issue, privacy_issue = map(str.strip, item.split(':', 1))
+
+            # Ensure the parent issue exists in our category mapping
+            if parent_issue not in self.all_parent_categories:
+                print(f"Warning: Parent category '{parent_issue}' not recognized. Skipping.")
+                continue
+
+        # Add the privacy issue to the corresponding parent category
+        if parent_issue not in issues_by_category:
+            issues_by_category[parent_issue] = []
+        issues_by_category[parent_issue].append(privacy_issue.lower())
 
         # Calculate score for each category that has issues
         for category, found_issues in issues_by_category.items():
@@ -172,31 +183,29 @@ class PrivacyGrader:
         Returns:
             PrivacyReport if at least some issues are valid, None if all issues are unknown
         """
-        # Validate issues
-        valid_issues, unknown_issues = self._validate_issues(privacy_issues)
 
-        # If all issues are unknown, return None
-        if len(valid_issues) == 0:
-            print("Unable to provide a report: None of the provided issues are included in the scoring system.")
-            return None
+        # Initialize issues grouped by category
+        issues_by_category: Dict[str, List[str]] = {}
 
-        # If some issues are unknown, log them
-        if unknown_issues:
-            print(
-                f"Note: The following issues were not recognized and will not be included in scoring: {unknown_issues}")
+        # Split each issue into parent issue and privacy issue
+        for issue in privacy_issues:
+            if ':' not in issue:
+                print(f"Warning: Invalid issue format '{issue}'. Skipping.")
+                continue
+            parent_issue, privacy_issue = map(str.strip, issue.split(':', 1))
+
+            # Ensure the parent issue exists
+            if parent_issue not in self.all_parent_categories:
+                print(f"Warning: Parent category '{parent_issue}' not recognized. Skipping.")
+                continue
+
+            # Add the privacy issue to the corresponding category
+            if parent_issue not in issues_by_category:
+                issues_by_category[parent_issue] = []
+            issues_by_category[parent_issue].append(privacy_issue.lower())
 
         # Calculate scores for all categories
-        category_scores = self._calculate_category_scores(valid_issues)
-
-        # Group valid issues by their parent categories (for reporting)
-        issues_by_category: Dict[str, List[str]] = {}
-        for issue in valid_issues:
-            category = self.mapping_df[
-                self.mapping_df['privacy_issue'] == issue
-                ]['parent_issue'].iloc[0]
-            if category not in issues_by_category:
-                issues_by_category[category] = []
-            issues_by_category[category].append(issue)
+        category_scores = self._calculate_category_scores(privacy_issues)
 
         # Calculate grades for each parent category
         category_grades = {}
@@ -238,12 +247,12 @@ class PrivacyGrader:
             overall_grade=overall_grade.value,
             overall_score=round(overall_score * 100, 2),
             parent_category_grades=category_grades,
-            worst_parent_categories=worst_categories,
-            unknown_issues=unknown_issues if unknown_issues else None
+            worst_parent_categories=worst_categories
         )
 # Example usage
 if __name__ == "__main__":
     mapping_df = pd.read_csv("mapping_df.csv")
+    mapping_path = "/app/mapping_df.csv"
     # Load weights for grader
     category_weights = load_weights_from_csv('category_weights.csv')
     # Initialize the grader
@@ -275,6 +284,11 @@ if __name__ == "__main__":
         'your data is processed and stored in a country that is friendlier to user privacy protection',
         'private messages can be read'
     ]
+    pdf_path = os.getenv("PDF_PATH", "/pdf_directory/default.pdf")
+    project_id = "ac215-privasee"
+    location_id = "us-central1"
+    endpoint_id = "3317729057814085632"
+    found_issues = process_pdf_privacy_issues(pdf_path, mapping_path, project_id, location_id, endpoint_id)
     report = grader.grade_privacy_issues(found_issues)
 
     if report:
