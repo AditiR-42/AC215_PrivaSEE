@@ -137,10 +137,10 @@ class PrivacyGrader:
                 print(f"Warning: Parent category '{parent_issue}' not recognized. Skipping.")
                 continue
 
-        # Add the privacy issue to the corresponding parent category
-        if parent_issue not in issues_by_category:
-            issues_by_category[parent_issue] = []
-        issues_by_category[parent_issue].append(privacy_issue.lower())
+            # Add the privacy issue to the corresponding parent category
+            if parent_issue not in issues_by_category:
+                issues_by_category[parent_issue] = []
+            issues_by_category[parent_issue].append(privacy_issue.lower())
 
         # Calculate score for each category that has issues
         for category, found_issues in issues_by_category.items():

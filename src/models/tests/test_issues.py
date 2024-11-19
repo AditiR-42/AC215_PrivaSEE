@@ -15,6 +15,17 @@ def mock_pdf_with_content(tmp_path):
     doc.close()
     return str(pdf_path), test_content
 
+@pytest.fixture
+def mock_csv_file(tmp_path):
+    csv_path = tmp_path / "mock_mapping.csv"
+    data = {
+        "parent_issue": ["ownership", "permissions"],
+        "privacy_issue": ["this service takes credit for your content", "the app requires broad device permissions"]
+    }
+    df = pd.DataFrame(data)
+    df.to_csv(csv_path, index=False)
+    return str(csv_path)
+
 
 # Unit Test: Test PDF text extraction
 def test_extract_text_from_pdf(mock_pdf_with_content):
@@ -29,6 +40,7 @@ def test_process_pdf_privacy_issues(mock_pdf_with_content):
     project_id = "mock_project_id"
     location_id = "mock_location"
     endpoint_id = "mock_endpoint"
+    csv_path = mock_csv_file
 
     mock_response = MagicMock()
     mock_response.text = "Mocked response about privacy issues."
@@ -45,7 +57,7 @@ def test_process_pdf_privacy_issues(mock_pdf_with_content):
         mock_model_instance.start_chat.return_value.send_message.return_value = mock_response
 
         # Call the function
-        process_pdf_privacy_issues(pdf_path, project_id, location_id, endpoint_id)
+        process_pdf_privacy_issues(pdf_path, csv_path, project_id, location_id, endpoint_id)
 
         # Verify Vertex AI initialization
         mock_init.assert_called_once_with(project=project_id, location=location_id)
@@ -67,6 +79,7 @@ def test_end_to_end_process(mock_pdf_with_content):
     project_id = "mock_project_id"
     location_id = "mock_location"
     endpoint_id = "mock_endpoint"
+    csv_path = mock_csv_file
 
     mock_response = MagicMock()
     mock_response.text = "Identified privacy issue: Example Issue"
@@ -83,7 +96,7 @@ def test_end_to_end_process(mock_pdf_with_content):
         mock_model_instance.start_chat.return_value.send_message.return_value = mock_response
 
         # Run the process function
-        process_pdf_privacy_issues(pdf_path, project_id, location_id, endpoint_id)
+        process_pdf_privacy_issues(pdf_path, csv_path, project_id, location_id, endpoint_id)
 
         # Verify all critical components executed correctly
         mock_init.assert_called_once_with(project=project_id, location=location_id)
