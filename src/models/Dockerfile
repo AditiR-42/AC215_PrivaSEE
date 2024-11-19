@@ -45,5 +45,5 @@ ADD . /app
 # Install PyTorch
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-# Set bash as the entrypoint to keep the container running interactively
-ENTRYPOINT ["/bin/bash"]
+# Set entrypoint to open bash by default
+CMD ["/bin/bash"]

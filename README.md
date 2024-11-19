@@ -73,8 +73,10 @@ Please see the attached [link](https://www.figma.com/proto/2vH2YvNCwrQwaWzuAyjBR
 
 ### Virtual Environment Setup
 Virtual environment is set up in Docker, ensuring smoother dependency management, isolation of libraries, and consistent execution across different systems.
+
 #### Running Docker <mark>*New*</mark>
 To run Dockerfile in either container, make sure to be in `/src/desired-container`:
+
 1. Run the command `bash docker-shell.sh`
 2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
 ![Image](reports/docker-screenshot.png)

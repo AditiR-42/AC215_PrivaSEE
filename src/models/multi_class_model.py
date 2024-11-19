@@ -44,7 +44,7 @@ optimizer = AdamW(model.parameters(), lr=2e-5, eps=1e-8)
 
 # Device configuration
 # device = torch.device("cuda")
-device = torch.device("cuda")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 # Data Prep for Pytorch
 class PrivacyDataset(Dataset):

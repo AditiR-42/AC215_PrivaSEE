@@ -1,0 +1,46 @@
+/* Ensure full viewport height and center contents */
+.layout-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    background-color: #1a1a1a; /* Match background color */
+    margin: 0; /* Reset default margins */
+  }
+  
+  .container {
+    text-align: center;
+    max-width: 1200px; /* Optional: Limit the width of the content */
+  }
+  
+  .title {
+    font-size: 4rem; */
+    color: #ffffff; /* Ensure the text is visible */
+  }
+  
+  .features {
+    display: flex;
+    justify-content: center; /* Align features horizontally */
+    gap: 2rem; /* Add spacing between features */
+  }
+  
+  .feature {
+    background-color: #1e293b; /* Match your current card styling */
+    color: #ffffff; /* Ensure text is visible */
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+    max-width: 300px; /* Limit feature card width */
+    text-align: center;
+  }
+  
+  .feature h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .feature p {
+    font-size: 1rem;
+    color: #cccccc; /* Slightly lighter text for better readability */
+  }
+  
