@@ -18,7 +18,7 @@ async def process_pdf(
     pdf_file: UploadFile = File(...),
     project_id: str = "473358048261",
     location_id: str = "us-central1",
-    endpoint_id: str = "5609779793168957440",
+    endpoint_id: str = "3504346967373250560",
 ):
     """
     Process a PDF file to extract and analyze privacy issues.
