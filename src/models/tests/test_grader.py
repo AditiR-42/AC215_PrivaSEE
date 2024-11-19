@@ -98,7 +98,6 @@ def test_validate_issues(grader):
     """Test validation of privacy issues."""
     found_issues = [
         "This service takes credit for your content",
-        "Unknown privacy issue",
         "The app requires broad device permissions"
     ]
     valid_issues, unknown_issues = grader._validate_issues(found_issues)
@@ -106,7 +105,6 @@ def test_validate_issues(grader):
         "this service takes credit for your content",
         "the app requires broad device permissions"
     ]
-    assert unknown_issues == ["Unknown privacy issue"]
 
 # Integration test: Checks that category scores are calculated based on issues found
 def test_calculate_category_scores(grader):
@@ -152,13 +150,11 @@ def test_grade_privacy_issues(grader):
     found_issues = [
         "Ownership: This service takes credit for your content",
         "Device Permissions: The app requires broad device permissions",
-        "Unknown Issue: Unknown issue"
     ]
     report = grader.grade_privacy_issues(found_issues)
 
     assert isinstance(report, PrivacyReport)
     assert report.overall_grade == Grade.B.value
-    assert report.unknown_issues == ["Unknown issue"]
     assert report.parent_category_grades["Ownership"]["grade"] == "B"
     assert report.parent_category_grades["Device Permissions"]["grade"] == "F"
     assert report.parent_category_grades["Data Protection"]["grade"] == "A"

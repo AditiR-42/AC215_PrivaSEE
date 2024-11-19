@@ -2,6 +2,7 @@ import pytest
 import fitz
 from unittest.mock import patch, MagicMock
 from models.get_issues import extract_text_from_pdf, process_pdf_privacy_issues
+import pandas
 
 # Fixture to create a temporary PDF with known content for testing
 @pytest.fixture

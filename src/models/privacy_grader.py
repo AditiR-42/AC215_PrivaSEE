@@ -183,6 +183,11 @@ class PrivacyGrader:
         Returns:
             PrivacyReport if at least some issues are valid, None if all issues are unknown
         """
+        valid_issues, unknown_issues = self._validate_issues(privacy_issues)
+
+        if not valid_issues and not unknown_issues:
+            print("No valid privacy issues found.")
+            return None
 
         # Initialize issues grouped by category
         issues_by_category: Dict[str, List[str]] = {}
