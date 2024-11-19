@@ -70,8 +70,10 @@ def test_process_pdf_privacy_issues(mock_pdf_with_content, mock_csv_file):
         mock_model_instance.start_chat.return_value.send_message.assert_called_once()
 
         # Verify the printed output
-        mock_print.assert_any_call("Model Response:")
-        mock_print.assert_any_call(mock_response.text)
+        # Verify the printed output
+        mock_print.assert_any_call("Model Response (with parent issues):")
+        mock_print.assert_any_call(f"- Unknown: {mock_response.text}")
+
 
 
 # End-to-End Test: Simulate an integration flow
@@ -105,5 +107,6 @@ def test_end_to_end_process(mock_pdf_with_content, mock_csv_file):
         mock_model_instance.start_chat.return_value.send_message.assert_called_once()
 
         # Validate final response was printed
-        mock_print.assert_any_call("Model Response:")
-        mock_print.assert_any_call(mock_response.text)
+        mock_print.assert_any_call("Model Response (with parent issues):")       
+        # mock_print.assert_any_call(mock_response.text)
+        mock_print.assert_any_call(f"- Unknown: {mock_response.text}")
