@@ -17,6 +17,7 @@ gcsfs = "*"
 google-cloud-aiplatform = "*"
 pymupdf = "*"
 pdfplumber = "*"
+fitz = "*"
 
 [dev-packages]
 pytest = "*"
