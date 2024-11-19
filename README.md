@@ -43,14 +43,16 @@ To run Dockerfile in the datapipeline container, make sure to be in `/src/datapi
 2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
 ![Image](reports/docker-screenshot.png)
 
-To run Dockerfile in the models container, make sure to be in `/src/models`:
+#### Running Docker <mark>*New*</mark>
+To run Dockerfile in either container, make sure to be in `/src/desired-container`:
+
 1. Run the command `bash docker-shell.sh`
-2. Check that the docker built by running `docker container ls`. You should see something like this:
-![Image](reports/docker-container.png)
-3. To enter the docker container, run `docker exec -it data-modeling-studio /bin/bash`
 2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
-![Image](reports/models-docker.png)
+![Image](reports/docker-screenshot.png)
 
 
 ### Notebooks/Reports
 Both folders here contains code that is not part of the container. Notebooks contains the original `.ipynb` files used to run the code, however, are also converted into `.py` files in the containers. Reports contains the write up from previous milestones. 
+
+### Midterm Presentation <mark>*New*</mark>
+Filename: midterm_presentation/PrivaSee_Midterm.pdf
