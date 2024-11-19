@@ -34,8 +34,14 @@ For now, running the React app locally requires installing modules listed in `re
 
 To actually run the React app locally, there are two steps: 
 
-1. In `src/frontend-react`: run `npm install` and `npm run dev`. If issues arise, check that `npm --version = 10.8.3` and `nvm --version = 22.9.0`
-2. In `src/api_service`: run `uvicorn api.service:app --reload --host 0.0.0.0 --port 9000`
+1. In `src/frontend-react`: 
+   ```bash
+   npm install
+   npm run dev   
+3. In `src/api_service`:
+   ```bash
+   uvicorn api.service:app --reload --host 0.0.0.0 --port 9000`
+If issues arise, check that `npm --version = 10.8.3` and `nvm --version = 22.9.0`
 
 Here are some screenshots of our app:
 <img width="800" alt="Screenshot 2024-11-19 at 5 47 33 AM" src="https://github.com/user-attachments/assets/b1aa8eb9-1fd7-49f7-8b13-c49ca58d7bbc">
@@ -49,12 +55,12 @@ Here are some screenshots of our app:
 
 Our project uses a combination of unit and integration tests to validate individual functions and the interaction between components. External dependencies, such as Google Cloud Storage and Vertex AI, are mocked to ensure tests are isolated and do not rely on external systems. Test coverage is measured using `pytest-cov` to ensure critical code paths are adequately tested. 
 
-#### **Testing Tools Used**
+Testing Tools Used:
 - **PyTest**: Used for writing and running test cases.
 - **PyTest-Cov**: used for measuring test coverage.
 - **Unittest.mock**: used for mocking library for isolating code during tests.
 
-#### **Instructions to Run Tests Locally**
+To Test Locally:
 1. **Install Dependencies**:
    ```bash
    pip install -r requirements.txt
@@ -64,8 +70,6 @@ Our project uses a combination of unit and integration tests to validate individ
 3. **Run specific tests**:
     ```bash
     pytest src/models/tests/test_issues.py
-
-
 
 #### Running Docker
 To run Dockerfile in either container, make sure to be in `/src/desired-container`:
