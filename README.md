@@ -20,8 +20,7 @@ Here is our Solution Architecture:
 
 Here is our Technical Architecture:
 
-[TODO: INSERT DIAGRAM --> see https://github.com/ac2152024/ac2152024_template/tree/milestone4]
-
+<img src="images/technical-arch.png"  width="800">
 **Backend API** 
 
 We used fast API to build the backend service. This exposes the model functionality to the frontend.
