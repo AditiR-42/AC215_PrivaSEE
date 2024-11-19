@@ -31,9 +31,10 @@
 }
 
 .heroContent h1 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
     font-size: 48px;
-    margin-bottom: 20px;
+    margin-bottom: 2rem;
 }
 
 .heroContent p {

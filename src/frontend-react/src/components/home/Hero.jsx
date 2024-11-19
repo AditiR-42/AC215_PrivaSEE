@@ -5,7 +5,7 @@ const Hero = () => {
     <div className="layout-wrapper">
       {/* Hero Section */}
       <div className="container">
-        <h1 className="title">Empowering Choices,<br />Simplifying Privacy</h1>
+        <h1 className="title">Empowering Choices,<br />SIMPLIFYING PRIVACY</h1>
         <div className="features">
           <div className="feature">
             <h2>Get a Summary</h2>

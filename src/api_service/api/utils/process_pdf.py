@@ -37,7 +37,11 @@ def process_pdf_privacy_issues(pdf_path: str, project_id: str, location_id: str,
     """
     # Step 1: Extract text from PDF
     input_text = extract_text_from_pdf(pdf_path)
-    csv_path = "/Users/sammizhu/ac215_PrivaSEE/src/api_service/api/utils/mapping_df.csv"
+    
+    # Dynamically locate the CSV path
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(current_dir, "mapping_df.csv")
+    
     privacy_issues = load_privacy_issues(csv_path)
     
     # Step 2: Initialize Vertex AI
@@ -60,7 +64,7 @@ def process_pdf_privacy_issues(pdf_path: str, project_id: str, location_id: str,
         ],
         generation_config=generation_config,
     )
-    # # Step 6: Print the response
+    # Step 6: Print the response
     response_list = [item.strip() for item in response.text.split(',')]
     
     # Print the response for verification

@@ -29,8 +29,9 @@
 
 /* Layout Wrapper */
 .layout-wrapper {
-    @apply flex flex-col min-h-screen; /* Full height container for flexbox layout */
+    @apply flex items-center justify-center min-h-screen; /* Center both vertically and horizontally */
 }
+
 
 /* Navbar */
 .navbar {
@@ -60,7 +61,7 @@ main {
 }
 
 .title {
-    @apply text-4xl font-bold uppercase mb-10 leading-relaxed text-white; /* Larger title with better spacing */
+    @apply text-6xl font-bold mb-10 leading-tight text-white; /* Larger title with better spacing */
 }
 
 .features {

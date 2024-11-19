@@ -162,7 +162,7 @@ export default function ChatPage() {
             {!hasActiveChat && (
                 <section className={styles.hero}>
                     <div className={styles.heroContent}>
-                        <h1>App Recommendator 🌟</h1>
+                        <h1>Get App Recommendations 🌟</h1>
                         <ChatInput
                             onSendMessage={newChat}
                             className={styles.heroChatInputContainer}

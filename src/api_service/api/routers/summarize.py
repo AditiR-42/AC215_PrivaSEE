@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, UploadFile, HTTPException, Form, File
 import logging
 from api.utils.process_pdf import process_pdf_privacy_issues
@@ -71,8 +72,12 @@ async def get_grade():
                 detail="No issues have been processed yet. Please process a PDF first.",
             )
 
+        # Dynamically locate the CSV file in the same directory as this script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        csv_path = os.path.join(current_dir, "mapping_df.csv")
+
         # Initialize the PrivacyGrader
-        grader = PrivacyGrader("/Users/sammizhu/ac215_PrivaSEE/src/api_service/api/utils/mapping_df.csv")
+        grader = PrivacyGrader(csv_path)
 
         # Grade the issues
         report = grader.grade_privacy_issues(parsed_issues_storage["issues"])

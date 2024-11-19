@@ -46,7 +46,7 @@
 
 /* Title styling */
 .title {
-    font-family: 'Playfair Display', serif; /* Updated font */
+    font-family: 'Inter', sans-serif; /* Updated font */
     font-size: 48px; /* Matching hero title size */
     font-weight: bold;
     margin-bottom: 2rem;

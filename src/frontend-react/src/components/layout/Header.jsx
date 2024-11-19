@@ -68,7 +68,11 @@ export default function Header() {
         >
             <div className="container mx-auto px-4 h-20 flex items-center justify-between">
                 <Link href="/" className="text-white hover:text-white/90 transition-colors">
-                    <h1 className="text-2xl font-bold font-montserrat">🧀 Formaggio</h1>
+                <img 
+                    src="/assets/privasee.png" 
+                    alt="PrivaSEE Logo" 
+                    className="h-7" /* Adjust size as needed */
+                />
                 </Link>
 
                 {/* Desktop Navigation */}

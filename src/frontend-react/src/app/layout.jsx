@@ -7,7 +7,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
 export const metadata = {
-    title: 'Formaggio',
+    title: 'PrivaSEE',
     description: 'Discover the world of cheese through AI',
 }
 
@@ -23,6 +23,11 @@ export default async function RootLayout({ children }) {
                     href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&family=Montserrat:wght@700&family=Playfair+Display:wght@400;700&display=swap"
                     rel="stylesheet"
                 />
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+                    rel="stylesheet"
+                />
+
             </head>
             <body className="min-h-screen">
                 <ClientSessionProvider session={session}>

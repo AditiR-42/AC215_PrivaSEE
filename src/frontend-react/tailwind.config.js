@@ -7,7 +7,7 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Source Sans Pro', 'sans-serif'],
+                sans: ['Inter', 'sans-serif'],
                 montserrat: ['Montserrat', 'sans-serif'],
                 playfair: ['Playfair Display', 'serif'],
             },

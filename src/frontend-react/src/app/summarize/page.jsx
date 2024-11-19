@@ -76,7 +76,7 @@ export default function FileUploadPage() {
     return (
         <div className={styles.container}>
             <main className={styles.mainSection}>
-                <h1 className={styles.title}>Upload and View PDF</h1>
+                <h1 className={styles.title}>Upload and View PDF ✅</h1>
 
                 <div className={styles.fileInputs}>
                     <label htmlFor="pdfUpload" className={styles.label}>PDF File (Terms and Conditions):</label>
