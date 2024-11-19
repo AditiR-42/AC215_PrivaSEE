@@ -123,7 +123,7 @@ export default function ChatInput({
                 <textarea
                     ref={textAreaRef}
                     className={styles.chatInput}
-                    placeholder="How can Formaggio help you today?"
+                    placeholder="What sort of app are you looking for?"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={(e) => {
@@ -155,7 +155,7 @@ export default function ChatInput({
                         <CameraAltOutlined />
                     </IconButton>
                 </div>
-                <div className={styles.rightControls}>
+                {/* <div className={styles.rightControls}>
                     <span className={styles.inputTip}>Use shift + return for new line</span>
                     <select
                         className={styles.modelSelect}
@@ -168,7 +168,7 @@ export default function ChatInput({
                         <option value="llm-rag">Cheese Expert (RAG)</option>
                         <option value="llm-agent">Cheese Expert (Agent)</option>
                     </select>
-                </div>
+                </div> */}
             </div>
         </div>
     )
