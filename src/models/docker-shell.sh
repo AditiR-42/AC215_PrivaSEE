@@ -31,9 +31,9 @@ docker build -t "$IMAGE_NAME" .
 echo "Stopping and removing existing container (if any)..."
 docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
 
-# Step 4: Run the Docker container with a long-running command
+# Step 4: Run the Docker container with an interactive bash shell
 echo "Running Docker container..."
-docker run -d \
+docker run -it \
   --name "$CONTAINER_NAME" \
   --network "$NETWORK_NAME" \
   -p 8080:8080 \
