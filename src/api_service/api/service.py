@@ -1,6 +1,12 @@
+import os
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from api.routers import summarize, recommend
+
+# Dynamically set GOOGLE_APPLICATION_CREDENTIALS to the secrets folder
+current_dir = os.path.dirname(os.path.abspath(__file__))
+secrets_path = os.path.abspath(os.path.join(current_dir, "../../secrets/model-containerization.json"))
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = secrets_path
 
 # Setup FastAPI app
 app = FastAPI(title="API Server", description="API Server", version="v1")

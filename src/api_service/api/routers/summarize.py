@@ -72,9 +72,10 @@ async def get_grade():
                 detail="No issues have been processed yet. Please process a PDF first.",
             )
 
-        # Dynamically locate the CSV file in the same directory as this script
+        # Dynamically locate the CSV file in the "utils" directory one level above the current script's directory
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        csv_path = os.path.join(current_dir, "mapping_df.csv")
+        parent_dir = os.path.dirname(current_dir)  # Get the parent directory
+        csv_path = os.path.join(parent_dir, "utils", "mapping_df.csv")
 
         # Initialize the PrivacyGrader
         grader = PrivacyGrader(csv_path)
