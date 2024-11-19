@@ -82,5 +82,5 @@ To run Dockerfile in either container, make sure to be in `/src/desired-containe
 ### Notebooks/Reports
 Both folders here contains code that is not part of the container. Notebooks contains the original `.ipynb` files used to run the code, however, are also converted into `.py` files in the containers. Reports contains the write up from previous milestones. 
 
-### Midterm Presentation <mark>*New*</mark>
+### Midterm Presentation
 Filename: midterm_presentation/PrivaSee_Midterm.pdf
