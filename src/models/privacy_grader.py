@@ -3,7 +3,7 @@ import pandas as pd
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
-from get_issues import process_pdf_privacy_issues
+from models.get_issues import process_pdf_privacy_issues
 
 def load_weights_from_csv(filepath: str) -> Dict[str, float]:
     """Load category weights from CSV file into format needed by grader."""
