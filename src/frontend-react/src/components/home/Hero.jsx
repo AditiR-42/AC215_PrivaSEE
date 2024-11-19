@@ -1,21 +1,28 @@
-export default function Hero() {
-    return (
-        <section
-            className="relative h-screen flex items-center justify-center text-center bg-black"
-            style={{
-                backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/assets/hero_background.png')",
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-            }}
-        >
-            <div className="container mx-auto px-4">
-                <h1 className="text-5xl md:text-7xl font-playfair text-white mb-6">
-                    🧀 Formaggio.me is here!
-                </h1>
-                <p className="text-xl md:text-2xl text-white">
-                    Discover the world of cheese through AI
-                </p>
-            </div>
-        </section>
-    )
-}
+import React from 'react';
+
+const Hero = () => {
+  return (
+    <div className="layout-wrapper">
+      {/* Hero Section */}
+      <div className="container">
+        <h1 className="title">Empowering Choices,<br />Simplifying Privacy</h1>
+        <div className="features">
+          <div className="feature">
+            <h2>Get a Summary</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          </div>
+          <div className="feature">
+            <h2>Get a Grade</h2>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+          </div>
+          <div className="feature">
+            <h2>Get Recommended</h2>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Hero;

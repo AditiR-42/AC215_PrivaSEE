@@ -8,10 +8,8 @@ export default function Home() {
     return (
         <>
             <Hero />
-            <WhatIs></WhatIs>
-            <Podcasts />
-            <Newsletters />
-            <About />
+            {/* <WhatIs></WhatIs>
+            <About /> */}
         </>
     )
 }

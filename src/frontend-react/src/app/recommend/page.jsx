@@ -1,175 +1,195 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState, use, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import IconButton from '@mui/material/IconButton';
+import ChatInput from '@/components/chat/ChatInput';
+import ChatHistory from '@/components/chat/ChatHistory';
+import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
+import ChatMessage from '@/components/chat/ChatMessage';
 //import DataService from "../../services/MockDataService"; // Mock
 import DataService from "../../services/DataService";
+import { uuid } from "../../services/Common";
 
 // Import the styles
 import styles from "./styles.module.css";
 
-
-export default function NewslettersPage({ searchParams }) {
+export default function ChatPage({ searchParams }) {
     const params = use(searchParams);
-    const newsletter_id = params.id;
+    const chat_id = params.id;
+    const model = params.model || 'llm';
+    console.log(chat_id, model);
 
     // Component States
-    const [newsletters, setNewsletters] = useState([]);
-    const [hasActiveNewsletter, setHasActiveNewsletter] = useState(false);
-    const [newsletter, setNewsletter] = useState(null);
+    const [chatId, setChatId] = useState(params.id);
+    const [hasActiveChat, setHasActiveChat] = useState(false);
+    const [chat, setChat] = useState(null);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [isTyping, setIsTyping] = useState(false);
+    const [selectedModel, setSelectedModel] = useState(model);
+    const router = useRouter();
 
-    const fetchNewsletter = async (id) => {
+    const fetchChat = async (id) => {
         try {
-            setNewsletter(null);
-            const response = await DataService.GetNewsletter(id);
-            setNewsletter(response.data);
-            console.log(newsletter);
+            setChat(null);
+            const response = await DataService.GetChat(model, id);
+            setChat(response.data);
+            console.log(chat);
         } catch (error) {
-            console.error('Error fetching newsletter:', error);
-            setNewsletter(null);
+            console.error('Error fetching chat:', error);
+            setChat(null);
         }
     };
 
     // Setup Component
     useEffect(() => {
-        const fetchData = async () => {
+        if (chat_id) {
+            fetchChat(chat_id);
+            setHasActiveChat(true);
+        } else {
+            setChat(null);
+            setHasActiveChat(false);
+        }
+    }, [chat_id]);
+    useEffect(() => {
+        setSelectedModel(model);
+    }, [model]);
+
+    function tempChatMessage(message) {
+        // Set temp values
+        message["message_id"] = uuid();
+        message["role"] = 'user';
+        if (chat) {
+            // Append message
+            var temp_chat = { ...chat };
+            temp_chat["messages"].push(message);
+        } else {
+            var temp_chat = {
+                "messages": [message]
+            }
+            return temp_chat;
+        }
+    }
+
+    // Handlers
+    const newChat = (message) => {
+        console.log(message);
+        // Start a new chat and submit to LLM
+        const startChat = async (message) => {
             try {
-                const response = await DataService.GetNewsletters(100);
-                setNewsletters(response.data);
+                // Show typing indicator
+                setIsTyping(true);
+                setHasActiveChat(true);
+                setChat(tempChatMessage(message)); // Show the user input message while LLM is invoked
+
+                // Submit chat
+                const response = await DataService.StartChatWithLLM(model, message);
+                console.log(response.data);
+
+                // Hide typing indicator and add response
+                setIsTyping(false);
+
+                setChat(response.data);
+                setChatId(response.data["chat_id"]);
+                router.push('/chat?model=' + selectedModel + '&id=' + response.data["chat_id"]);
             } catch (error) {
-                console.error('Error fetching podcasts:', error);
-                setNewsletters([]); // Set empty array in case of error
+                console.error('Error fetching chat:', error);
+                setIsTyping(false);
+                setChat(null);
+                setChatId(null);
+                setHasActiveChat(false);
+                router.push('/chat?model=' + selectedModel)
             }
         };
+        startChat(message);
 
-        fetchData();
-    }, []);
-    useEffect(() => {
-        if (newsletter_id) {
-            fetchNewsletter(newsletter_id);
-            setHasActiveNewsletter(true);
-        } else {
-            setNewsletter(null);
-            setHasActiveNewsletter(false);
+    };
+    const appendChat = (message) => {
+        console.log(message);
+        // Append message and submit to LLM
+
+        const continueChat = async (id, message) => {
+            try {
+                // Show typing indicator
+                setIsTyping(true);
+                setHasActiveChat(true);
+                tempChatMessage(message);
+
+                // Submit chat
+                const response = await DataService.ContinueChatWithLLM(model, id, message);
+                console.log(response.data);
+
+                // Hide typing indicator and add response
+                setIsTyping(false);
+
+                setChat(response.data);
+                forceRefresh();
+            } catch (error) {
+                console.error('Error fetching chat:', error);
+                setIsTyping(false);
+                setChat(null);
+                setHasActiveChat(false);
+            }
+        };
+        continueChat(chat_id, message);
+    };
+    // Force re-render by updating the key
+    const forceRefresh = () => {
+        setRefreshKey(prevKey => prevKey + 1);
+    };
+    const handleModelChange = (newValue) => {
+
+        setSelectedModel(newValue);
+        var path = '/chat?model=' + newValue;
+        if (chat_id) {
+            path = path + '&id=' + chat_id;
         }
-    }, [newsletter_id]);
+        router.push(path)
+    };
 
     return (
         <div className={styles.container}>
+
             {/* Hero Section */}
-            <section className={styles.hero}>
-                <div className={styles.heroContent}>
-                    <h1>Cheese Chronicles</h1>
-                    <p>Explore our collection of articles about the fascinating world of cheese and AI</p>
+            {!hasActiveChat && (
+                <section className={styles.hero}>
+                    <div className={styles.heroContent}>
+                        <h1>App Recommendator 🌟</h1>
+                        {/* Main Chat Input: ChatInput */}
+                        <ChatInput onSendMessage={newChat} className={styles.heroChatInputContainer} selectedModel={selectedModel} onModelChange={handleModelChange}></ChatInput>
+                    </div>
+                </section>
+            )}
+
+            {/* Chat History Section: ChatHistory */}
+            {!hasActiveChat && (
+                <ChatHistory model={model}></ChatHistory>
+            )}
+
+            {/* Chat Block Header Section */}
+            {hasActiveChat && (
+                <div className={styles.chatHeader}></div>
+            )}
+            {/* Active Chat Interface */}
+            {hasActiveChat && (
+                <div className={styles.chatInterface}>
+                    {/* Chat History Sidebar: ChatHistorySidebar */}
+                    <ChatHistorySidebar chat_id={chat_id} model={model}></ChatHistorySidebar>
+
+                    {/* Main chat area */}
+                    <div className={styles.mainContent}>
+                        {/* Chat message: ChatMessage */}
+                        <ChatMessage chat={chat} key={refreshKey} isTyping={isTyping} model={model}></ChatMessage>
+                        {/* Sticky chat input area: ChatInput */}
+                        <ChatInput
+                            onSendMessage={appendChat}
+                            chat={chat}
+                            selectedModel={selectedModel}
+                            onModelChange={setSelectedModel}
+                            disableModelSelect={true}
+                        ></ChatInput>
+                    </div>
                 </div>
-            </section>
-
-            {/* About Section */}
-            {!hasActiveNewsletter && (
-                <section className={styles.about}>
-                    <div className={styles.aboutContent}>
-                        <h2>About Newsletters</h2>
-                        <p>
-                            Welcome to Formaggio.me's Cheese Chronicles, your weekly digest of all things cheese!
-                            Our newsletters dive deep into the fascinating world of artisanal cheese-making,
-                            featuring expert insights, tasting notes, and the latest innovations in cheese technology.
-                        </p>
-                    </div>
-                </section>
-            )}
-
-            {/* Newsletter Grid */}
-            {!hasActiveNewsletter && (
-                <section className={styles.newsletterSection}>
-                    <div className={styles.grid}>
-                        {newsletters.map((newsletter) => (
-                            <article key={newsletter.id} className={styles.card}>
-                                <div className={styles.imageContainer}>
-                                    <img
-                                        src={DataService.GetNewsletterImage(newsletter.image)}
-                                        alt={newsletter.title}
-                                        width={400}
-                                        height={250}
-                                        className={styles.image}
-                                    />
-                                    <span className={styles.category}>{newsletter.category}</span>
-                                </div>
-
-                                <div className={styles.content}>
-                                    <div className={styles.meta}>
-                                        <span className={styles.date}>{newsletter.date}</span>
-                                        <span className={styles.readTime}>{newsletter.readTime}</span>
-                                    </div>
-
-                                    <h3 className={styles.title}>{newsletter.title}</h3>
-                                    <p className={styles.excerpt}>{newsletter.excerpt}</p>
-
-                                    <Link href={`/newsletters?id=${newsletter.id}`} className={styles.readMore}>
-                                        Read More <span className={styles.arrow}>→</span>
-                                    </Link>
-                                </div>
-                            </article>
-                        ))}
-                    </div>
-
-                    {/* Newsletter Subscription */}
-                    <div className={styles.subscriptionBox}>
-                        <h3>Stay Updated</h3>
-                        <p>Subscribe to receive our latest newsletters directly in your inbox.</p>
-                        <form className={styles.subscriptionForm}>
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                className={styles.emailInput}
-                            />
-                            <button type="submit" className={styles.subscribeButton}>
-                                Subscribe
-                            </button>
-                        </form>
-                    </div>
-                </section>
-            )}
-
-            {/* Newsletter Detail View */}
-            {hasActiveNewsletter && newsletter && (
-                <section className={styles.newsletterDetail}>
-                    <div className={styles.detailContainer}>
-                        <Link href="/newsletters" className={styles.backButton}>
-                            ← Back to Newsletters
-                        </Link>
-
-                        <div className={styles.detailHeader}>
-                            <span className={styles.detailCategory}>{newsletter.category}</span>
-                            <div className={styles.detailMeta}>
-                                <span className={styles.date}>{newsletter.date}</span>
-                                <span className={styles.readTime}>{newsletter.readTime}</span>
-                            </div>
-                            <h1 className={styles.detailTitle}>{newsletter.title}</h1>
-                        </div>
-
-                        <div className={styles.detailImageContainer}>
-                            <img
-                                src={DataService.GetNewsletterImage(newsletter.image)}
-                                alt={newsletter.title}
-                                className={styles.detailImage}
-                            />
-                        </div>
-
-                        <div className={styles.detailContent}>
-                            <div dangerouslySetInnerHTML={{ __html: newsletter.detail }} />
-                        </div>
-
-                        <div className={styles.shareSection}>
-                            <h3>Share this article</h3>
-                            <div className={styles.shareButtons}>
-                                <button className={styles.shareButton}>Twitter</button>
-                                <button className={styles.shareButton}>Facebook</button>
-                                <button className={styles.shareButton}>LinkedIn</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
             )}
         </div>
     );

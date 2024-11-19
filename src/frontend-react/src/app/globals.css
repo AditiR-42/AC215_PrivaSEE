@@ -10,14 +10,13 @@
     body {
         @apply antialiased;
         font-family: var(--font-source-sans-pro);
+        background-color: #232323; /* Dark background color extracted from the uploaded design */
+        color: #ffffff; /* Ensure text readability on the dark background */
+        margin: 0;
+        padding: 0;
     }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
+    h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-playfair);
     }
 }
@@ -28,17 +27,74 @@
     }
 }
 
+/* Layout Wrapper */
 .layout-wrapper {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    @apply flex flex-col min-h-screen; /* Full height container for flexbox layout */
 }
 
+/* Navbar */
+.navbar {
+    @apply flex justify-between items-center px-10 py-2 shadow-md; /* Smaller height with reduced padding */
+    background-color: #232323; /* Same color as body for seamless look */
+}
+
+.navbar .logo {
+    @apply text-lg font-bold uppercase flex items-center gap-2; /* Adjust font size if needed */
+}
+
+.navbar .menu {
+    @apply flex gap-5;
+}
+
+.navbar .menu a {
+    @apply text-gray-300 text-sm font-medium hover:text-gray-100 transition-colors; /* Softer text color with hover effect */
+}
+
+/* Main Content */
 main {
-    flex: 1;
+    @apply flex-1; /* Allow main content to grow and fill the space */
 }
 
-body {
-    margin: 0;
-    padding: 0;
+.container {
+    @apply w-full text-center py-20 px-5; /* Centered and spaced content */
+}
+
+.title {
+    @apply text-4xl font-bold uppercase mb-10 leading-relaxed text-white; /* Larger title with better spacing */
+}
+
+.features {
+    @apply flex justify-evenly items-center gap-10 flex-wrap mt-10; /* Responsive feature layout */
+}
+
+.feature {
+    @apply max-w-xs text-center bg-gray-800 p-5 rounded-lg shadow-lg transition-transform transform hover:-translate-y-2 hover:shadow-2xl;
+}
+
+.feature h2 {
+    @apply text-lg font-semibold mb-4 text-white;
+}
+
+.feature p {
+    @apply text-sm leading-relaxed text-gray-400;
+}
+
+/* Footer */
+.footer {
+    @apply bg-gray-900 text-gray-400 text-center text-sm py-5 mt-auto; /* Footer sticks to the bottom */
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .features {
+        @apply flex-col gap-5; /* Stack cards vertically on smaller screens */
+    }
+
+    .feature {
+        @apply w-full; /* Ensure full width on small screens */
+    }
+
+    .navbar {
+        @apply px-5 py-3; /* Adjust padding for better touch experience */
+    }
 }

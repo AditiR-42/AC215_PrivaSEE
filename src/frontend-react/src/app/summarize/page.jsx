@@ -1,195 +1,102 @@
 'use client';
 
-import { useState, use, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import IconButton from '@mui/material/IconButton';
-import ChatInput from '@/components/chat/ChatInput';
-import ChatHistory from '@/components/chat/ChatHistory';
-import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
-import ChatMessage from '@/components/chat/ChatMessage';
-//import DataService from "../../services/MockDataService"; // Mock
-import DataService from "../../services/DataService";
-import { uuid } from "../../services/Common";
+import React, { useState, useEffect } from 'react';
+import styles from './styles.module.css';
 
-// Import the styles
-import styles from "./styles.module.css";
+export default function FileUploadPage() {
+    const [isClient, setIsClient] = useState(false);
+    const [files, setFiles] = useState([]);
+    const [uploadProgress, setUploadProgress] = useState({});
 
-export default function ChatPage({ searchParams }) {
-    const params = use(searchParams);
-    const chat_id = params.id;
-    const model = params.model || 'llm';
-    console.log(chat_id, model);
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
-    // Component States
-    const [chatId, setChatId] = useState(params.id);
-    const [hasActiveChat, setHasActiveChat] = useState(false);
-    const [chat, setChat] = useState(null);
-    const [refreshKey, setRefreshKey] = useState(0);
-    const [isTyping, setIsTyping] = useState(false);
-    const [selectedModel, setSelectedModel] = useState(model);
-    const router = useRouter();
-
-    const fetchChat = async (id) => {
-        try {
-            setChat(null);
-            const response = await DataService.GetChat(model, id);
-            setChat(response.data);
-            console.log(chat);
-        } catch (error) {
-            console.error('Error fetching chat:', error);
-            setChat(null);
-        }
+    const handleFileDrop = (event) => {
+        event.preventDefault();
+        const newFiles = Array.from(event.dataTransfer.files);
+        uploadFiles(newFiles);
     };
 
-    // Setup Component
-    useEffect(() => {
-        if (chat_id) {
-            fetchChat(chat_id);
-            setHasActiveChat(true);
-        } else {
-            setChat(null);
-            setHasActiveChat(false);
-        }
-    }, [chat_id]);
-    useEffect(() => {
-        setSelectedModel(model);
-    }, [model]);
+    const handleFileSelect = (event) => {
+        const newFiles = Array.from(event.target.files);
+        uploadFiles(newFiles);
+    };
 
-    function tempChatMessage(message) {
-        // Set temp values
-        message["message_id"] = uuid();
-        message["role"] = 'user';
-        if (chat) {
-            // Append message
-            var temp_chat = { ...chat };
-            temp_chat["messages"].push(message);
-        } else {
-            var temp_chat = {
-                "messages": [message]
-            }
-            return temp_chat;
-        }
+    const uploadFiles = (newFiles) => {
+        const newFileList = [...files, ...newFiles];
+        setFiles(newFileList);
+
+        newFiles.forEach((file) => {
+            const uploadId = file.name;
+            setUploadProgress((prev) => ({ ...prev, [uploadId]: 0 }));
+
+            // Simulate file upload
+            const simulateUpload = setInterval(() => {
+                setUploadProgress((prev) => {
+                    const progress = Math.min(prev[uploadId] + 10, 100);
+                    if (progress === 100) clearInterval(simulateUpload);
+                    return { ...prev, [uploadId]: progress };
+                });
+            }, 300);
+        });
+    };
+
+    if (!isClient) {
+        return null;
     }
-
-    // Handlers
-    const newChat = (message) => {
-        console.log(message);
-        // Start a new chat and submit to LLM
-        const startChat = async (message) => {
-            try {
-                // Show typing indicator
-                setIsTyping(true);
-                setHasActiveChat(true);
-                setChat(tempChatMessage(message)); // Show the user input message while LLM is invoked
-
-                // Submit chat
-                const response = await DataService.StartChatWithLLM(model, message);
-                console.log(response.data);
-
-                // Hide typing indicator and add response
-                setIsTyping(false);
-
-                setChat(response.data);
-                setChatId(response.data["chat_id"]);
-                router.push('/chat?model=' + selectedModel + '&id=' + response.data["chat_id"]);
-            } catch (error) {
-                console.error('Error fetching chat:', error);
-                setIsTyping(false);
-                setChat(null);
-                setChatId(null);
-                setHasActiveChat(false);
-                router.push('/chat?model=' + selectedModel)
-            }
-        };
-        startChat(message);
-
-    };
-    const appendChat = (message) => {
-        console.log(message);
-        // Append message and submit to LLM
-
-        const continueChat = async (id, message) => {
-            try {
-                // Show typing indicator
-                setIsTyping(true);
-                setHasActiveChat(true);
-                tempChatMessage(message);
-
-                // Submit chat
-                const response = await DataService.ContinueChatWithLLM(model, id, message);
-                console.log(response.data);
-
-                // Hide typing indicator and add response
-                setIsTyping(false);
-
-                setChat(response.data);
-                forceRefresh();
-            } catch (error) {
-                console.error('Error fetching chat:', error);
-                setIsTyping(false);
-                setChat(null);
-                setHasActiveChat(false);
-            }
-        };
-        continueChat(chat_id, message);
-    };
-    // Force re-render by updating the key
-    const forceRefresh = () => {
-        setRefreshKey(prevKey => prevKey + 1);
-    };
-    const handleModelChange = (newValue) => {
-
-        setSelectedModel(newValue);
-        var path = '/chat?model=' + newValue;
-        if (chat_id) {
-            path = path + '&id=' + chat_id;
-        }
-        router.push(path)
-    };
 
     return (
         <div className={styles.container}>
-
-            {/* Hero Section */}
-            {!hasActiveChat && (
-                <section className={styles.hero}>
-                    <div className={styles.heroContent}>
-                        <h1>Cheese Assistant 🌟</h1>
-                        {/* Main Chat Input: ChatInput */}
-                        <ChatInput onSendMessage={newChat} className={styles.heroChatInputContainer} selectedModel={selectedModel} onModelChange={handleModelChange}></ChatInput>
-                    </div>
-                </section>
-            )}
-
-            {/* Chat History Section: ChatHistory */}
-            {!hasActiveChat && (
-                <ChatHistory model={model}></ChatHistory>
-            )}
-
-            {/* Chat Block Header Section */}
-            {hasActiveChat && (
-                <div className={styles.chatHeader}></div>
-            )}
-            {/* Active Chat Interface */}
-            {hasActiveChat && (
-                <div className={styles.chatInterface}>
-                    {/* Chat History Sidebar: ChatHistorySidebar */}
-                    <ChatHistorySidebar chat_id={chat_id} model={model}></ChatHistorySidebar>
-
-                    {/* Main chat area */}
-                    <div className={styles.mainContent}>
-                        {/* Chat message: ChatMessage */}
-                        <ChatMessage chat={chat} key={refreshKey} isTyping={isTyping} model={model}></ChatMessage>
-                        {/* Sticky chat input area: ChatInput */}
-                        <ChatInput
-                            onSendMessage={appendChat}
-                            chat={chat}
-                            selectedModel={selectedModel}
-                            onModelChange={setSelectedModel}
-                            disableModelSelect={true}
-                        ></ChatInput>
+            <main className={styles.mainSection}>
+                <h1 className={styles.title}>Upload</h1>
+                <div className={styles.uploadBox} onDrop={handleFileDrop} onDragOver={(e) => e.preventDefault()}>
+                    <div className={styles.uploadContent}>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                            className={styles.uploadIcon}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M12 16v-8m0 8l4-4m-4 4l-4-4m-6 6a9 9 0 0118 0H6z"
+                            />
+                        </svg>
+                        <p>Drag & drop files or <label htmlFor="fileInput" className={styles.browseLink}>Browse</label></p>
+                        <p className={styles.supportedFormats}>Supported formats: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word, PPT</p>
+                        <input
+                            id="fileInput"
+                            type="file"
+                            multiple
+                            className={styles.hiddenInput}
+                            onChange={handleFileSelect}
+                        />
                     </div>
                 </div>
+                <button className={styles.uploadButton}>UPLOAD FILES</button>
+            </main>
+
+            {files.length > 0 && (
+                <section className={styles.fileListSection}>
+                    <h3 className={styles.fileListTitle}>Uploading - {files.length} file(s)</h3>
+                    <div className={styles.fileList}>
+                        {files.map((file, index) => (
+                            <div key={index} className={styles.fileItem}>
+                                <span>{file.name}</span>
+                                <div className={styles.progressBar}>
+                                    <div
+                                        className={styles.progress}
+                                        style={{ width: `${uploadProgress[file.name] || 0}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
             )}
         </div>
     );
