@@ -47,7 +47,25 @@ Here are some screenshots of our app:
 
 **Automated Testing** 
 
-[YEAB INSERT HERE]
+Our project uses a combination of unit and integration tests to validate individual functions and the interaction between components. External dependencies, such as Google Cloud Storage and Vertex AI, are mocked to ensure tests are isolated and do not rely on external systems. Test coverage is measured using `pytest-cov` to ensure critical code paths are adequately tested. 
+
+#### **Testing Tools Used**
+- **PyTest**: Used for writing and running test cases.
+- **PyTest-Cov**: used for measuring test coverage.
+- **Unittest.mock**: used for mocking library for isolating code during tests.
+
+#### **Instructions to Run Tests Locally**
+1. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+2. **Run all tests**:
+    ```bash
+    pytest --cov=. --cov-report=html
+3. **Run specific tests**:
+    ```bash
+    pytest src/models/tests/test_issues.py
+
+
 
 #### Running Docker
 To run Dockerfile in either container, make sure to be in `/src/desired-container`:
