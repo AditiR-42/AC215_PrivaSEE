@@ -47,7 +47,6 @@ export default function ChatPage() {
             setHasActiveChat(false);
         }
     }, [chat_id]);
-
     useEffect(() => {
         setSelectedModel(model);
     }, [model]);
