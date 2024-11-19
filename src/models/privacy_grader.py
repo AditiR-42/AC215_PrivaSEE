@@ -3,7 +3,7 @@ import pandas as pd
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
-from get_issues import process_pdf_privacy_issues
+from models.get_issues import process_pdf_privacy_issues
 
 def load_weights_from_csv(filepath: str) -> Dict[str, float]:
     """Load category weights from CSV file into format needed by grader."""
@@ -137,10 +137,10 @@ class PrivacyGrader:
                 print(f"Warning: Parent category '{parent_issue}' not recognized. Skipping.")
                 continue
 
-        # Add the privacy issue to the corresponding parent category
-        if parent_issue not in issues_by_category:
-            issues_by_category[parent_issue] = []
-        issues_by_category[parent_issue].append(privacy_issue.lower())
+            # Add the privacy issue to the corresponding parent category
+            if parent_issue not in issues_by_category:
+                issues_by_category[parent_issue] = []
+            issues_by_category[parent_issue].append(privacy_issue.lower())
 
         # Calculate score for each category that has issues
         for category, found_issues in issues_by_category.items():
@@ -183,6 +183,11 @@ class PrivacyGrader:
         Returns:
             PrivacyReport if at least some issues are valid, None if all issues are unknown
         """
+        valid_issues, unknown_issues = self._validate_issues(privacy_issues)
+
+        if not valid_issues and not unknown_issues:
+            print("No valid privacy issues found.")
+            return None
 
         # Initialize issues grouped by category
         issues_by_category: Dict[str, List[str]] = {}
