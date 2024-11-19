@@ -1,103 +1,151 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import styles from './styles.module.css';
+import React, { useState } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
+import DataService from "../../services/DataService";
+import styles from "./styles.module.css";
+
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
 
 export default function FileUploadPage() {
-    const [isClient, setIsClient] = useState(false);
-    const [files, setFiles] = useState([]);
-    const [uploadProgress, setUploadProgress] = useState({});
+    const [pdfFile, setPdfFile] = useState(null);
+    const [pdfData, setPdfData] = useState(null);
+    const [numPages, setNumPages] = useState(null);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [grade, setGrade] = useState(null);
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
 
-    const handleFileDrop = (event) => {
-        event.preventDefault();
-        const newFiles = Array.from(event.dataTransfer.files);
-        uploadFiles(newFiles);
+        if (file && file.type === "application/pdf") {
+            setPdfFile(file);
+
+            const reader = new FileReader();
+            reader.onload = (e) => setPdfData(e.target.result);
+            reader.readAsArrayBuffer(file);
+        } else {
+            alert("Please upload a valid PDF file.");
+        }
     };
 
-    const handleFileSelect = (event) => {
-        const newFiles = Array.from(event.target.files);
-        uploadFiles(newFiles);
+    const onDocumentLoadSuccess = ({ numPages }) => {
+        setNumPages(numPages);
+        setPageNumber(1);
     };
 
-    const uploadFiles = (newFiles) => {
-        const newFileList = [...files, ...newFiles];
-        setFiles(newFileList);
+    const handleUpload = async () => {
+        if (!pdfFile) {
+            alert("Please upload a PDF file first.");
+            return;
+        }
 
-        newFiles.forEach((file) => {
-            const uploadId = file.name;
-            setUploadProgress((prev) => ({ ...prev, [uploadId]: 0 }));
+        try {
+            setUploadProgress(10);
+            const projectId = "473358048261";
+            const locationId = "us-central1";
+            const endpointId = "5609779793168957440";
 
-            // Simulate file upload
-            const simulateUpload = setInterval(() => {
-                setUploadProgress((prev) => {
-                    const progress = Math.min(prev[uploadId] + 10, 100);
-                    if (progress === 100) clearInterval(simulateUpload);
-                    return { ...prev, [uploadId]: progress };
-                });
-            }, 300);
-        });
+            const response = await DataService.UploadFiles(pdfFile, null, projectId, locationId, endpointId);
+            console.log("Upload response:", response);
+            setUploadProgress(100);
+            alert("PDF processed successfully. You can now fetch the grade.");
+        } catch (error) {
+            console.error("Error uploading PDF:", error);
+            alert("Failed to process files.");
+        }
     };
 
-    if (!isClient) {
-        return null;
-    }
+    const handleFetchGrade = async () => {
+        try {
+            const response = await DataService.GetGrade();
+            console.log("Grade response:", response);
+            setGrade(response);
+        } catch (error) {
+            console.error("Error fetching grade:", error);
+            alert("Failed to fetch grade.");
+        }
+    };
 
     return (
         <div className={styles.container}>
             <main className={styles.mainSection}>
-                <h1 className={styles.title}>Upload</h1>
-                <div className={styles.uploadBox} onDrop={handleFileDrop} onDragOver={(e) => e.preventDefault()}>
-                    <div className={styles.uploadContent}>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            className={styles.uploadIcon}
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 16v-8m0 8l4-4m-4 4l-4-4m-6 6a9 9 0 0118 0H6z"
-                            />
-                        </svg>
-                        <p>Drag & drop files or <label htmlFor="fileInput" className={styles.browseLink}>Browse</label></p>
-                        <p className={styles.supportedFormats}>Supported formats: JPEG, PNG, GIF, MP4, PDF, PSD, AI, Word, PPT</p>
-                        <input
-                            id="fileInput"
-                            type="file"
-                            multiple
-                            className={styles.hiddenInput}
-                            onChange={handleFileSelect}
-                        />
-                    </div>
-                </div>
-                <button className={styles.uploadButton}>UPLOAD FILES</button>
-            </main>
+                <h1 className={styles.title}>Upload and View PDF</h1>
 
-            {files.length > 0 && (
-                <section className={styles.fileListSection}>
-                    <h3 className={styles.fileListTitle}>Uploading - {files.length} file(s)</h3>
-                    <div className={styles.fileList}>
-                        {files.map((file, index) => (
-                            <div key={index} className={styles.fileItem}>
-                                <span>{file.name}</span>
-                                <div className={styles.progressBar}>
-                                    <div
-                                        className={styles.progress}
-                                        style={{ width: `${uploadProgress[file.name] || 0}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-                        ))}
+                <div className={styles.fileInputs}>
+                    <label htmlFor="pdfUpload" className={styles.label}>PDF File (Terms and Conditions):</label>
+                    <input
+                        type="file"
+                        id="pdfUpload"
+                        accept=".pdf"
+                        className={styles.fileInput}
+                        onChange={handleFileChange}
+                    />
+                </div>
+
+                {pdfData && (
+                    <div className={styles.viewer}>
+                        <Document
+                            file={pdfData}
+                            onLoadSuccess={onDocumentLoadSuccess}
+                            className={styles.pdfDocument}
+                        >
+                            <Page pageNumber={pageNumber} />
+                        </Document>
+                        <p>
+                            Page {pageNumber} of {numPages}
+                        </p>
+                        <div className={styles.navigation}>
+                            <button
+                                onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                                disabled={pageNumber <= 1}
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() => setPageNumber((prev) => Math.min(prev + 1, numPages))}
+                                disabled={pageNumber >= numPages}
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
-                </section>
-            )}
+                )}
+
+                <button className={styles.uploadButton} onClick={handleUpload}>
+                    Upload PDF
+                </button>
+
+                {uploadProgress > 0 && (
+                    <div className={styles.progressBar}>
+                        <div
+                            className={styles.progress}
+                            style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                    </div>
+                )}
+
+                <button className={styles.uploadButton} onClick={handleFetchGrade}>
+                    Fetch Grade
+                </button>
+
+                {grade && (
+                    <div className={styles.gradeResult}>
+                        <h2>Grade Report</h2>
+                        <p><strong>Overall Grade:</strong> {grade.overall_grade}</p>
+                        <p><strong>Overall Score:</strong> {grade.overall_score}</p>
+                        <pre className={styles.preformatted}>
+                            {JSON.stringify(grade.category_scores, null, 2)}
+                        </pre>
+                    </div>
+                )}
+            </main>
         </div>
     );
 }

@@ -7,7 +7,6 @@ from io import StringIO
 import json
 
 # Initialize FastAPI and Router
-app = FastAPI()
 router = APIRouter()
 
 # Load Dataset Function (Lazy Loading)
@@ -112,11 +111,3 @@ def recommend_app(request: QueryRequest):
         return {"recommendation": recommendation}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# Example Router Endpoint
-@router.get("/health")
-async def health_check():
-    return {"status": "healthy"}
-
-# Include Router in App
-app.include_router(router, prefix="/api")

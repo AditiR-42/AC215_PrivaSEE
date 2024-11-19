@@ -26,6 +26,6 @@ async def get_index():
 
 # Additional routers here
 app.include_router(recommend.router)
-# app.include_router(summarize.router, prefix="/summarize")
+app.include_router(summarize.router)
 
 

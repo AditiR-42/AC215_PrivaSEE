@@ -35,6 +35,36 @@ const DataService = {
             throw error;
         }
     },
+    UploadFiles: async function (pdfFile, csvFile, projectId, locationId, endpointId) {
+        const formData = new FormData();
+        formData.append("pdf_file", pdfFile);
+        formData.append("csv_file", csvFile);
+        formData.append("project_id", projectId);
+        formData.append("location_id", locationId);
+        formData.append("endpoint_id", endpointId);
+
+        try {
+            const response = await api.post(`${BASE_API_URL}/process-pdf/`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.log(error)
+            console.error("Error uploading files:", error);
+            throw error;
+        }
+    },
+    GetGrade: async function () {
+        try {
+            const response = await api.post(`${BASE_API_URL}/get-grade/`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching grade");
+            throw error;
+        }
+    },
 };
 
 export default DataService;
