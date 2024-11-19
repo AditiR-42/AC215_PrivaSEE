@@ -16,7 +16,7 @@ We designed both a Solution Architecture and a Technical architecture to ensure 
 
 Here is our Solution Architecture:
 
-[TODO: INSERT DIAGRAM --> see https://github.com/ac2152024/ac2152024_template/tree/milestone4]
+<img src="images/solution-arch.png"  width="800">
 
 Here is our Technical Architecture:
 
