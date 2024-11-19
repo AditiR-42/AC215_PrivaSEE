@@ -9,7 +9,7 @@ const Hero = () => {
         <div className="features">
           <div className="feature">
             <h2>Get a Summary</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna.</p>
           </div>
           <div className="feature">
             <h2>Get a Grade</h2>
