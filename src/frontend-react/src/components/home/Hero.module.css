@@ -1,46 +1,85 @@
-/* Ensure full viewport height and center contents */
-.layout-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
-    background-color: #1a1a1a; /* Match background color */
-    margin: 0; /* Reset default margins */
-  }
-  
-  .container {
-    text-align: center;
-    max-width: 1200px; /* Optional: Limit the width of the content */
-  }
-  
-  .title {
-    font-size: 4rem; */
-    color: #ffffff; /* Ensure the text is visible */
-  }
-  
-  .features {
-    display: flex;
-    justify-content: center; /* Align features horizontally */
-    gap: 2rem; /* Add spacing between features */
-  }
-  
-  .feature {
-    background-color: #1e293b; /* Match your current card styling */
-    color: #ffffff; /* Ensure text is visible */
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
-    max-width: 300px; /* Limit feature card width */
-    text-align: center;
-  }
-  
-  .feature h2 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .feature p {
-    font-size: 1rem;
-    color: #cccccc; /* Slightly lighter text for better readability */
-  }
-  
+/* Layout Wrapper */
+.layoutWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  background-color: #232323;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  width: 100%;
+  padding: 0 10rem; /* Add horizontal padding to shift content right */
+}
+
+/* Title Styling */
+.title {
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 7rem 0 2rem 0; /* Add margin-top to move title further down */
+}
+
+/* Feature Row */
+.featureRow {
+  display: grid;
+  grid-template-columns: auto 1fr; /* Fix the image width and let the text take remaining space */
+  gap: 1rem; /* Maintain spacing between columns */
+  align-items: center; /* Center-align image and text */
+  padding: 0rem 2rem 0rem 0rem; /* Add padding inside the box */
+  background-color: #363636; /* Box background color */
+  border-radius: 0.5rem; /* Rounded corners match image radius */
+  margin-bottom: 2rem; /* Add vertical spacing between rows */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  transition: transform 0.2s ease, background-color 0.2s ease; /* Smooth transition for hover effects */
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+/* Hover Effect */
+.featureRow:hover {
+  transform: translateY(-10px); /* Lift the box slightly */
+  background-color: #505050; /* Change the background color */
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.3); /* Add a stronger shadow */
+}
+
+/* Image Styling */
+.featureImage {
+  display: flex;
+  justify-content: start; /* Align the image to the left */
+  align-items: center;
+}
+
+.image {
+  max-width: 180px;
+  height: auto;
+  border-radius: 0.5rem 0rem 0rem 0.5rem; /* Rounded corners */
+  box-shadow: none; /* Remove image shadow since it's now part of the box */
+  margin-left: 0; /* Ensure image touches the left edge */
+}
+
+/* Text Styling */
+.featureText {
+  text-align: left;
+  color: #ffffff;
+  margin-left: 1.5rem; /* Spacing between the image and the text */
+}
+
+.featureTitle {
+  font-size: 1.5rem; /* Bigger size for the heading */
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.featureDescription {
+  font-size: 1rem; /* Smaller size for description text */
+  color: #cccccc;
+  line-height: 1.6; /* Add spacing between lines */
+}
+
+/* Additional Utility Classes */
+.mt8 {
+  margin-top: 1rem; /* Vertical spacing between rows */
+}

@@ -17,11 +17,12 @@ fastapi = "*"
 python-multipart = "*"
 pillow = "*"
 chromadb = "==0.5.7"
-tensorflow = "==2.17.0"
+tensorflow = "==2.16.1"
 pytest = "*"
 pytest-cov = "*"
 fuzzywuzzy = "*"
 nltk = "*"
+pymupdf = "*"
 
 [requires]
 python_version = "3.12"

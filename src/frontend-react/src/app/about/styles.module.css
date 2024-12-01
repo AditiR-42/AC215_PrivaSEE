@@ -1,0 +1,32 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    justify-content: flex-start; /* Align content at the top */
+    min-height: 100vh; /* Full viewport height */
+    padding-top: 120px; /* Match padding with the Upload and View PDF page */
+    background-color: #232323; /* Matching background */
+    color: #ffffff;
+    font-family: 'Source Sans Pro', sans-serif; /* Matching font */
+}
+
+.heroContent {
+    max-width: 800px;
+    width: 100%; /* Full width */
+    text-align: center;
+    margin-top: 40px; /* Add some spacing below the navbar */
+}
+
+.heroContent h1 {
+    font-family: 'Inter', sans-serif; /* Same as Upload and View PDF */
+    font-size: 48px; /* Matching font size */
+    font-weight: bold;
+    margin-bottom: 2rem;
+    color: #ffffff; /* White text */
+}
+
+.heroContent p {
+    font-size: 20px;
+    opacity: 0.9;
+    text-align: left;
+}

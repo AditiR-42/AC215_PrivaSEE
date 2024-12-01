@@ -3,14 +3,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Info, Podcasts, Email, SmartToy, ChatBubbleOutline } from '@mui/icons-material';
+import { HelpOutline, Checklist, ThumbUpOffAlt } from '@mui/icons-material';
 import styles from './Header.module.css';
 
 const navItems = [
-    { name: 'Home', path: '/', sectionId: '', icon: <Home fontSize="small" /> },
-    { name: 'Summarize', path: '/summarize', sectionId: '', icon: <Podcasts fontSize="small" /> },
-    // { name: 'Grade', path: '/grade', sectionId: 'newsletters', icon: <Email fontSize="small" /> },
-    { name: 'Recommend', path: '/recommend', sectionId: '', icon: <SmartToy fontSize="small" /> }
+    { name: 'About', path: '/about', sectionId: '', icon: <HelpOutline fontSize="small" /> },
+    { name: 'Summarize', path: '/summarize', sectionId: '', icon: <Checklist fontSize="small" /> },
+    { name: 'Recommend', path: '/recommend', sectionId: '', icon: <ThumbUpOffAlt fontSize="small" /> }
 ];
 
 export default function Header() {

@@ -40,7 +40,7 @@ To actually run the React app locally, there are two steps:
    npm run dev   
 3. In `src/api_service`:
    ```bash
-   uvicorn api.service:app --reload --host 0.0.0.0 --port 9000`
+   uvicorn api.service:app --reload --host 0.0.0.0 --port 9000
 If issues arise, check that `npm --version = 10.8.3` and `nvm --version = 22.9.0`
 
 Here are some screenshots of our app:

@@ -9,7 +9,13 @@ import json
 from fuzzywuzzy import process
 from nltk.corpus import wordnet
 import nltk
+import os
 nltk.download('wordnet')
+
+# Dynamically set GOOGLE_APPLICATION_CREDENTIALS to the secrets folder
+current_dir = os.path.dirname(os.path.abspath(__file__))
+secrets_path = os.path.abspath(os.path.join(current_dir, "../../../secrets/model-containerization.json"))
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = secrets_path
 
 # Initialize FastAPI and Router
 router = APIRouter()
@@ -283,7 +289,7 @@ def generate_conversational_response(rec, user_query):
     genre = rec.get("Genre", "unspecified")
     app_score = rec.get("app_score", None)
     num_ratings = rec.get("num_ratings", None)
-    description = rec.get("Description", "No description available.")
+    description = rec.get("recommendation", "No description available.")
     installs = rec.get("Installs", None)
 
     # Construct a summary of the app

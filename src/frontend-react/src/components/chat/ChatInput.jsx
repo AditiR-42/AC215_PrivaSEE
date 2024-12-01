@@ -151,9 +151,6 @@ export default function ChatInput({
                         accept="image/*"
                         onChange={handleImageChange}
                     />
-                    <IconButton aria-label="camera" className={styles.iconButton} onClick={handleImageClick}>
-                        <CameraAltOutlined />
-                    </IconButton>
                 </div>
                 {/* <div className={styles.rightControls}>
                     <span className={styles.inputTip}>Use shift + return for new line</span>
