@@ -34,7 +34,10 @@ For now, running the React app locally requires installing modules listed in `re
 
 To actually run the React app locally, there are two steps: 
 
-1. In `src/frontend-react`: 
+1. In `src`:
+   ```
+   pip install -r requirements.txt
+2. In `src/frontend-react`: 
    ```bash
    npm install
    npm run dev   
