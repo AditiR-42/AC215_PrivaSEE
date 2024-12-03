@@ -15,8 +15,9 @@ all:
       machine_instance_name: "privasee-app"
       machine_type: "n2d-standard-2"
       machine_disk_size: 50
+      nextauth_secret: "randomly_generated_secret_here"
 
     children:
         appserver:
             hosts:
-                34.75.199.90:
+                34.73.27.190:

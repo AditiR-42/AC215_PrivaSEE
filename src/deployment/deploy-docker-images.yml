@@ -13,8 +13,8 @@
     community.general.docker_image:
       build:
         path: /frontend-react
-        platform: linux/amd64/v2
-      name: gcr.io/{{ gcp_project }}/privasee-app-frontend-react:{{ tag.stdout}}
+        platform: linux/amd64
+      name: gcr.io/{{ gcp_project }}/privasee-app-frontend-react:{{ tag.stdout }}
       source: build
   - name: Push frontend image to GCR
     community.general.docker_image:
@@ -26,8 +26,8 @@
     community.general.docker_image:
       build:
         path: /api-service
-        platform: linux/amd64/v2
-      name: gcr.io/{{ gcp_project }}/privasee-app-api-service:{{ tag.stdout}}
+        platform: linux/amd64
+      name: gcr.io/{{ gcp_project }}/privasee-app-api-service:{{ tag.stdout }}
       source: build
   - name: Push api-service image to GCR
     community.general.docker_image:
