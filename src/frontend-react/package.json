@@ -139,7 +139,6 @@
     "form-data": "^4.0.1",
     "fraction.js": "^4.3.7",
     "fs.realpath": "^1.0.0",
-    "fsevents": "^2.3.3",
     "function-bind": "^1.1.2",
     "function.prototype.name": "^1.1.6",
     "functions-have-names": "^1.2.3",
@@ -327,6 +326,7 @@
     "path-parse": "^1.0.7",
     "path-scurry": "^1.11.1",
     "path-type": "^4.0.0",
+    "pdfjs-dist": "^3.4.120",
     "picocolors": "^1.1.1",
     "picomatch": "^2.3.1",
     "pify": "^2.3.0",
@@ -351,7 +351,9 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-is": "^16.13.1",
+    "react-loader-spinner": "^5.0.0",
     "react-markdown": "^9.0.1",
+    "react-pdf": "^9.1.1",
     "react-toastify": "^10.0.6",
     "react-transition-group": "^4.4.5",
     "read-cache": "^1.0.0",
@@ -454,6 +456,9 @@
     "yocto-queue": "^0.1.0",
     "zwitch": "^2.0.4"
   },
+  "optionalDependencies": {
+    "fsevents": "^2.3.3"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -462,5 +467,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0"
+  }
 }

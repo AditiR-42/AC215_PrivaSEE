@@ -2,10 +2,26 @@
 const nextConfig = {
     reactStrictMode: true,
     webpack: (config) => {
+        // Add rule for handling SVGs
         config.module.rules.push({
             test: /\.svg$/,
             use: ["@svgr/webpack"]
         });
+
+        // Add rule for handling only CSS from react-pdf
+        config.module.rules.push({
+            test: /\.css$/,
+            include: /node_modules\/react-pdf/,
+            use: [
+                {
+                    loader: 'style-loader',
+                },
+                {
+                    loader: 'css-loader',
+                },
+            ],
+        });
+
         return config;
     },
     rewrites: async () => {
