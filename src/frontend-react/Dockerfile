@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Install dependencies
 COPY package.json package-lock.json ./
+ENV npm_config_platform=linux
 RUN npm ci
 
 # Copy source files
