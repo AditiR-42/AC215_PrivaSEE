@@ -1,14 +1,18 @@
 import os
 import pandas as pd
+from google.cloud import storage
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
-from models.get_issues import process_pdf_privacy_issues
+# from get_issues import process_pdf_privacy_issues
+from get_issues2 import *
 
+storage_client = storage.Client()
 def load_weights_from_csv(filepath: str) -> Dict[str, float]:
     """Load category weights from CSV file into format needed by grader."""
     df = pd.read_csv(filepath)
     return dict(zip(df['parent_category'], df['weight']))
+
 
 def upload_df_to_gcs(bucket_name, df, destination_blob_name):
     """Uploads a DataFrame as a CSV to GCS directly from memory."""
@@ -23,6 +27,7 @@ def upload_df_to_gcs(bucket_name, df, destination_blob_name):
     blob.upload_from_string(csv_data, content_type='text/csv')
 
     print(f"Uploaded DataFrame to {destination_blob_name} in bucket {bucket_name}.")
+
 
 def read_csv_from_gcs(bucket_name, source_blob_name):
     """Read a CSV file from GCS into a DataFrame."""
@@ -44,12 +49,25 @@ class Grade(Enum):
 
 
 @dataclass
+class PrivacyCategoryReport:
+    """Detailed report for a privacy category."""
+    parent_category: str
+    grade: str
+    score: float
+    good_issues: List[str]
+    neutral_issues: List[str]
+    bad_issues: List[str]
+    total_possible_issues: int
+    category_weight: float
+
+
+@dataclass
 class PrivacyReport:
     """Container for privacy grading results."""
     overall_grade: str
     overall_score: float
-    parent_category_grades: Dict[str, Dict]
-    worst_parent_categories: List[Dict]
+    parent_category_grades: Dict[str, PrivacyCategoryReport]
+    worst_parent_categories: List[PrivacyCategoryReport]
     unknown_issues: Optional[List[str]] = None
 
 
@@ -59,6 +77,14 @@ class PrivacyGrader:
         self.mapping_df = mapping_df.copy()
         self.mapping_df['privacy_issue'] = self.mapping_df['privacy_issue'].str.lower()
         self.valid_privacy_issues = set(self.mapping_df['privacy_issue'].unique())
+
+        # Classification weights
+        self.classification_weights = {
+            'blocker': -1.0,  # Increased penalty (was -0.8)
+            'bad': -0.5,  # Increased penalty (was -0.4)
+            'neutral': 0.0,  # No impact (was -0.1)
+            'good': 0.1  # Reduced positive impact (was 0.2)
+        }
 
         # Get all unique parent categories
         self.all_parent_categories = set(self.mapping_df['parent_issue'].unique())
@@ -77,10 +103,11 @@ class PrivacyGrader:
 
         # Define grade boundaries
         self.grade_boundaries = {
-            0.8: Grade.A,
-            0.6: Grade.B,
-            0.4: Grade.C,
-            0.2: Grade.D
+            0.95: Grade.A,  # 95-100% = A (was 90)
+            0.85: Grade.B,  # 85-94% = B (was 75)
+            0.75: Grade.C,  # 75-84% = C (was 60)
+            0.65: Grade.D,  # 65-74% = D (was 45)
+            # Below 65% = F
         }
 
     def _create_case_mapping(self, original_df: pd.DataFrame) -> Dict[str, str]:
@@ -102,64 +129,95 @@ class PrivacyGrader:
         unknown_issues = []
 
         for issue in found_issues:
-            issue_lower = issue.lower()
+            if ':' not in issue:
+                unknown_issues.append(issue)
+                continue
+
+            # Split and get the actual issue part after the colon
+            _, privacy_issue = map(str.strip, issue.split(':', 1))
+            issue_lower = privacy_issue.lower()
+
             if issue_lower in self.valid_privacy_issues:
-                valid_issues.append(issue_lower)
+                valid_issues.append(issue)  # Keep the original formatted string
             else:
                 unknown_issues.append(issue)
 
         return valid_issues, unknown_issues
 
     def _calculate_category_scores(self, valid_issues: List[str]) -> Dict[str, float]:
-        """
-        Calculate scores for all parent categories based on found issues.
-
-        Args:
-            valid_issues: List of validated privacy issues (lowercase)
-
-        Returns:
-            Dictionary mapping each parent category to its score (1.0 = best, 0.0 = worst)
-        """
-        # Initialize scores for all categories
+        """Calculate scores based on issue classifications with stricter penalties."""
         category_scores = {category: 1.0 for category in self.all_parent_categories}
 
-        # Group valid issues by their parent categories
         issues_by_category: Dict[str, List[str]] = {}
         for item in valid_issues:
-            # Split the item into parent issue and privacy issue
             if ':' not in item:
-                print(f"Warning: Invalid issue format '{item}'. Skipping.")
                 continue
             parent_issue, privacy_issue = map(str.strip, item.split(':', 1))
 
-            # Ensure the parent issue exists in our category mapping
             if parent_issue not in self.all_parent_categories:
-                print(f"Warning: Parent category '{parent_issue}' not recognized. Skipping.")
                 continue
 
-            # Add the privacy issue to the corresponding parent category
             if parent_issue not in issues_by_category:
                 issues_by_category[parent_issue] = []
             issues_by_category[parent_issue].append(privacy_issue.lower())
 
-        # Calculate score for each category that has issues
-        for category, found_issues in issues_by_category.items():
-            possible_issues = self.issues_by_category[category]
-            if possible_issues:  # Avoid division by zero
-                category_scores[category] = 1.0 - (len(found_issues) / len(possible_issues))
+        for category in self.all_parent_categories:
+            found_issues = issues_by_category.get(category, [])
+            if not found_issues:
+                continue
+
+            base_score = 1.0
+            issue_classifications = []
+
+            # Get classifications for each issue
+            for issue in found_issues:
+                classification = self.mapping_df[
+                    (self.mapping_df['parent_issue'] == category) &
+                    (self.mapping_df['privacy_issue'].str.lower() == issue.lower())
+                    ]['classification'].iloc[0]
+                issue_classifications.append(classification)
+
+                # Apply impact from classification
+                base_score += self.classification_weights[classification]
+
+            # Count types of issues
+            blocker_count = issue_classifications.count('blocker')
+            bad_count = issue_classifications.count('bad')
+            good_count = issue_classifications.count('good')
+
+            # Enhanced penalty rules
+            if blocker_count > 0:
+                # Severe penalty for any blockers
+                base_score = min(base_score, 0.3)  # Was 0.5
+            elif bad_count > 0:
+                # Cap score if there are any bad issues
+                base_score = min(base_score, 0.7)
+
+            # Reduce the minimum score for all good issues
+            if len(found_issues) == good_count:
+                base_score = max(base_score, 0.7)  # Was 0.8
+
+            # Apply category weight
+            score = base_score * self.category_weights[category]
+
+            # Ensure score stays within bounds
+            category_scores[category] = max(min(score, 1.0), 0.0)
 
         return category_scores
+
 
     def _calculate_overall_score(self, category_scores: Dict[str, float]) -> float:
         """Calculate overall score as weighted average of category scores."""
         total_weight = sum(self.category_weights[cat] for cat in category_scores.keys())
+
         if total_weight == 0:
-            return 1.0
+            return 0.0
 
         weighted_sum = sum(
             score * self.category_weights[category]
             for category, score in category_scores.items()
         )
+
         return weighted_sum / total_weight
 
     def _get_grade(self, score: float) -> Grade:
@@ -175,13 +233,7 @@ class PrivacyGrader:
 
     def grade_privacy_issues(self, privacy_issues: List[str]) -> Optional[PrivacyReport]:
         """
-        Grade a list of privacy issues and generate a comprehensive report.
-
-        Args:
-            privacy_issues: List of specific privacy issues found
-
-        Returns:
-            PrivacyReport if at least some issues are valid, None if all issues are unknown
+        Grade privacy issues and generate a comprehensive report with issues grouped by classification.
         """
         valid_issues, unknown_issues = self._validate_issues(privacy_issues)
 
@@ -189,73 +241,119 @@ class PrivacyGrader:
             print("No valid privacy issues found.")
             return None
 
-        # Initialize issues grouped by category
-        issues_by_category: Dict[str, List[str]] = {}
+        # Group issues by category and classification
+        issues_by_category: Dict[str, Dict[str, List[str]]] = {}
 
-        # Split each issue into parent issue and privacy issue
-        for issue in privacy_issues:
+        for issue in valid_issues:
             if ':' not in issue:
-                print(f"Warning: Invalid issue format '{issue}'. Skipping.")
                 continue
+
             parent_issue, privacy_issue = map(str.strip, issue.split(':', 1))
 
-            # Ensure the parent issue exists
             if parent_issue not in self.all_parent_categories:
-                print(f"Warning: Parent category '{parent_issue}' not recognized. Skipping.")
                 continue
 
-            # Add the privacy issue to the corresponding category
             if parent_issue not in issues_by_category:
-                issues_by_category[parent_issue] = []
-            issues_by_category[parent_issue].append(privacy_issue.lower())
+                issues_by_category[parent_issue] = {
+                    'good': [],
+                    'neutral': [],
+                    'bad': []  # Will include both bad and blocker
+                }
 
-        # Calculate scores for all categories
-        category_scores = self._calculate_category_scores(privacy_issues)
+            # Get classification from mapping_df
+            classification = self.mapping_df[
+                (self.mapping_df['parent_issue'] == parent_issue) &
+                (self.mapping_df['privacy_issue'].str.lower() == privacy_issue.lower())
+                ]['classification'].iloc[0]
 
-        # Calculate grades for each parent category
+            # Group into good, neutral, or bad (including blockers)
+            if classification == 'good':
+                issues_by_category[parent_issue]['good'].append(privacy_issue)
+            elif classification == 'neutral':
+                issues_by_category[parent_issue]['neutral'].append(privacy_issue)
+            else:  # 'bad' or 'blocker'
+                issues_by_category[parent_issue]['bad'].append(privacy_issue)
+
+        # Calculate scores
+        category_scores = self._calculate_category_scores(valid_issues)
+
+        # Create detailed category reports
         category_grades = {}
         for category in self.all_parent_categories:
             score = category_scores[category]
             grade = self._get_grade(score)
 
-            found_issues = issues_by_category.get(category, [])
-            category_grades[category] = {
-                "grade": grade.value,
-                "score": round(score * 100, 2),
-                "privacy_issues_found": self._restore_original_case(found_issues),
-                "total_possible_issues": len(self.issues_by_category[category]),
-                "category_weight": self.category_weights[category]
-            }
+            category_grades[category] = PrivacyCategoryReport(
+                parent_category=category,
+                grade=grade.value,
+                score=round(score * 100, 2),
+                good_issues=issues_by_category.get(category, {}).get('good', []),
+                neutral_issues=issues_by_category.get(category, {}).get('neutral', []),
+                bad_issues=issues_by_category.get(category, {}).get('bad', []),
+                total_possible_issues=len(self.issues_by_category[category]),
+                category_weight=self.category_weights[category]
+            )
 
-        # Calculate overall weighted score and grade
+        # Calculate overall score and grade
         overall_score = self._calculate_overall_score(category_scores)
         overall_grade = self._get_grade(overall_score)
 
-        # Identify worst parent categories (top 5 categories with issues found)
+        # Identify worst categories (those with bad issues)
         worst_categories = sorted(
             [
-                {
-                    "parent_category": category,
-                    "grade": data["grade"],
-                    "score": data["score"],
-                    "privacy_issues_found": data["privacy_issues_found"],
-                    "total_possible_issues": data["total_possible_issues"],
-                    "category_weight": data["category_weight"]
-                }
-                for category, data in category_grades.items()
-                if len(data["privacy_issues_found"]) > 0
+                report for category, report in category_grades.items()
+                if report.bad_issues
             ],
-            key=lambda x: x["score"]
+            key=lambda x: x.score
         )[:5]
 
         return PrivacyReport(
             overall_grade=overall_grade.value,
             overall_score=round(overall_score * 100, 2),
             parent_category_grades=category_grades,
-            worst_parent_categories=worst_categories
+            worst_parent_categories=worst_categories,
+            unknown_issues=unknown_issues if unknown_issues else None
         )
+
+    def save_grade_to_csv(service_name: str, grade: str, csv_path: str = 'privacy_grades.csv') -> None:
+        """
+        Save or update privacy grade for a service in CSV file.
+        If service already exists, preserve the existing grade.
+
+        Args:
+            service_name: Name of the service being graded
+            grade: Privacy grade (A-F)
+            csv_path: Path to CSV file storing grades
+        """
+        try:
+            # Try to read existing CSV file
+            try:
+                df = pd.read_csv(csv_path)
+            except FileNotFoundError:
+                # If file doesn't exist, create new DataFrame
+                df = pd.DataFrame(columns=['service_name', 'grade'])
+
+            # Check if service already exists
+            if service_name not in df['service_name'].values:
+                # Add new row
+                new_row = pd.DataFrame({
+                    'service_name': [service_name],
+                    'grade': [grade]
+                })
+                df = pd.concat([df, new_row], ignore_index=True)
+
+                # Save updated DataFrame
+                df.to_csv(csv_path, index=False)
+                print(f"Added grade {grade} for {service_name} to {csv_path}")
+            else:
+                print(f"Service {service_name} already exists in {csv_path}. Preserving existing grade.")
+
+        except Exception as e:
+            print(f"Error saving grade to CSV: {str(e)}")
+
 # Example usage
 if __name__ == "__main__":
+    # mapping parent to child issues
     mapping_df = pd.read_csv("mapping_df.csv")
     mapping_path = "/app/mapping_df.csv"
     # Load weights for grader
@@ -263,50 +361,67 @@ if __name__ == "__main__":
     # Initialize the grader
     grader = PrivacyGrader(mapping_df, category_weights)
 
-    # Example list of privacy issues found in a service
-    # Get report
+    # TEST1: Example list of privacy issues found in a service
     found_issues = [
-        'This service takes credit for your content',
-        'If YOU OFFER suggestions to the service they become the owner of the ideas that you give them',
-        'You maintain ownership of your content',
-        'this service gives your personal data to third parties involved in its operation',
-        'this service shares your personal data with third parties that are not essential to its operation',
-        'YOU can delete your content from this service',
-        'this service retains rights to your content even after you stop using your account',
-        'the data retention period is kept to the minimum necessary for fulfilling its purposes',
-        'the service may keep a secure anonymized record of your data for analytical purposes even after the data retention period',
-        'no need to register',
+        'Ownership: This service takes credit for your content',
+        'Ownership: If YOU OFFER suggestions to the service they become the owner of the ideas that you give them',
+        'Ownership: You maintain ownership of your content',
+        'Third Parties: this service gives your personal data to third parties involved in its operation',
+        'Third Parties: this service shares your personal data with third parties that are not essential to its operation',
+        'Right to Leave The Service: YOU can delete your content from this service',
+        'Right to Leave The Service: this service retains rights to your content even after you stop using your account',
+        'Right to Leave The Service: the data retention period is kept to the minimum necessary for fulfilling its purposes',
+        'Right to Leave The Service: the service may keep a secure anonymized record of your data for analytical purposes even after the data retention period',
+        'Right to Leave The Service: no need to register',
         'not an issue_testing error reporting',
         'not an issue_testing error reporting2',
-        'not an issue_testing error reporting3',
-        'your personal data is used for limited purposes',
-        'your personal information is used for many different purposes',
-        'only aggregate data is given to third parties',
-        'app required for this service requires broad device permissions',
-        'your data is processed and stored in a country that is less friendly to user privacy protection',
-        'your data may be processed and stored anywhere in the world',
-        'your personal data will not be used for an automated decisionmaking',
-        'your data is processed and stored in a country that is friendlier to user privacy protection',
-        'private messages can be read'
+        # 'not an issue_testing error reporting3' - not in mapping
+        'Personal Data: your personal data is used for limited purposes',
+        'Personal Data: your personal information is used for many different purposes',
+        'Personal Data: only aggregate data is given to third parties',
+        'Personal Data: app required for this service requires broad device permissions',
+        'Personal Data: your data is processed and stored in a country that is less friendly to user privacy protection',
+        'Personal Data: your data may be processed and stored anywhere in the world',
+        'Personal Data: your personal data will not be used for an automated decisionmaking',
+        'Personal Data: your data is processed and stored in a country that is friendlier to user privacy protection',
+        'Personal Data: private messages can be read'
     ]
-    pdf_path = os.getenv("PDF_PATH", "/pdf_directory/default.pdf")
-    project_id = "ac215-privasee"
-    location_id = "us-central1"
-    endpoint_id = "3317729057814085632"
-    found_issues = process_pdf_privacy_issues(pdf_path, mapping_path, project_id, location_id, endpoint_id)
-    report = grader.grade_privacy_issues(found_issues)
+    # report = grader.grade_privacy_issues(found_issues)
 
+
+    # # TEST1: using the pdf extraction process
+    pdf_path = os.getenv("PDF_PATH", "pdf_directory/apple.pdf")  # pdf to analyze
+    csv_path = "mapping_df.csv"  # mapping pdf for issues
+    # project_id = "473358048261"  # Your project ID
+    project_id = "ac215-privasee"
+    location_id = "us-central1"  # Your region
+    endpoint_id = "3504346967373250560"  # Your endpoint ID
+    service, found_issues= process_pdf_privacy_issues(pdf_path=pdf_path,
+                               csv_path=csv_path,
+                               project_id=project_id,
+                               location_id=location_id,
+                               endpoint_id=endpoint_id)
+    # print(found_issues)
+    service_name= "Apple Inc"
+    report = grader.grade_privacy_issues(found_issues)
     if report:
+        # print(f"\n Report card for {service}")
         print(f"\nOverall Grade: {report.overall_grade}")
         print(f"Overall Score: {report.overall_score}%")
 
         if report.unknown_issues:
             print(f"\nUnknown Issues: {report.unknown_issues}")
 
-        print("\nWorst Performing Parent Categories:")
+        print("\nWorst Performing Categories:")
         for category in report.worst_parent_categories:
-            print(f"\n{category['parent_category']}:")
-            print(f"Grade: {category['grade']}")
-            print(f"Score: {category['score']}%")
-            print("Privacy Issues Found:", category['privacy_issues_found'])
-            print(f"Total Possible Issues: {category['total_possible_issues']}")
+            print(f"\nCategory: {category.parent_category}")  # Added this line
+            print(f"Grade: {category.grade} ({category.score}%)")
+            if category.bad_issues:
+                print("Severe Privacy Issues:", category.bad_issues)
+            if category.neutral_issues:
+                print("Neutral Privacy Issues:", category.neutral_issues)
+            if category.good_issues:
+                print("Good Privacy Practices:", category.good_issues)
+            print(f"Total Possible Issues: {category.total_possible_issues}")
+        # save privacy grade to csv
+        report.save_grade_to_csv(service_name, report.overall_grade)

@@ -1,0 +1,259 @@
+,parent_issue,privacy_issue,classification
+0,Ownership,This service takes credit for your content,bad
+1,Ownership,If you offer suggestions to the service they become the owner of the ideas that you give them,bad
+2,Ownership,You maintain ownership of your content,good
+3,Ownership,This service can use your content for all their existing and future services,neutral
+4,Ownership,The service disables software that you are not licensed to use,bad
+5,Ownership,If you offer suggestions to the service they may use that without your approval or compensation but they do not become the owner,good
+6,Ownership,You waive your moral rights,blocker
+7,Governance,The service can intervene in user disputes,neutral
+8,Governance,This service cannot be held responsible for disputes that you may have with other users,neutral
+9,Governance,Any liability on behalf of the service is only limited to the fees you paid as a user,bad
+10,Governance,Defend indemnify hold harmless survives termination,neutral
+11,Governance,This service is only available for use individually and noncommercially,neutral
+12,Governance,You are prohibited from attempting to gain unauthorized access to other computer systems,neutral
+13,Governance,This service assumes no responsibility and liability for the contents of links to other websites,neutral
+14,Governance,Failure to enforce any provision of the Terms of Service does not constitute a waiver of such provision,neutral
+15,Governance,Other applicable rules terms conditions or guidelines,neutral
+16,Governance,You can scrape the site as long as it doesnt impact the server too much,good
+17,Governance,Service fines users for Terms of Service violations,bad
+18,Governance,You are allowed to quote their content with attribution,neutral
+19,Governance,Minors must have the authorization of their legal guardians to use the service,neutral
+20,Governance,Per the services terms you may not express negative opinions about them,bad
+21,Governance,This service offers a symbolic but nonbinding statement about a matter of opinion ethics society or politics,good
+22,Governance,This service fines spammers,good
+23,Governance,This service is only available to users over a certain age,neutral
+24,Governance,Invalidity of any portion of the Terms of Service does not entail invalidity of its remainder,neutral
+25,Governance,Harming minors in any ways is prohibited,neutral
+26,Governance,You have a reduced time period to take legal action against the service,bad
+27,Governance,You agree to indemnify and hold the service harmless in case of a claim related to your use of the service,neutral
+28,Governance,This service is only available for commercial use,neutral
+29,Governance,You agree to defend indemnify and hold the service harmless in case of a claim related to your use of the service,neutral
+30,Governance,This service assumes no liability for any losses or damages resulting from any matter relating to the service,neutral
+31,Guarantee,The service is not responsible for linked or clearly quoted content from thirdparty content providers,neutral
+32,Guarantee,You will be notified about website maintenance,good
+33,Guarantee,Accessibility to this service is guaranteed at 99 or more,good
+34,Guarantee,The service does not guarantee that software errors will be corrected,bad
+35,Guarantee,The service does not guarantee accuracy or reliability of the information provided,neutral
+36,Guarantee,The service is provided as is and to be used at your sole risk,neutral
+37,Guarantee,You are responsible for any risks damages or losses that may incur by downloading materials,neutral
+38,Guarantee,No guarantee is given regarding quality,neutral
+39,Guarantee,Your use is throttled,bad
+40,Guarantee,This service does not guarantee that it or the products obtained through it meet your expectations or requirements,neutral
+41,Guarantee,The service provider makes no warranty regarding uninterrupted timely secure or errorfree service,neutral
+42,User Involvement in Changing Terms,Critical changes to the terms are made without user involvement,neutral
+43,User Involvement in Changing Terms,Your feedback is invited regarding changes to the terms,good
+44,Changes,There is a date of the last update of the agreements,neutral
+45,Changes,Changes in policies are applied retroactively,blocker
+46,Unclassified,none,neutral
+47,Jurisdiction and governing laws,Personal information that is shared outside its jurisdiction is processed according to the original jurisdictions data protection standards,good
+48,Jurisdiction and governing laws,The court of law governing the terms is in location X,neutral
+49,Jurisdiction and governing laws,The court of law governing the terms is in a jurisdiction that is friendlier to user privacy protection,good
+50,Jurisdiction and governing laws,The court of law governing the terms is in a jurisdiction that is less friendly to user privacy protection,bad
+51,Jurisdiction and governing laws,The service claims to be GDPR compliant for European users,good
+52,Jurisdiction and governing laws,The service claims to be CCPA compliant for California users,good
+53,Jurisdiction and governing laws,The service claims to be LGPD compliant for Brazilian users,good
+54,Jurisdiction and governing laws,The service is only available in some countries approved by its government,bad
+55,Notice of Changing Terms,The terms may be changed at any time but you will receive notification of the changes,neutral
+56,Notice of Changing Terms,Conditions may change but your continued acceptance is not inferred from an earlier acceptance,neutral
+57,Notice of Changing Terms,The service reviews its privacy policy on a regular basis,good
+58,Notice of Changing Terms,You should revisit the terms periodically although in case of material changes the service will notify,neutral
+59,Notice of Changing Terms,Terms may be changed any time at their discretion without notice to you,bad
+60,Notice of Changing Terms,When the service wants to make a material change to its terms you are notified at least 30 days in advance,good
+61,Notice of Changing Terms,When the service wants to change its terms you are notified a week or more in advance,good
+62,Notice of Changing Terms,Instead of asking directly this Service will assume your consent to changes of terms merely from your usage,bad
+63,Suspension and Censorship,Usernames can be rejected or changed for any reason,bad
+64,Suspension and Censorship,Your account can be suspended for several reasons,neutral
+65,Suspension and Censorship,Users who have been permanently banned from this service are not allowed to reregister under a new account,neutral
+66,Suspension and Censorship,If you are the target of a copyright claim your content may be removed,neutral
+67,Suspension and Censorship,User accounts can be terminated after having been in breach of the terms of service repeatedly,good
+68,Suspension and Censorship,They may stop providing the service at any time,neutral
+69,Suspension and Censorship,Your content can be deleted if you violate the terms,neutral
+70,Suspension and Censorship,30 days of notice are given before closing your account,good
+71,Suspension and Censorship,Content you post may be edited by the service for any reason,blocker
+72,Suspension and Censorship,User suspension from the service will be fair and proportionate,good
+73,Suspension and Censorship,Political discussions which are against the governmentadvocated value are prohibited,blocker
+74,Suspension and Censorship,Specific content can be deleted without reason and may be removed without prior notice,blocker
+75,Suspension and Censorship,Usergenerated content can be blocked or censored for any reason,bad
+76,Suspension and Censorship,Your account can be deleted or permanently suspended without prior notice and without a reason,bad
+77,Business Transfers,Promises will be kept after a merger or acquisition,good
+78,Business Transfers,Your personal data may be sold or otherwise transferred as part of a bankruptcy proceeding or other type of financial transaction,bad
+79,Logs,Logs are deleted after a finite period of time,good
+80,Logs,Only necessary logs are kept by the service to ensure quality,good
+81,Logs,Logs are kept for an undefined period of time,bad
+82,Logs,This Service does not keep any logs,good
+83,Security,Information is provided about security practices,good
+84,Security,Two factor authentication is provided for your account,good
+85,Security,You will be notified if personal data has been affected by data breaches,good
+86,Security,You are responsible for maintaining the security of your account and for the activities on your account,neutral
+87,Security,You must report to the service any unauthorized use of your account or any breach of security,neutral
+88,Security,Security incidents are reported to the authorities,neutral
+89,Security,Staff at this organisation receive training about handling data,good
+90,Payments,The service has a no refund policy,neutral
+91,Payments,You are entitled to a refund if certain thresholds or standards are not met by the service,good
+92,Payments,You authorise the service to charge a credit card supplied on reoccurring basis,neutral
+93,Payments,This service has a no refund policy with some exceptions,neutral
+94,Payments,An anonymous payment method is offered,good
+95,Payments,Prices and fees may be changed at any time without notice to you,bad
+96,Content,You agree not to use the service for illegal purposes,neutral
+97,Content,You shall not interfere with another persons enjoyment of the service,bad
+98,Content,This service does not condone any ideas contained in its usergenerated contents,neutral
+99,Content,The posting of pornographic content is prohibited,neutral
+100,Content,You arent allowed to publicly post private messages,good
+101,Content,Political discussions or campaining are prohibited,neutral
+102,Content,You are prohibited from posting content which promotes violence or politically or religiously extremist values,neutral
+103,Content,You agree not to submit libelous harassing or threatening content,neutral
+104,Content,Usergenerated content is encrypted and this service cannot decrypt it,good
+105,Content,The publishing of personally identifiable information without the owners consent is not allowed,good
+106,Content,You are prohibited from sending chain letters junk mail spam or any unsolicited messages,neutral
+107,Content,Spidering crawling or accessing the site through any automated means is not allowed,neutral
+108,Content,You arent allowed to remove or edit usergenerated content,blocker
+109,Copyright License,A license is kept on usergenerated content even after you close your account,bad
+110,Copyright License,Instructions are provided on how to submit a copyright claim,neutral
+111,Copyright License,The copyright license that you grant this service is limited to the parties that make up the services broader platform,neutral
+112,Copyright License,Your content can be licensed to third parties,bad
+113,Copyright License,If you are the target of a copyright holders take down notice this service gives you the opportunity to defend yourself,good
+114,Copyright License,Your content can be distributed through any media known now or in the future,neutral
+115,Copyright License,Content is published under a free license instead of a bilateral one,good
+116,Copyright License,Copyright license limited for the purposes of that same service but transferable and sublicenseable,good
+117,Copyright License,The service has nonexclusive use of your content,good
+118,Trackers,This service tracks you on other websites,bad
+119,Trackers,Third party cookies are employed but with opt out instructions,bad
+120,Trackers,The cookies used by this service do not contain information that would personally identify you,good
+121,Trackers,Tracking cookies refused will not limit your ability to use the service,good
+122,Trackers,A list of all cookies set by the website is provided,good
+123,Trackers,Thirdparty cookies are used for advertising,bad
+124,Trackers,Tracking pixels are used in servicetouser communication,bad
+125,Trackers,The service deletes tracking data after a period of time and allows you to opt out,good
+126,Trackers,Thirdparty cookies are used for statistics,bad
+127,Trackers,This service tracks which web page referred you to it,bad
+128,Trackers,You are not being tracked,good
+129,Trackers,You are being tracked via social media cookiespixels,bad
+130,Trackers,Blocking first party cookies may limit your ability to use the service,neutral
+131,Trackers,Only temporary session cookies are used,good
+132,Trackers,You are tracked via web beacons tracking pixels browser fingerprinting andor device fingerprinting,bad
+133,Trackers,This service still tracks you even if you opted out from tracking,blocker
+134,Trackers,Firstparty cookies are used,neutral
+135,Trackers,Your browsers Do Not Track DNT headers are respected,good
+136,Trackers,Do Not Track DNT headers are ignored and you are tracked anyway even if you set this header,neutral
+137,Personal Data,Your personal data is not sold,good
+138,Personal Data,This service assumes no liability for unauthorized access to your personal information,bad
+139,Personal Data,Your private content may be accessed by people working for the service,neutral
+140,Personal Data,The service does not index or open files that you upload,good
+141,Personal Data,Your personal data is aggregated into statistics,neutral
+142,Personal Data,You can access most of the pages on the services website without revealing any personal information,good
+143,Personal Data,Many different types of personal data are collected,bad
+144,Personal Data,They store data on you even if you did not interact with the service,blocker
+145,Personal Data,A complaint mechanism is provided for the handling of personal data,good
+146,Personal Data,Your Personal data may be sold unless you opt out,bad
+147,Personal Data,This service does not collect use or share location data,good
+148,Personal Data,This service may collect use and share location data,bad
+149,Personal Data,Your personal data is used for limited purposes,good
+150,Personal Data,Your personal information is used for many different purposes,bad
+151,Personal Data,Only aggregate data is given to third parties,neutral
+152,Personal Data,App required for this service requires broad device permissions,bad
+153,Personal Data,Your data is processed and stored in a country that is less friendly to user privacy protection,bad
+154,Personal Data,Your data may be processed and stored anywhere in the world,bad
+155,Personal Data,Your personal data will not be used for an automated decisionmaking,good
+156,Personal Data,Your data is processed and stored in a country that is friendlier to user privacy protection,good
+157,Personal Data,Private messages can be read,blocker
+158,Personal Data,Your personal data is used for automated decisionmaking profiling or AI training,blocker
+159,[Deprecated],The service is transparent regarding government requests or inquiries that may involve your data,neutral
+160,[Deprecated],very broad,bad
+161,[Deprecated],You agree not to submit illegal content,neutral
+162,[Deprecated],The service is not transparent regarding government requests or inquiries that may involve your data,neutral
+163,[Deprecated],The copyright license maintained by the service over your data andor content is broader than necessary,bad
+164,[Deprecated],You are free to choose the type of copyright license that you want to use over your content,good
+165,[Deprecated],Pseudonyms are allowed due to the services billing policies,neutral
+166,[Deprecated],This service provides a way for you to export your data,good
+167,[Deprecated],Only for your individual use,neutral
+168,[Deprecated],users can contact the edtech vendor about any privacy policy questions complaints and material changes as indicated in the policies,neutral
+169,[Deprecated],sensitive personal information is collected,neutral
+170,[Deprecated],behavioral data is collected,neutral
+171,[Deprecated],users are notified of any material changes,neutral
+172,[Deprecated],the policy version has a clear date,neutral
+173,Anonymity,You must provide your legal name pseudonyms are not allowed,bad
+174,Anonymity,You are not allowed to use pseudonyms as trust and transparency between users regarding their identities is relevant to the service,neutral
+175,Anonymity,Your profile is combined across various products,bad
+176,Anonymity,An onion site accessible over Tor is provided,good
+177,Anonymity,This service will continue using anonymized usergenerated content after erasure of personal information,neutral
+178,Anonymity,You must provide your identifiable information,bad
+179,Anonymity,Alternative accounts are not allowed,neutral
+180,Anonymity,Pseudonyms are allowed,good
+181,Anonymity,Your provided identifiable information is actively checked by the service,bad
+182,Types of Information Collected,IP addresses of website visitors are not tracked,good
+183,Types of Information Collected,Your IP address is collected which can be used to view your approximate location,neutral
+184,Types of Information Collected,This service receives your precise location through GPS coordinates,bad
+185,Types of Information Collected,Your biometric data is collected,bad
+186,Types of Information Collected,Your browsing history can be viewed by the service,blocker
+187,Types of Information Collected,Voice data is collected and shared with thirdparties,bad
+188,User Choice,You cannot opt out of promotional communications,bad
+189,User Choice,You can choose the copyright license,good
+190,User Choice,Inconvenient process for obtaining personal data,bad
+191,User Choice,You can request access correction andor deletion of your data,good
+192,User Choice,You have the right to request lower Charges from Third Party Providers,neutral
+193,User Choice,You can opt out of providing personal information to third parties,good
+194,User Choice,You can retrieve an archive of your data,good
+195,User Choice,You can opt out of promotional communications,good
+196,User Choice,You can choose with whom you share content,good
+197,User Choice,You can limit how your information is used by thirdparties and the service,good
+198,Third Parties,Many third parties are involved in operating the service,bad
+199,Third Parties,Third parties are involved in operating the service,neutral
+200,Third Parties,Third parties used by the service are bound by confidentiality obligations,good
+201,Third Parties,Your information is only shared with third parties when given specific consent,good
+202,Third Parties,Your personal data is not shared with third parties,good
+203,Third Parties,The service explains how to prevent disclosure of personal information to third parties,good
+204,Third Parties,You are warned of the potential consequences related to thirdparty access,good
+205,Third Parties,No thirdparty analytics or tracking platforms are used,good
+206,Third Parties,Information is gathered about you through third parties,bad
+207,Third Parties,This service gives your personal data to third parties involved in its operation,bad
+208,Third Parties,This service shares your personal data with third parties that are not essential to its operation,bad
+209,Right to Leave The Service,You can delete your content from this service,good
+210,Right to Leave The Service,This service retains rights to your content even after you stop using your account,bad
+211,Right to Leave The Service,The data retention period is kept to the minimum necessary for fulfilling its purposes,good
+212,Right to Leave The Service,The service may keep a secure anonymized record of your data for analytical purposes even after the data retention period,bad
+213,Right to Leave The Service,No need to register,good
+214,Right to Leave The Service,You cannot delete your account of this service,blocker
+215,Right to Leave The Service,You cannot delete your contributions but it makes sense for this service,neutral
+216,Right to Leave The Service,Some personal data may be kept for business interests or legal obligations,bad
+217,Right to Leave The Service,This service holds onto content that youve deleted,blocker
+218,Right to Leave The Service,You have the right to leave this service at any time,good
+219,Right to Leave The Service,You can set guidelines for the use of your personal information after your death,good
+220,Right to Leave The Service,The service suspends your account after inactivity for a certain or uncertain time,neutral
+221,Law and Government Requests,You agree to comply with the law of the services country,neutral
+222,Law and Government Requests,Third parties are not allowed to access your personal information without a legal basis,good
+223,Law and Government Requests,The service will resist legal requests for your information where reasonably possible,good
+224,Law and Government Requests,The service will only respond to government requests that are reasonable,good
+225,Law and Government Requests,The service promises to inform andor notify you regarding government inquiries that may involve your personal data,good
+226,Law and Government Requests,Your personal data may be disclosed to comply with government requests without notice to you,bad
+227,Law and Government Requests,You cant close your account if an investigation is ongoing,neutral
+228,Advertising,Your personal data is used to employ targeted thirdparty advertising,bad
+229,Advertising,You can opt out of targeted advertising,good
+230,Advertising,Your identity is used in ads that are shown to other users,blocker
+231,Advertising,Your personal data may be used for marketing purposes,bad
+232,Advertising,Your personal data is used for advertising,bad
+233,Advertising,Extra data may be collected about you through promotions,bad
+234,Advertising,Sensitive data is collected and shared to target advertising,blocker
+235,Advertising,The service does not use any thirdparty advertising services,good
+236,Transparency,Features of the website are made available under a free software license,good
+237,Transparency,You cannot distribute or disclose your account to third parties,neutral
+238,Transparency,This service informs you that its Terms of Service does not apply to third party websites,neutral
+239,Transparency,Information is provided about how your personal data is used,good
+240,Transparency,You are informed about the risk of publishing personal info online,good
+241,Transparency,Separate policies are employed for different parts of the service,neutral
+242,Transparency,You must create an account to use this service,neutral
+243,Transparency,Archives of their agreements are provided so that changes can be viewed over time,good
+244,Transparency,The service informs you that its privacy policy does not apply to third party websites,neutral
+245,Transparency,Information is provided about how they collect personal data,good
+246,Transparency,This Service provides a list of Third Parties involved in its operation,good
+247,Transparency,A free help desk is provided,good
+248,Transparency,The service is opensource,good
+249,Transparency,The policy refers to documents that are missing or unfindable,blocker
+250,Transparency,The terms for this service are easy to read,good
+251,Transparency,The terms for this service are translated into different languages,neutral
+252,Transparency,This service is a subsidiary of Company X,neutral
+253,Transparency,An audio version of the Terms of Service is provided,good
+254,Transparency,Information is provided about what kind of information they collect,good
+255,Dispute Resolution,You arent forced into binding arbitration in case of disputes,good
+256,Dispute Resolution,You are forced into binding arbitration in case of disputes,bad
+257,Dispute Resolution,You waive your right to a class action,bad
