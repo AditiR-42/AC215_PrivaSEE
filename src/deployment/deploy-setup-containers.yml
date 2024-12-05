@@ -43,7 +43,7 @@
     - name: Create frontend container
       community.general.docker_container:
         name: "frontend"
-        image: "us-docker.pkg.dev/{{ gcp_project }}/privasee-docker/privasee-app-frontend-react:{{ tag.stdout }}"
+        image: "gcr.io/{{ gcp_project }}/privasee-app-frontend-react:{{ tag.stdout }}"
         state: started
         recreate: yes
         pull: yes
