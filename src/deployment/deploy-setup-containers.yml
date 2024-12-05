@@ -36,10 +36,14 @@
     - name: Print tag
       debug:
         var: tag
+    - name: Generate random NEXTAUTH_SECRET
+      command: openssl rand -base64 32
+      register: generated_secret
+    
     - name: Create frontend container
-      docker_container:
+      community.general.docker_container:
         name: "frontend"
-        image: "gcr.io/{{ gcp_project }}/privasee-app-frontend-react:{{ tag.stdout}}"
+        image: "us-docker.pkg.dev/{{ gcp_project }}/privasee-docker/privasee-app-frontend-react:{{ tag.stdout }}"
         state: started
         recreate: yes
         pull: yes
@@ -47,7 +51,9 @@
         published_ports:
           - 3000:3000
         networks:
-          - name: "{{docker_network_name}}"
+          - name: "{{ docker_network_name }}"
+        env:
+          NEXTAUTH_SECRET: "{{ generated_secret.stdout }}"
 
     # Create a folder on persistent disk
     - name: Create persistent directory
