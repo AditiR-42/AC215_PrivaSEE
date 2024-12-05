@@ -13,7 +13,7 @@
     community.general.docker_image:
       build:
         path: /frontend-react
-        platform: linux/amd64  # Add platform here
+        platform: linux/amd64
       name: gcr.io/{{ gcp_project }}/privasee-app-frontend-react:{{ tag.stdout }}
       source: build
   - name: Push frontend image to GCR
@@ -26,7 +26,7 @@
     community.general.docker_image:
       build:
         path: /api-service
-        platform: linux/amd64  # Correct platform specification
+        platform: linux/amd64
       name: gcr.io/{{ gcp_project }}/privasee-app-api-service:{{ tag.stdout }}
       source: build
   - name: Push api-service image to GCR

@@ -1,11 +1,14 @@
+ARG TARGETPLATFORM
+
 # Build stage
-FROM node:18-alpine AS build
+FROM --platform=${TARGETPLATFORM:-linux/amd64} node:20-alpine AS build
 
 WORKDIR /app
 
 # Install dependencies
 COPY package.json package-lock.json ./
-RUN npm ci --omit=optional
+ENV npm_config_platform=linux
+RUN npm ci
 
 # Copy source files
 COPY . .
@@ -14,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine AS production
+FROM --platform=${TARGETPLATFORM:-linux/amd64} node:20-alpine AS production
 
 WORKDIR /app
 
@@ -29,6 +32,9 @@ RUN npm ci --only=production
 
 # Expose the listening port
 EXPOSE 3000
+
+# Define environment variable defaults for Next.js production
+ENV NEXTAUTH_SECRET=change_this_default_secret
 
 # Run the Next.js app
 CMD ["npm", "start"]
