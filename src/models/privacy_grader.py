@@ -5,7 +5,7 @@ from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
 # from get_issues import process_pdf_privacy_issues
-from get_issues2 import *
+from get_issues import *
 
 storage_client = storage.Client()
 def load_weights_from_csv(filepath: str) -> Dict[str, float]:
@@ -80,10 +80,10 @@ class PrivacyGrader:
 
         # Classification weights
         self.classification_weights = {
-            'blocker': -1.0,  # Increased penalty (was -0.8)
-            'bad': -0.5,  # Increased penalty (was -0.4)
-            'neutral': 0.0,  # No impact (was -0.1)
-            'good': 0.1  # Reduced positive impact (was 0.2)
+            'blocker': -2.0,  # Much stronger penalty
+            'bad': -0.7,  # Stronger penalty
+            'neutral': 0.0,  # no impact
+            'good': 0.1  # positive impact
         }
 
         # Get all unique parent categories
@@ -103,10 +103,10 @@ class PrivacyGrader:
 
         # Define grade boundaries
         self.grade_boundaries = {
-            0.95: Grade.A,  # 95-100% = A (was 90)
-            0.85: Grade.B,  # 85-94% = B (was 75)
-            0.75: Grade.C,  # 75-84% = C (was 60)
-            0.65: Grade.D,  # 65-74% = D (was 45)
+            0.95: Grade.A,
+            0.85: Grade.B,
+            0.75: Grade.C,
+            0.65: Grade.D,
             # Below 65% = F
         }
 
@@ -143,7 +143,6 @@ class PrivacyGrader:
                 unknown_issues.append(issue)
 
         return valid_issues, unknown_issues
-
     def _calculate_category_scores(self, valid_issues: List[str]) -> Dict[str, float]:
         """Calculate scores based on issue classifications with stricter penalties."""
         category_scores = {category: 1.0 for category in self.all_parent_categories}
@@ -188,14 +187,14 @@ class PrivacyGrader:
             # Enhanced penalty rules
             if blocker_count > 0:
                 # Severe penalty for any blockers
-                base_score = min(base_score, 0.3)  # Was 0.5
+                base_score = min(base_score, 0.3)
             elif bad_count > 0:
                 # Cap score if there are any bad issues
                 base_score = min(base_score, 0.7)
 
             # Reduce the minimum score for all good issues
             if len(found_issues) == good_count:
-                base_score = max(base_score, 0.7)  # Was 0.8
+                base_score = max(base_score, 0.7)
 
             # Apply category weight
             score = base_score * self.category_weights[category]
@@ -388,21 +387,28 @@ if __name__ == "__main__":
     ]
     # report = grader.grade_privacy_issues(found_issues)
 
-
-    # # TEST1: using the pdf extraction process
-    pdf_path = os.getenv("PDF_PATH", "pdf_directory/apple.pdf")  # pdf to analyze
+    # # TEST2 using the pdf extraction process
+    pdf_path = os.getenv("PDF_PATH", "pdf_directory/amazon.pdf")  # pdf to analyze
     csv_path = "mapping_df.csv"  # mapping pdf for issues
-    # project_id = "473358048261"  # Your project ID
     project_id = "ac215-privasee"
     location_id = "us-central1"  # Your region
     endpoint_id = "3504346967373250560"  # Your endpoint ID
-    service, found_issues= process_pdf_privacy_issues(pdf_path=pdf_path,
-                               csv_path=csv_path,
-                               project_id=project_id,
-                               location_id=location_id,
-                               endpoint_id=endpoint_id)
-    # print(found_issues)
-    service_name= "Apple Inc"
+
+    print(f"Processing file: {pdf_path}")
+    print(f"Using mapping: {csv_path}")
+    print(f"Project ID: {project_id}")
+    print(f"Location: {location_id}")
+    print(f"Endpoint ID: {endpoint_id}")
+
+    found_issues= process_pdf_privacy_issues(
+        pdf_path=pdf_path,
+        csv_path=csv_path,
+        project_id=project_id,
+        location_id=location_id,
+        endpoint_id=endpoint_id
+    )
+
+    grader = PrivacyGrader(mapping_df, category_weights)
     report = grader.grade_privacy_issues(found_issues)
     if report:
         # print(f"\n Report card for {service}")
@@ -424,4 +430,4 @@ if __name__ == "__main__":
                 print("Good Privacy Practices:", category.good_issues)
             print(f"Total Possible Issues: {category.total_possible_issues}")
         # save privacy grade to csv
-        report.save_grade_to_csv(service_name, report.overall_grade)
+        # report.save_grade_to_csv(service_name, report.overall_grade)

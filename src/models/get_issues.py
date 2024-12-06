@@ -12,6 +12,7 @@ def extract_text_from_pdf(pdf_path: str) -> str:
         for page_num in range(pdf.page_count):
             page = pdf[page_num]
             text += page.get_text()
+    # svae into text file and test, ask llm to see if it has bad character
     return text
 
 
@@ -28,7 +29,7 @@ def load_privacy_issues(csv_path: str) -> str:
 # Define your generation configuration
 generation_config = {
     "max_output_tokens": 8192,
-    "temperature": 0.05,
+    "temperature": 0.01,
     "top_p": 0.95,
 }
 
@@ -36,7 +37,6 @@ generation_config = {
 def process_pdf_privacy_issues(pdf_path: str, csv_path: str, project_id: str, location_id: str, endpoint_id: str):
     """
     Extracts text from a PDF and sends it to the Vertex AI model for analysis.
-    Returns both formatted_response_list and service name.
     """
     # Step 1: Extract text from PDF
     input_text = extract_text_from_pdf(pdf_path)
@@ -53,18 +53,19 @@ def process_pdf_privacy_issues(pdf_path: str, csv_path: str, project_id: str, lo
     # Step 4: Start a chat session
     chat = model.start_chat()
 
+    # IGNORE STEP 5 for MS5
     # # Step 5: First, get the service name
-    service_response = chat.send_message(
-        [
-            "What is the name of the service or company whose privacy policy or terms of service is being analyzed in this text? Please respond with just the name, nothing else.",
-            f"Text to analyze:\n{input_text}"
-        ],
-        generation_config=generation_config,
-    )
-    service_name = service_response.text.strip()
+    # service_response = chat.send_message(
+    #     [
+    #         "What is the name of the service or company whose privacy policy or terms of service is being analyzed in this text? Please respond with just the name, nothing else.",
+    #         f"Text to analyze:\n{input_text}"
+    #     ],
+    #     generation_config=generation_config,
+    # )
+    # service_name = service_response.text.strip()
 
-    # Step 6: Then get the privacy issues
-    issues_response = chat.send_message(
+    # Step 6: Send messages to the model
+    response = chat.send_message(
         [
             f"Privacy Issues List:\n{privacy_issues}",
             f"Extracted PDF Text:\n{input_text}",
@@ -72,10 +73,10 @@ def process_pdf_privacy_issues(pdf_path: str, csv_path: str, project_id: str, lo
         ],
         generation_config=generation_config,
     )
+    # # Step 6: Print the response
+    response_list = [item.strip() for item in response.text.split(',')]
 
-    response_list = [item.strip() for item in issues_response.text.split(',')]
-
-    # Get mapping for parent issues
+    # Print the response for verification
     mapping_df = pd.read_csv(csv_path)
     mapping_dict = dict(zip(mapping_df['privacy_issue'].str.lower(), mapping_df['parent_issue']))
 
@@ -87,39 +88,21 @@ def process_pdf_privacy_issues(pdf_path: str, csv_path: str, project_id: str, lo
         formatted_response_list.append(f"{parent_issue}: {issue}")
 
     # Print the response for verification
-    print("\n We have identified the following privacy issues:")
+    print("Identified privacy attributes:")
     for issue in formatted_response_list:
         print(f"- {issue}")
 
-    # print(f"\nService Name: {service_name}")
-
-    return service_name, formatted_response_list
-    # return service_name
-    # return formatted_response_list
+    return formatted_response_list
 
 
 # Example usage
 if __name__ == "__main__":
-    # Arguments
-    pdf_path = os.getenv("PDF_PATH", "pdf_directory/apple.pdf")  # pdf to analyze
+    pdf_path = os.getenv("PDF_PATH", "pdf_directory/amazon.pdf")  # pdf to analyze
     csv_path = "mapping_df.csv"  # mapping pdf for issues
     project_id = "ac215-privasee"
     location_id = "us-central1"  # Your region
     endpoint_id = "3504346967373250560"  # Your endpoint ID
 
-    print(f"Processing file: {pdf_path}")
-    print(f"Using mapping: {csv_path}")
-    print(f"Project ID: {project_id}")
-    print(f"Location: {location_id}")
-    print(f"Endpoint ID: {endpoint_id}")
-
-    # service, found_issues = process_pdf_privacy_issues(
-    #     pdf_path=pdf_path,
-    #     csv_path=csv_path,
-    #     project_id=project_id,
-    #     location_id=location_id,
-    #     endpoint_id=endpoint_id
-    # )
     process_pdf_privacy_issues(
         pdf_path=pdf_path,
         csv_path=csv_path,
