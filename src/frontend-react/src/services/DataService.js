@@ -27,7 +27,7 @@ const DataService = {
     GetRecommendation: async function (query) {
         console.log(BASE_API_URL);
         try {
-            const response = await api.post(`${BASE_API_URL}/recommend`, { query });
+            const response = await api.post(`/recommend`, { query });
             console.log(response.data)
             return response.data;
         } catch (error) {
@@ -44,7 +44,7 @@ const DataService = {
         formData.append("endpoint_id", endpointId);
 
         try {
-            const response = await api.post(`${BASE_API_URL}/process-pdf/`, formData, {
+            const response = await api.post(`/process-pdf/`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -58,7 +58,7 @@ const DataService = {
     },
     GetGrade: async function () {
         try {
-            const response = await api.post(`${BASE_API_URL}/get-grade/`);
+            const response = await api.post(`/get-grade/`);
             return response.data;
         } catch (error) {
             console.error("Error fetching grade");

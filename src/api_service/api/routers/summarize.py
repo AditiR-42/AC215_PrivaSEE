@@ -3,6 +3,7 @@ from fastapi import APIRouter, UploadFile, HTTPException, Form, File
 import logging
 from api.utils.process_pdf import process_pdf_privacy_issues
 from api.utils.privacy_grader import PrivacyGrader
+import traceback
 
 # Initialize the FastAPI router
 router = APIRouter()
@@ -93,4 +94,6 @@ async def get_grade():
 
     except Exception as e:
         logging.error(f"Error grading issues: {str(e)}")
+        print(e)
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error grading issues: {str(e)}")

@@ -10,12 +10,13 @@ from fuzzywuzzy import process
 from nltk.corpus import wordnet
 import nltk
 import os
+import traceback
 nltk.download('wordnet')
 
 # Dynamically set GOOGLE_APPLICATION_CREDENTIALS to the secrets folder
-current_dir = os.path.dirname(os.path.abspath(__file__))
-secrets_path = os.path.abspath(os.path.join(current_dir, "../../../secrets/model-containerization.json"))
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = secrets_path
+#current_dir = os.path.dirname(os.path.abspath(__file__))
+#secrets_path = os.path.abspath(os.path.join(current_dir, "/secrets/model-containerization.json"))
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = secrets_path
 
 # Initialize FastAPI and Router
 router = APIRouter()
@@ -345,6 +346,8 @@ def recommend_app(request: QueryRequest):
         # Return the response as a JSON object
         return {"recommendation": conversational_response}
     except Exception as e:
+        print(e)
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
