@@ -5,22 +5,11 @@ const nextConfig = {
         // Add rule for handling SVGs
         config.module.rules.push({
             test: /\.svg$/,
-            use: ["@svgr/webpack"]
+            use: ["@svgr/webpack"],
         });
 
-        // Add rule for handling only CSS from react-pdf
-        config.module.rules.push({
-            test: /\.css$/,
-            include: /node_modules\/react-pdf/,
-            use: [
-                {
-                    loader: 'style-loader',
-                },
-                {
-                    loader: 'css-loader',
-                },
-            ],
-        });
+        // Remove custom CSS handling for react-pdf
+        // Next.js automatically handles global and modular CSS files
 
         return config;
     },
@@ -49,7 +38,6 @@ const nextConfig = {
             },
         ];
     },
-    reactStrictMode: false,
 };
 
 module.exports = nextConfig;
