@@ -87,3 +87,7 @@ Both folders here contains code that is not part of the container. Notebooks con
 
 ### Midterm Presentation
 Filename: midterm_presentation/PrivaSee_Midterm.pdf
+
+### Deployment
+[insert writeup if we need one]
+As part of our scaling using Kubernetes, we used the script at src/deployment/scaling-test.py to ensure that autoscaling was effective. While the small size of each request made it difficult to increase memory to the point where new clusters were needed. However, the test nevertheless showed that scaling was enabled and that the site was able to accommodate significant request traffic. (see the screenshots in the images folder for these results)
