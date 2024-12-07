@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ChatInput from '@/components/chat/ChatInput';
-import ChatHistory from '@/components/chat/ChatHistory';
-import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
 import ChatMessage from '@/components/chat/ChatMessage';
 import DataService from "../../services/DataService";
 import { uuid } from "../../services/Common";
@@ -176,13 +174,10 @@ export default function ChatPage() {
                 </section>
             )}
 
-            {/* {!hasActiveChat && <ChatHistory model={model} />} */}
-
             {hasActiveChat && (
                 <>
                     <div className={styles.chatHeader}></div>
                     <div className={styles.chatInterface}>
-                        <ChatHistorySidebar chat_id={chat_id} model={model} />
                         <div className={styles.mainContent}>
                             <ChatMessage chat={chat} key={refreshKey} isTyping={isTyping} model={model} />
                             <ChatInput

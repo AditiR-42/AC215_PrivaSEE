@@ -21,7 +21,7 @@ export default function MobileMenu({ isOpen, onClose }) {
                     About
                 </Link>
                 <Link href="#podcasts" className="mobile-link" onClick={handleLinkClick}>
-                    Podcasts
+                    PrivaSEE
                 </Link>
             </nav>
         </div>

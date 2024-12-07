@@ -7,7 +7,6 @@ import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-//import DataService from "../../services/MockDataService"; // Mock
 import DataService from "../../services/DataService";
 
 // Styles
@@ -19,7 +18,6 @@ export default function ChatMessage({
     model
 }) {
     // Component States
-    const chatHistoryRef = useRef(null);
 
     const fetchChat = async (id) => {
         try {
@@ -32,14 +30,6 @@ export default function ChatMessage({
             setChat(null);
         }
     };
-
-    // Setup Component
-    // Auto-scroll to bottom of chat history when new messages are added
-    useEffect(() => {
-        if (chatHistoryRef.current) {
-            chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
-        }
-    }, [chat, isTyping]);
 
     // Helper function to format time
     const formatTime = (timestamp) => {

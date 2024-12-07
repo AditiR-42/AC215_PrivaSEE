@@ -152,20 +152,6 @@ export default function ChatInput({
                         onChange={handleImageChange}
                     />
                 </div>
-                {/* <div className={styles.rightControls}>
-                    <span className={styles.inputTip}>Use shift + return for new line</span>
-                    <select
-                        className={styles.modelSelect}
-                        value={selectedModel}
-                        onChange={handleModelChange}
-                        disabled={disableModelSelect}
-                    >
-                        <option value="llm">Formaggio Assistant (LLM)</option>
-                        <option value="llm-cnn">Formaggio Assistant (LLM + CNN)</option>
-                        <option value="llm-rag">Cheese Expert (RAG)</option>
-                        <option value="llm-agent">Cheese Expert (Agent)</option>
-                    </select>
-                </div> */}
             </div>
         </div>
     )

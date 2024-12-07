@@ -46,7 +46,7 @@ async def process_pdf(
         # Store extracted issues in memory
         parsed_issues_storage["issues"] = found_issues
 
-        logging.info(f"Processing completed. Found issues: {found_issues}")
+        # logging.info(f"Processing completed. Found issues: {found_issues}")
 
         return {
             "message": "Processing completed successfully.",
@@ -76,20 +76,21 @@ async def get_grade():
         # Dynamically locate the CSV file in the "utils" directory one level above the current script's directory
         current_dir = os.path.dirname(os.path.abspath(__file__))
         parent_dir = os.path.dirname(current_dir)  # Get the parent directory
-        csv_path = os.path.join(parent_dir, "utils", "mapping_df.csv")
+        mapping_df_path = os.path.join(parent_dir, "utils", "mapping_df.csv")
+        category_weights_path = os.path.join(parent_dir, "utils", "category_weights.csv")
 
         # Initialize the PrivacyGrader
-        grader = PrivacyGrader(csv_path)
+        grader = PrivacyGrader(mapping_df_path, category_weights_path)
 
         # Grade the issues
         report = grader.grade_privacy_issues(parsed_issues_storage["issues"])
 
-        logging.info(f"Grading completed. Report: {report}")
+        # logging.info(f"Grading completed. Report: {report}")
 
         return {
-            "overall_grade": report["overall_grade"],
-            "overall_score": report["overall_score"],
-            "category_scores": report["category_scores"],
+            "overall_grade": report.overall_grade,
+            "overall_score": report.overall_score,
+            "category_scores": report.parent_category_grades,
         }
 
     except Exception as e:
