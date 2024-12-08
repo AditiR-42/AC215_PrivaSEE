@@ -1,6 +1,8 @@
 import pytest
 import pandas as pd
 from io import StringIO
+from unittest.mock import patch, MagicMock
+
 @patch("models.privacy_grader.storage.Client")
 def test_privacy_grader(mock_storage_client):
     # Mock the storage client behavior
@@ -23,7 +25,6 @@ def test_privacy_grader(mock_storage_client):
     assert grader is not None
 
 from models.privacy_grader import load_weights_from_csv, PrivacyGrader, PrivacyReport, Grade
-from unittest.mock import patch, MagicMock
 
 # to  test do PYTHONPATH=$(pwd) pytest tests/test_grader.py
 # Mock CSV content for testing based on provided files
