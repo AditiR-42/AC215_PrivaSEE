@@ -10,7 +10,6 @@ def get_storage_client():
     from google.cloud import storage
     return storage.Client()
 
-storage_client = get_storage_client()
 def load_weights_from_csv(filepath: str) -> Dict[str, float]:
     """Load category weights from CSV file into format needed by grader."""
     df = pd.read_csv(filepath)
@@ -23,6 +22,7 @@ def upload_df_to_gcs(bucket_name, df, destination_blob_name):
     csv_data = df.to_csv(index=False)
 
     # Get the bucket and blob objects
+    storage_client = get_storage_client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
@@ -34,6 +34,7 @@ def upload_df_to_gcs(bucket_name, df, destination_blob_name):
 
 def read_csv_from_gcs(bucket_name, source_blob_name):
     """Read a CSV file from GCS into a DataFrame."""
+    storage_client = get_storage_client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(source_blob_name)
     # Download the CSV content as text (UTF-8)
