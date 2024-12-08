@@ -6,6 +6,7 @@ from models.privacy_grader import PrivacyGrader, load_weights_from_csv
 
 @patch("models.privacy_grader.get_storage_client")
 def test_privacy_grader(mock_get_storage_client):
+    print("Mocking get_storage_client...")
     mock_storage_client = MagicMock()
     mock_get_storage_client.return_value = mock_storage_client
 
@@ -24,7 +25,6 @@ def test_privacy_grader(mock_get_storage_client):
     assert grader is not None
 
 
-from models.privacy_grader import load_weights_from_csv, PrivacyGrader, PrivacyReport, Grade
 
 # to  test do PYTHONPATH=$(pwd) pytest tests/test_grader.py
 # Mock CSV content for testing based on provided files

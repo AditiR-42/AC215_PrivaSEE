@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-from google.cloud import storage
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
@@ -8,6 +7,7 @@ from enum import Enum
 from .get_issues import *
 def get_storage_client():
     """Returns a Google Cloud Storage client."""
+    from google.cloud import storage
     return storage.Client()
 
 storage_client = get_storage_client()
