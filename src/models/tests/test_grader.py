@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 from io import StringIO
 from models.privacy_grader import load_weights_from_csv, PrivacyGrader, PrivacyReport, Grade
-
+from unittest.mock import patch, MagicMock
 
 # to  test do PYTHONPATH=$(pwd) pytest tests/test_grader.py
 # Mock CSV content for testing based on provided files
@@ -160,3 +160,18 @@ def test_grade_privacy_issues(grader):
     assert report.parent_category_grades["Data Protection"]["grade"] == "A"
     assert report.parent_category_grades["User Rights"]["grade"] == "A"
 
+@patch("models.privacy_grader.storage.Client")
+def test_privacy_grader(mock_storage_client):
+    mock_storage_client.return_value = MagicMock()
+    mock_storage_client.return_value.bucket.return_value = MagicMock()
+
+    # Test logic
+    mapping_df = pd.DataFrame({
+        "privacy_issue": ["test_issue"],
+        "parent_issue": ["test_category"],
+        "classification": ["neutral"]
+    })
+    category_weights = {"test_category": 1.0}
+    grader = PrivacyGrader(mapping_df, category_weights)
+
+    assert grader is not None
