@@ -5,7 +5,7 @@ from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
 # from get_issues import process_pdf_privacy_issues
-from get_issues import *
+from .get_issues import *
 
 storage_client = storage.Client()
 def load_weights_from_csv(filepath: str) -> Dict[str, float]:
