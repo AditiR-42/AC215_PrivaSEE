@@ -6,8 +6,11 @@ from dataclasses import dataclass
 from enum import Enum
 # from get_issues import process_pdf_privacy_issues
 from .get_issues import *
+def get_storage_client():
+    """Returns a Google Cloud Storage client."""
+    return storage.Client()
 
-storage_client = storage.Client()
+storage_client = get_storage_client()
 def load_weights_from_csv(filepath: str) -> Dict[str, float]:
     """Load category weights from CSV file into format needed by grader."""
     df = pd.read_csv(filepath)

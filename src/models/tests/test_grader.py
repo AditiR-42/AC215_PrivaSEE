@@ -1,19 +1,18 @@
 import pytest
+from unittest.mock import patch, MagicMock
 import pandas as pd
 from io import StringIO
-from unittest.mock import patch, MagicMock
+from models.privacy_grader import PrivacyGrader, load_weights_from_csv
 
-@patch("models.privacy_grader.storage.Client")
-def test_privacy_grader(mock_storage_client):
-    # Mock the storage client behavior
-    mock_storage_client.return_value = MagicMock()
+@patch("models.privacy_grader.get_storage_client")
+def test_privacy_grader(mock_get_storage_client):
+    mock_storage_client = MagicMock()
+    mock_get_storage_client.return_value = mock_storage_client
 
-    # Mock bucket and blob behavior
-    mock_bucket = mock_storage_client.return_value.bucket.return_value
+    mock_bucket = mock_storage_client.bucket.return_value
     mock_blob = mock_bucket.blob.return_value
     mock_blob.download_as_text.return_value = "privacy_issue,parent_issue,classification\nissue1,category1,neutral"
 
-    # Test logic
     mapping_df = pd.DataFrame({
         "privacy_issue": ["test_issue"],
         "parent_issue": ["test_category"],
@@ -23,6 +22,7 @@ def test_privacy_grader(mock_storage_client):
     grader = PrivacyGrader(mapping_df, category_weights)
 
     assert grader is not None
+
 
 from models.privacy_grader import load_weights_from_csv, PrivacyGrader, PrivacyReport, Grade
 
