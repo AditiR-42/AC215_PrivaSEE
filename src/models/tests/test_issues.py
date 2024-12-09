@@ -8,7 +8,7 @@ import pandas as pd
 @pytest.fixture
 def mock_pdf_with_content(tmp_path):
     pdf_path = tmp_path / "mock_test.pdf"
-    doc = fitz.open()  # Create a new PDF document
+    doc = fitz.open()  
     page = doc.new_page()
     test_content = "This is a test PDF containing text."
     page.insert_text((72, 72), test_content)
@@ -71,7 +71,7 @@ def test_process_pdf_privacy_issues(mock_pdf_with_content, mock_csv_file):
 
         # Verify the printed output
         # Verify the printed output
-        mock_print.assert_any_call("Model Response (with parent issues):")
+        mock_print.assert_any_call("Identified privacy attributes:")
         mock_print.assert_any_call(f"- Unknown: {mock_response.text}")
 
 
@@ -107,6 +107,6 @@ def test_end_to_end_process(mock_pdf_with_content, mock_csv_file):
         mock_model_instance.start_chat.return_value.send_message.assert_called_once()
 
         # Validate final response was printed
-        mock_print.assert_any_call("Model Response (with parent issues):")       
+        mock_print.assert_any_call("Identified privacy attributes:")      
         # mock_print.assert_any_call(mock_response.text)
         mock_print.assert_any_call(f"- Unknown: {mock_response.text}")
