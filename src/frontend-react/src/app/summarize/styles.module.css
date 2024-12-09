@@ -50,6 +50,49 @@
   .fileInputs {
     margin-bottom: 20px;
   }
+
+  .issuesTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  .issuesTable th, .issuesTable td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .frequencyBarGroup {
+    margin-bottom: 1rem; /* Space between the bars and the table */
+  }
+  
+  .frequencyBarContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .barLabel {
+    flex: 0 0 150px; /* Fixed width for the label */
+    text-align: left;
+    font-weight: bold;
+    margin-right: 1rem;
+  }
+  
+  .barWrapper {
+    flex: 1; /* Allows the bar to take the remaining space */
+    max-width: 500px; /* Set the maximum width of the bar container */
+  }
+  
+  .frequencyBar {
+    height: 20px;
+    background-color: #4285f4;
+    color: white;
+    text-align: center;
+    line-height: 20px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
   
   .label {
     display: block;
