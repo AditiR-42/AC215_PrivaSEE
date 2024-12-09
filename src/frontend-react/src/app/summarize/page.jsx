@@ -185,28 +185,86 @@ export default function FileUploadPage() {
             </button>
             </div>
 
-            {/* Display the message */}
-            {/* {message && <p className={styles.message}>{message}</p>} */}
-
             {grade && issues && (
-            <div className={styles.gradeBox}>
-                <h3>Grade Report:</h3>
-                <p>
-                <strong>Overall Grade:</strong>{" "}
-                <span className={`${styles.grade} ${styles[grade.overall_grade]}`}>
-                    {grade.overall_grade}
-                </span>
-                </p>
-                <h3>Found Issues:</h3>
-                {Array.isArray(issues) ? (
-                <ul>
-                    {issues.map((issue, index) => (
-                    <li key={index}>{issue}.</li>
-                    ))}
-                </ul>
-                ) : (
+              <div className={styles.gradeBox}>
+              <h3>Overall Grade: <span className={`${styles.grade} ${styles[grade.overall_grade]}`}>
+                  {grade.overall_grade}
+              </span></h3>
+              <h3>Found Issues:</h3>
+              {Array.isArray(issues) && issues.length > 0 ? (
+                <>
+                  {/* Wrap bars in a container */}
+                  <div className={styles.barTableWrapper}>
+                  <div className={styles.frequencyBarGroup}>
+                    {Object.entries(
+                      issues.reduce((acc, issue) => {
+                        const [parent] = issue.split(": ");
+                        if (!acc[parent]) acc[parent] = 0;
+                        acc[parent] += 1;
+                        return acc;
+                      }, {})
+                    )
+                      .sort((a, b) => b[1] - a[1]) // Sort by frequency descending
+                      .map(([parent, count], index, array) => {
+                        const colors = ["#0077b6", "#00b4d8", "#90e0ef"]; // Color scheme
+                        const maxRank = array.length - 1; // Rank index from 0 to max
+                        const rank = Math.round((index / maxRank) * (colors.length - 1)); // Map index to color rank
+                        return (
+                          <div key={parent} className={styles.frequencyBarContainer}>
+                            <span className={styles.barLabel}>{parent}</span>
+                            <div className={styles.barWrapper}>
+                              <div
+                                className={styles.frequencyBar}
+                                style={{
+                                  width: `${(count / array[0][1]) * 100}%`, // Normalize to max frequency
+                                  backgroundColor: colors[rank], // Assign color based on rank
+                                }}
+                              >
+                                {count}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                    {/* Issues Table */}
+                    <table className={styles.issuesTable}>
+                      <thead>
+                        <tr>
+                          <th>Parent Issue</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(
+                          issues.reduce((acc, issue) => {
+                            const [parent, ...descriptionParts] = issue.split(": ");
+                            const description = descriptionParts.join(": ");
+                            if (!acc[parent]) acc[parent] = [];
+                            acc[parent].push(description);
+                            return acc;
+                          }, {})
+                        )
+                          .sort((a, b) => b[1].length - a[1].length) // Sort by frequency descending
+                          .map(([parent, descriptions]) => (
+                            <React.Fragment key={parent}>
+                              {descriptions.map((description, index) => (
+                                <tr key={`${parent}-${index}`}>
+                                  {index === 0 && (
+                                    <td rowSpan={descriptions.length}>{parent}</td>
+                                  )}
+                                  <td>{description}</td>
+                                </tr>
+                              ))}
+                            </React.Fragment>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : (
                 <p>{issues}</p>
-                )}
+              )}
             </div>
             )}
         </div>
