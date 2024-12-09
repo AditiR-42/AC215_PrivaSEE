@@ -45,10 +45,6 @@ jobs:
         run: |
           pytest --cov=. --cov-report=html
               # Step: Run API integration tests
-      - name: Run API integration tests
-        run: |
-          pytest tests/integration --cov=. --cov-append --cov-report=term
-
 
       # Step 5: Upload coverage report as an artifact
       - name: Upload coverage report
