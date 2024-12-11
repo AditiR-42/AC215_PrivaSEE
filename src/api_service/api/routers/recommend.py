@@ -1,5 +1,4 @@
 from fastapi import FastAPI, HTTPException, APIRouter, Depends
-from fastapi import HTTPException
 from pydantic import BaseModel
 from google.cloud import storage, aiplatform
 from vertexai.generative_models import GenerativeModel
@@ -11,17 +10,24 @@ from nltk.corpus import wordnet
 import nltk
 import os
 import traceback
-nltk.download('wordnet')
 
-# Dynamically set GOOGLE_APPLICATION_CREDENTIALS to the secrets folder
-# current_dir = os.path.dirname(os.path.abspath(__file__))
-# secrets_path = os.path.abspath(os.path.join(current_dir, "secrets/model-containerization.json"))
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = secrets_path
+nltk.download("wordnet")
 
 # Initialize FastAPI and Router
 router = APIRouter()
 
-# function to load dataset
+# Initialize dataset as a global placeholder
+df = None
+formatted_data = None
+
+# Initialize Vertex AI
+aiplatform.init(project="ac215-privasee", location="us-central1")
+
+# Initialize the model
+model = GenerativeModel("gemini-1.5-flash-002")
+
+
+# Function to load dataset
 def load_dataset():
     try:
         client = storage.Client()
@@ -35,23 +41,25 @@ def load_dataset():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to load dataset: {str(e)}")
 
-#load the dataset as a universal variable
-df = load_dataset()
-formatted_data = df["formatted"].tolist()
 
-# Initialize Vertex AI
-aiplatform.init(project="ac215-privasee", location="us-central1")
+# Function to initialize dataset lazily
+def initialize_dataset():
+    global df, formatted_data
+    if df is None:
+        try:
+            df = load_dataset()
+            formatted_data = df["formatted"].tolist()
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error initializing dataset: {str(e)}")
 
-#initialize the model
-model = GenerativeModel("gemini-1.5-flash-002")
 
 # Request Model
 class QueryRequest(BaseModel):
     query: str
 
+
 # Helper Functions
 def extract_service_and_requirements(query: str):
-    # Define the prompt to parse all fields from the query
     prompt = (
         f"Analyze this query: '{query}'. Extract values for the following fields if mentioned, otherwise return 'NA':\n"
         f"- Service: Name of the service (e.g., Facebook, Instagram)\n"
@@ -68,15 +76,12 @@ def extract_service_and_requirements(query: str):
         f"Respond in valid JSON format with the fields as keys. Use 'NA' for any field not mentioned in the query."
     )
 
-    # Generate the response using the model
     response = model.generate_content(prompt)
 
     try:
-        # Clean and parse the response
         clean_response = response.text.strip().strip("```").strip("json").strip()
         parsed_data = json.loads(clean_response)
 
-        # Ensure all fields are returned, even if NA
         expected_fields = [
             "Service",
             "privacy_rating",
@@ -90,9 +95,7 @@ def extract_service_and_requirements(query: str):
             "Free",
             "Contains Ads",
         ]
-        result = {field: parsed_data.get(field, "NA") for field in expected_fields}
-
-        return result
+        return {field: parsed_data.get(field, "NA") for field in expected_fields}
 
     except json.JSONDecodeError as e:
         raise ValueError(f"Error decoding JSON response: {e}")
@@ -107,6 +110,8 @@ def filter_dataframe(criteria):
     Returns:
         pd.DataFrame: A filtered DataFrame based on the criteria.
     """
+    initialize_dataset()  # Ensure the dataset is loaded
+    filtered_df = df.copy()
     # Define a mapping for privacy ratings
     privacy_rating_order = {
         "A": 4,

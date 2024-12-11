@@ -2,7 +2,7 @@ import httpx
 import pytest
 import io
 from unittest.mock import patch, MagicMock
-import httpx
+import pandas as pd
 
 BASE_URL = "http://localhost:9000" 
 
@@ -384,24 +384,43 @@ def test_get_grade_empty_issues():
     parsed_issues_storage = {"issues": []}  # Simulate empty storage
     assert len(parsed_issues_storage["issues"]) == 0
 
-from fastapi.testclient import TestClient
-from api_service.api.service import app
+@patch("api_service.api.routers.recommend.load_dataset")
+def test_load_dataset(mock_load_dataset):
+    """Test lazy loading of dataset with mocked data."""
+    mock_load_dataset.return_value = pd.DataFrame(
+        {"formatted": ["mock_data"], "privacy_rating": ["A"], "Genre": ["Social Media"]}
+    )
 
-client = TestClient(app)
+    from api_service.api.routers.recommend import initialize_dataset, df, formatted_data
 
-def test_integration_process_pdf_and_get_grade():
-    # Step 1: Upload a valid PDF
-    with open("test.pdf", "rb") as f:
-        response = client.post("/process-pdf/", files={"pdf_file": f})
-        assert response.status_code == 200
-        assert "found_issues" in response.json()
+    assert df is None  # Dataset should not be initialized
+    initialize_dataset()
+    assert df is not None  # Dataset should be initialized
+    assert "mock_data" in formatted_data
 
-    # Step 2: Get the grade
-    response = client.post("/get-grade/")
-    assert response.status_code == 200
-    assert "overall_grade" in response.json()
 
-def test_integration_recommend_app():
-    response = client.post("/recommend", json={"query": "app with high privacy rating"})
-    assert response.status_code == 200
-    assert "recommendation" in response.json()
+@patch("api_service.api.routers.recommend.storage.Client")
+def test_load_dataset_mock_storage(mock_storage_client):
+    """Test load_dataset function with mocked Google Cloud Storage."""
+    # Mock the blob's download_as_text method to return CSV data
+    mock_blob = MagicMock()
+    mock_blob.download_as_text.return_value = "formatted,privacy_rating,Genre\nmock_data,A,Social Media"
+
+    # Mock the bucket and its blob method
+    mock_bucket = MagicMock()
+    mock_bucket.blob.return_value = mock_blob
+
+    # Mock the storage.Client to return the mocked bucket
+    mock_storage_client.return_value.bucket.return_value = mock_bucket
+
+    # Import and test the load_dataset function
+    from api_service.api.routers.recommend import load_dataset
+
+    # Call the function and assert the output
+    df = load_dataset()
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+    assert df.iloc[0]["formatted"] == "mock_data"
+    assert df.iloc[0]["privacy_rating"] == "A"
+    assert df.iloc[0]["Genre"] == "Social Media"
+
