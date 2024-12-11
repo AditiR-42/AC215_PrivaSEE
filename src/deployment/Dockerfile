@@ -45,7 +45,7 @@ RUN useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 passw
     mkdir -p /app && \
     chown app:app /app
 
-COPY src/api_service/docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN ls -la /app
 # Set the working directory
 WORKDIR /app
 ADD --chown=app:app . /app
