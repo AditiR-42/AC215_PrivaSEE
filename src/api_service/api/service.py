@@ -38,6 +38,7 @@ async def get_api_status():
 
 # Additional routers here
 app.include_router(recommend.router)
-app.include_router(summarize.router)
+app.include_router(summarize.router, prefix="/summarize")
+
 
 

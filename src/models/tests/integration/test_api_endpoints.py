@@ -41,7 +41,7 @@ def test_process_pdf_endpoint(mock_post):
 
     # Simulate a file upload
     files = {"pdf_file": ("mock.pdf", b"PDF content", "application/pdf")}
-    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
 
     # Assertions
     assert response.status_code == 200
@@ -57,7 +57,7 @@ def test_get_grade_endpoint(mock_post):
     mock_response.json.return_value = {"grade": "A"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/get-grade/", json={"input": "test data"})
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade/", json={"input": "test data"})
 
     assert response.status_code == 200
     assert response.json() == {"grade": "A"}
@@ -91,7 +91,7 @@ def test_get_grade_invalid_payload(mock_post):
     mock_response.json.return_value = {"error": "Invalid data format"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/get-grade/", json={"invalid": "data"})
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade/", json={"invalid": "data"})
     assert response.status_code == 422
     assert response.json() == {"error": "Invalid data format"}
 
@@ -103,7 +103,7 @@ def test_get_grade_invalid_payload(mock_post):
     mock_response.json.return_value = {"error": "Invalid data format"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/get-grade/", json={"invalid": "data"})
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade/", json={"invalid": "data"})
     assert response.status_code == 422
     assert response.json() == {"error": "Invalid data format"}
 
@@ -116,7 +116,7 @@ def test_process_pdf_invalid_file(mock_post):
     mock_post.return_value = mock_response
 
     files = {"pdf_file": ("invalid.txt", b"Text content", "text/plain")}
-    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
 
     assert response.status_code == 400
     assert response.json() == {"error": "Invalid file type"}
@@ -169,7 +169,7 @@ def test_process_pdf_invalid_project_id(mock_post):
 
     files = {"pdf_file": ("mock.pdf", b"PDF content", "application/pdf")}
     response = httpx.post(
-        f"{BASE_URL}/process-pdf/",
+        f"{BASE_URL}/summarize/process-pdf/",
         files=files,
         data={"project_id": "invalid_project", "location_id": "us-central1", "endpoint_id": "3504346967373250560"}
     )
@@ -186,7 +186,7 @@ def test_process_pdf_empty_file(mock_post):
     mock_post.return_value = mock_response
 
     files = {"pdf_file": ("empty.pdf", b"", "application/pdf")}
-    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
 
     assert response.status_code == 400
     assert response.json() == {"detail": "A valid PDF file is required."}
@@ -201,7 +201,7 @@ def test_get_grade_missing_issues(mock_post):
     }
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/get-grade/")
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade/")
     assert response.status_code == 400
     assert response.json() == {
         "detail": "No issues have been processed yet. Please process a PDF first."
@@ -215,7 +215,7 @@ def test_get_grade_invalid_grading_logic(mock_post):
     mock_response.json.return_value = {"detail": "Error grading issues: Invalid data"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/get-grade/")
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade/")
     assert response.status_code == 500
     assert response.json() == {"detail": "Error grading issues: Invalid data"}
 
@@ -276,7 +276,7 @@ def test_process_pdf_processing_error(mock_post):
     mock_post.return_value = mock_response
 
     files = {"pdf_file": ("mock.pdf", b"PDF content", "application/pdf")}
-    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
     assert response.status_code == 500
     assert response.json() == {"detail": "Error processing file: Unexpected error"}
 
@@ -289,7 +289,7 @@ def test_process_pdf_invalid_extension(mock_post):
     mock_post.return_value = mock_response
 
     files = {"pdf_file": ("invalid.txt", b"Not a PDF", "text/plain")}
-    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
 
     assert response.status_code == 400
     assert response.json() == {"detail": "A valid PDF file is required."}
@@ -302,7 +302,7 @@ def test_process_pdf_no_file(mock_post):
     mock_response.json.return_value = {"detail": "Missing file"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/process-pdf/", files={})
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files={})
     assert response.status_code == 422
     assert response.json() == {"detail": "Missing file"}
 
@@ -314,7 +314,7 @@ def test_get_grade_empty_storage(mock_post):
     mock_response.json.return_value = {"detail": "No issues have been processed yet."}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/get-grade/")
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade/")
     assert response.status_code == 400
     assert response.json() == {"detail": "No issues have been processed yet."}
 
@@ -409,3 +409,74 @@ def test_load_dataset_mock_storage(mock_storage_client):
     assert df.iloc[0]["privacy_rating"] == "A"
     assert df.iloc[0]["Genre"] == "Social Media"
 
+@patch("httpx.post")
+def test_summarize_endpoint_valid_payload(mock_post):
+    """Test /summarize endpoint with valid payload."""
+    # Mock the HTTP response
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"summary": "This is a summarized text."}
+    mock_post.return_value = mock_response
+
+    # Send a valid request to the /summarize endpoint
+    payload = {"text": "This is a long text that needs summarization."}
+    response = httpx.post(f"{BASE_URL}/summarize", json=payload)
+
+    # Assertions
+    assert response.status_code == 200
+    assert response.json() == {"summary": "This is a summarized text"}
+
+
+@patch("httpx.post")
+def test_summarize_endpoint_empty_payload(mock_post):
+    """Test /summarize endpoint with an empty payload."""
+    # Mock the HTTP response
+    mock_response = MagicMock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {"detail": "Text field is required."}
+    mock_post.return_value = mock_response
+
+    # Send an empty request to the /summarize endpoint
+    payload = {}
+    response = httpx.post(f"{BASE_URL}/summarize", json=payload)
+
+    # Assertions
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Text field is required."}
+
+
+@patch("httpx.post")
+def test_summarize_endpoint_invalid_payload(mock_post):
+    """Test /summarize endpoint with invalid payload."""
+    # Mock the HTTP response
+    mock_response = MagicMock()
+    mock_response.status_code = 422
+    mock_response.json.return_value = {"detail": "Invalid input format."}
+    mock_post.return_value = mock_response
+
+    # Send an invalid request to the /summarize endpoint
+    payload = {"invalid_key": "value"}
+    response = httpx.post(f"{BASE_URL}/summarize", json=payload)
+
+    # Assertions
+    assert response.status_code == 422
+    assert response.json() == {"detail": "Invalid input format."}
+
+
+@patch("httpx.post")
+def test_summarize_endpoint_large_payload(mock_post):
+    """Test /summarize endpoint with a large text payload."""
+    # Mock the HTTP response
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"summary": "This is a summarized version of a long text."}
+    mock_post.return_value = mock_response
+
+    # Generate a large payload
+    large_text = "This is a long text. " * 1000  # Repeat to make it large
+    payload = {"text": large_text}
+    response = httpx.post(f"{BASE_URL}/summarize", json=payload)
+
+    # Assertions
+    assert response.status_code == 200
+    assert response.json() == {"summary": "This is a summarized version of a long text."}
