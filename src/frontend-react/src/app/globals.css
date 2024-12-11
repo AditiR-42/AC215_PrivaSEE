@@ -61,7 +61,7 @@ main {
 }
 
 .title {
-    @apply text-6xl font-bold mb-10 leading-tight text-white; /* Larger title with better spacing */
+    @apply text-5xl font-bold mb-10 leading-tight text-white; /* Larger title with better spacing */
 }
 
 .features {

@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ChatInput from '@/components/chat/ChatInput';
-import ChatHistory from '@/components/chat/ChatHistory';
-import ChatHistorySidebar from '@/components/chat/ChatHistorySidebar';
 import ChatMessage from '@/components/chat/ChatMessage';
 import DataService from "../../services/DataService";
 import { uuid } from "../../services/Common";
@@ -14,9 +12,9 @@ import { ThreeDots } from 'react-loader-spinner'; // Add the loader component
 import styles from "./styles.module.css";
 
 export default function ChatPage() {
-    const searchParams = useSearchParams(); // Use useSearchParams hook
-    const chat_id = searchParams.get('id'); // Access `id` safely
-    const model = searchParams.get('model') || 'llm'; // Access `model` safely
+    const searchParams = useSearchParams();
+    const chat_id = searchParams.get('id');
+    const model = searchParams.get('model') || 'llm';
     const router = useRouter();
 
     // Component States
@@ -26,11 +24,12 @@ export default function ChatPage() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [isTyping, setIsTyping] = useState(false);
     const [selectedModel, setSelectedModel] = useState(model);
-    const [isLoading, setIsLoading] = useState(false); // Add loading state
+    const [isLoading, setIsLoading] = useState(false);
+    const [recommendationText, setRecommendationText] = useState(""); // New state for recommendation
 
     const fetchChat = async (id) => {
         try {
-            setIsLoading(true); // Start loading
+            setIsLoading(true);
             setChat(null);
             const response = await DataService.GetChat(model, id);
             setChat(response.data);
@@ -38,11 +37,10 @@ export default function ChatPage() {
             console.error('Error fetching chat:', error);
             setChat(null);
         } finally {
-            setIsLoading(false); // Stop loading
+            setIsLoading(false);
         }
     };
 
-    // Lifecycle hooks
     useEffect(() => {
         if (chat_id) {
             fetchChat(chat_id);
@@ -61,7 +59,7 @@ export default function ChatPage() {
         const tempMessage = {
             message_id: uuid(),
             role: 'user',
-            content: message.content, // Use `content` instead of `text`
+            content: message.content,
             image: message.image || null,
         };
         const updatedChat = chat
@@ -70,43 +68,41 @@ export default function ChatPage() {
         return updatedChat;
     };
 
-    // Handlers
     const newChat = (message) => {
         const startChat = async (message) => {
             try {
                 setIsTyping(true);
-                setIsLoading(true); // Start loading
-                setChat(tempChatMessage(message)); // Temporarily show user input
-    
+                setIsLoading(true);
+                setChat(tempChatMessage(message));
+
                 console.log('Sending message to backend:', message.content);
-    
+
                 // Fetch recommendation from the backend
                 const recommendation = await DataService.GetRecommendation(message.content);
                 console.log('Backend Response:', recommendation);
-    
-                // Display the recommendation in an alert
-                alert(`Recommendation: ${recommendation.recommendation.Description || "No description provided"}`);
-    
+
+                // Update recommendation text in the UI
+                setRecommendationText(recommendation.recommendation || "No description provided");
+
                 toast.success("Recommendation received!");
-    
+
                 setIsTyping(false);
                 setChat((prevChat) => ({
                     ...prevChat,
                     messages: [
                         ...(prevChat?.messages || []),
-                        { role: 'assistant', content: recommendation.recommendation.Description },
+                        { role: 'assistant', content: recommendation.recommendation },
                     ],
                 }));
             } catch (error) {
                 console.error('Error during chat:', error);
-                alert('Something went wrong. Please try again.'); // Show error in alert
                 toast.error('Something went wrong. Please try again.');
                 setIsTyping(false);
             } finally {
-                setIsLoading(false); // Stop loading
+                setIsLoading(false);
             }
         };
-    
+
         startChat(message);
     };
 
@@ -114,7 +110,7 @@ export default function ChatPage() {
         const continueChat = async (id, message) => {
             try {
                 setIsTyping(true);
-                setIsLoading(true); // Start loading
+                setIsLoading(true);
                 setChat(tempChatMessage(message));
 
                 const response = await DataService.ContinueChatWithLLM(model, id, message);
@@ -135,7 +131,7 @@ export default function ChatPage() {
                     ],
                 }));
             } finally {
-                setIsLoading(false); // Stop loading
+                setIsLoading(false);
             }
         };
 
@@ -152,7 +148,6 @@ export default function ChatPage() {
 
     return (
         <div className={styles.container}>
-            {/* Loading overlay */}
             {isLoading && (
                 <div className={styles.loadingOverlay}>
                     <ThreeDots color="#007bff" height={80} width={80} />
@@ -169,17 +164,20 @@ export default function ChatPage() {
                             selectedModel={selectedModel}
                             onModelChange={handleModelChange}
                         />
+                        {recommendationText && (
+                            <div className={styles.recommendationBox}>
+                                <h3>Recommendation:</h3>
+                                <p>{recommendationText}</p>
+                            </div>
+                        )}
                     </div>
                 </section>
             )}
-
-            {!hasActiveChat && <ChatHistory model={model} />}
 
             {hasActiveChat && (
                 <>
                     <div className={styles.chatHeader}></div>
                     <div className={styles.chatInterface}>
-                        <ChatHistorySidebar chat_id={chat_id} model={model} />
                         <div className={styles.mainContent}>
                             <ChatMessage chat={chat} key={refreshKey} isTyping={isTyping} model={model} />
                             <ChatInput
@@ -189,12 +187,17 @@ export default function ChatPage() {
                                 onModelChange={handleModelChange}
                                 disableModelSelect={true}
                             />
+                            {recommendationText && (
+                                <div className={styles.recommendationBox}>
+                                    <h3>Recommendation:</h3>
+                                    <p>{recommendationText}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </>
             )}
 
-            {/* Toast Container */}
             <ToastContainer position="top-right" autoClose={3000} />
         </div>
     );

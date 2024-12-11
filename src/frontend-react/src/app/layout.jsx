@@ -8,7 +8,7 @@ import Footer from '@/components/layout/Footer';
 
 export const metadata = {
     title: 'PrivaSEE',
-    description: 'Discover the world of cheese through AI',
+    description: 'Protect your privacy. Quickly understand terms and conditions.',
 }
 
 export default async function RootLayout({ children }) {

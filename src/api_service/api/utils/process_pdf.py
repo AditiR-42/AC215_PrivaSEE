@@ -26,7 +26,7 @@ def load_privacy_issues(csv_path: str) -> str:
 # Define your generation configuration
 generation_config = {
     "max_output_tokens": 8192,
-    "temperature": 1,
+    "temperature": 0.01,
     "top_p": 0.95,
 }
 

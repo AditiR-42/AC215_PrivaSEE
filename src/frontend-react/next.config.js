@@ -2,10 +2,15 @@
 const nextConfig = {
     reactStrictMode: true,
     webpack: (config) => {
+        // Add rule for handling SVGs
         config.module.rules.push({
             test: /\.svg$/,
-            use: ["@svgr/webpack"]
+            use: ["@svgr/webpack"],
         });
+
+        // Remove custom CSS handling for react-pdf
+        // Next.js automatically handles global and modular CSS files
+
         return config;
     },
     rewrites: async () => {
@@ -33,7 +38,6 @@ const nextConfig = {
             },
         ];
     },
-    reactStrictMode: false,
 };
 
 module.exports = nextConfig;

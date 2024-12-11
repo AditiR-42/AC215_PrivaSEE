@@ -151,24 +151,7 @@ export default function ChatInput({
                         accept="image/*"
                         onChange={handleImageChange}
                     />
-                    <IconButton aria-label="camera" className={styles.iconButton} onClick={handleImageClick}>
-                        <CameraAltOutlined />
-                    </IconButton>
                 </div>
-                {/* <div className={styles.rightControls}>
-                    <span className={styles.inputTip}>Use shift + return for new line</span>
-                    <select
-                        className={styles.modelSelect}
-                        value={selectedModel}
-                        onChange={handleModelChange}
-                        disabled={disableModelSelect}
-                    >
-                        <option value="llm">Formaggio Assistant (LLM)</option>
-                        <option value="llm-cnn">Formaggio Assistant (LLM + CNN)</option>
-                        <option value="llm-rag">Cheese Expert (RAG)</option>
-                        <option value="llm-agent">Cheese Expert (Agent)</option>
-                    </select>
-                </div> */}
             </div>
         </div>
     )

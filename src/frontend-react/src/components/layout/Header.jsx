@@ -3,14 +3,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Info, Podcasts, Email, SmartToy, ChatBubbleOutline } from '@mui/icons-material';
+import { HelpOutline, Checklist, ThumbUpOffAlt } from '@mui/icons-material';
 import styles from './Header.module.css';
 
 const navItems = [
-    { name: 'Home', path: '/', sectionId: '', icon: <Home fontSize="small" /> },
-    { name: 'Summarize', path: '/summarize', sectionId: '', icon: <Podcasts fontSize="small" /> },
-    // { name: 'Grade', path: '/grade', sectionId: 'newsletters', icon: <Email fontSize="small" /> },
-    { name: 'Recommend', path: '/recommend', sectionId: '', icon: <SmartToy fontSize="small" /> }
+    { name: 'About', path: '/about', sectionId: '', icon: <HelpOutline fontSize="small" /> },
+    { name: 'Summarize', path: '/summarize', sectionId: '', icon: <Checklist fontSize="small" /> },
+    { name: 'Recommend', path: '/recommend', sectionId: '', icon: <ThumbUpOffAlt fontSize="small" /> }
 ];
 
 export default function Header() {
@@ -75,23 +74,6 @@ export default function Header() {
                 />
                 </Link>
 
-                {/* Desktop Navigation */}
-                {/* <nav className="hidden md:flex gap-8">
-                    <Link href="/" className="text-white hover:text-white/90 transition-colors">
-                        Home
-                    </Link>
-                    <Link href="#about" className="text-white hover:text-white/90 transition-colors">
-                        About
-                    </Link>
-                    <Link href="#podcasts" className="text-white hover:text-white/90 transition-colors">
-                        Podcasts
-                    </Link>
-                    <Link href="#newsletters" className="text-white hover:text-white/90 transition-colors">
-                        Newsletters
-                    </Link>
-                </nav> */}
-
-
                 <div className={styles.navLinks}>
                     {navItems.map((item) => (
                         <Link
@@ -125,25 +107,25 @@ export default function Header() {
                 >
                     <nav className="flex flex-col p-4">
                         <Link
-                            href="/"
-                            className="py-3 text-gray-800 border-b border-gray-200"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            Home
-                        </Link>
-                        <Link
-                            href="#about"
+                            href="/about"
                             className="py-3 text-gray-800 border-b border-gray-200"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             About
                         </Link>
                         <Link
-                            href="#podcasts"
+                            href="/summarize"
+                            className="py-3 text-gray-800 border-b border-gray-200"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Summarize
+                        </Link>
+                        <Link
+                            href="/recommend"
                             className="py-3 text-gray-800"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
-                            Podcasts
+                            Recommend
                         </Link>
                     </nav>
                 </div>

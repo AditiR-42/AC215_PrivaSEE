@@ -1,25 +1,51 @@
 import React from 'react';
+import Link from 'next/link'; // Import Link for navigation
+import styles from "./Hero.module.css";
 
 const Hero = () => {
   return (
-    <div className="layout-wrapper">
+    <div className={styles.layoutWrapper}>
       {/* Hero Section */}
-      <div className="container">
-        <h1 className="title">Empowering Choices,<br />SIMPLIFYING PRIVACY</h1>
-        <div className="features">
-          <div className="feature">
-            <h2>Get a Summary</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna.</p>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Empowering Choices,<br />SIMPLIFYING PRIVACY</h1>
+        
+        {/* Get a Summary Section */}
+        <Link href="/summarize">
+          <div className={styles.featureRow} role="button" tabIndex="0">
+            <div className={styles.featureImage}>
+              <img 
+                src="/assets/getasummary.png" 
+                alt="Summary Illustration" 
+                className={styles.image}
+              />
+            </div>
+            <div className={styles.featureText}>
+              <h2 className={styles.featureTitle}>Get a Summary ✅</h2>
+              <p className={styles.featureDescription}>
+                Upload a pdf of an app's terms and conditions. Receive a privacy grade on a scale of A-F, as well as a summary of key legal issues.
+              </p>
+            </div>
           </div>
-          <div className="feature">
-            <h2>Get a Grade</h2>
-            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        </Link>
+
+        {/* Get a Recommendation Section */}
+        <Link href="/recommend">
+          <div className={`${styles.featureRow} ${styles.mt8}`} role="button" tabIndex="0">
+            <div className={styles.featureImage}>
+              <img 
+                src="/assets/getarecommendation.png" 
+                alt="Recommendation Illustration" 
+                className={styles.image}
+              />
+            </div>
+            <div className={styles.featureText}>
+              <h2 className={styles.featureTitle}>Get a Recommendation 🌟</h2>
+              <p className={styles.featureDescription}>
+                Input the type of app you're looking for. Receive an app recommendation based on your top privacy priorities and concerns.
+              </p>
+            </div>
           </div>
-          <div className="feature">
-            <h2>Get Recommended</h2>
-            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-          </div>
-        </div>
+        </Link>
       </div>
     </div>
   );

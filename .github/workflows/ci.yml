@@ -5,6 +5,7 @@ on:
     branches:
       - main  # Triggers when code is pushed to the main branch
       - ms4
+      - ms5
 
 jobs:
   test:
@@ -43,6 +44,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           pytest --cov=. --cov-report=html
+              # Step: Run API integration tests
 
       # Step 5: Upload coverage report as an artifact
       - name: Upload coverage report

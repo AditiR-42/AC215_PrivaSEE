@@ -1,0 +1,28 @@
+parent_category,weight
+Personal Data,1.0
+Security,1.0
+Types of Information Collected,1.0
+Third Parties,0.9
+Trackers,0.8
+Law and Government Requests,0.8
+Anonymity,0.8
+Logs,0.8
+Advertising,0.7
+User Choice,0.7
+Right to Leave The Service,0.7
+Notice of Changing Terms,0.6
+Changes,0.6
+Business Transfers,0.6
+Transparency,0.6
+User Involvement in Changing Terms,0.6
+Dispute Resolution,0.6
+Jurisdiction and governing laws,0.6
+Suspension and Censorship,0.5
+Content,0.4
+Copyright License,0.4
+Governance,0.4
+Payments,0.3
+Guarantee,0.3
+Ownership,0.3
+[Deprecated],0.0
+Unclassified,0.0
