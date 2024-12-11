@@ -58,7 +58,7 @@ WORKDIR /app
 # Install python packages
 ADD --chown=app:app Pipfile Pipfile.lock /app/
 RUN pipenv sync
-RUN chmod +rx /app/docker-entrypoint.sh
+RUN ls -la /app
 RUN chmod +x /app/*
 RUN ls -la /app
 
