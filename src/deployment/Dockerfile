@@ -39,7 +39,7 @@ RUN curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | gpg --d
     apt-get update && \
     apt-get install -y --no-install-recommends kubectl helm python3 python3-pip && \
     pip install openshift ansible docker apache-libcloud
-    COPY /src/api_service/docker-entrypoint.sh /app/docker-entrypoint.sh
+    
 RUN useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 passw0rd)" && \
     usermod -aG docker app && \
     mkdir -p /app && \
@@ -49,6 +49,7 @@ RUN useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 passw
 # Set the working directory
 WORKDIR /app
 ADD --chown=app:app . /app
+COPY src/api_service/docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 
 
