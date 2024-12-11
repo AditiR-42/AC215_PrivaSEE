@@ -43,13 +43,13 @@ RUN curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | gpg --d
 RUN useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 passw0rd)" && \
     usermod -aG docker app && \
     mkdir -p /app && \
+    COPY src/api_service/docker-entrypoint.sh /app/docker-entrypoint.sh
     chown app:app /app
 
 
 # Set the working directory
 WORKDIR /app
 ADD --chown=app:app . /app
-COPY src/api_service/docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 
 
