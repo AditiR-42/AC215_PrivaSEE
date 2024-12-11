@@ -279,3 +279,111 @@ def test_process_pdf_processing_error(mock_post):
     response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
     assert response.status_code == 500
     assert response.json() == {"detail": "Error processing file: Unexpected error"}
+
+@patch("httpx.post")
+def test_process_pdf_invalid_extension(mock_post):
+    """Test /process-pdf endpoint with a non-PDF file."""
+    mock_response = MagicMock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {"detail": "A valid PDF file is required."}
+    mock_post.return_value = mock_response
+
+    files = {"pdf_file": ("invalid.txt", b"Not a PDF", "text/plain")}
+    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "A valid PDF file is required."}
+
+@patch("httpx.post")
+def test_process_pdf_no_file(mock_post):
+    """Test /process-pdf endpoint without a file."""
+    mock_response = MagicMock()
+    mock_response.status_code = 422
+    mock_response.json.return_value = {"detail": "Missing file"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/process-pdf/", files={})
+    assert response.status_code == 422
+    assert response.json() == {"detail": "Missing file"}
+
+@patch("httpx.post")
+def test_get_grade_empty_storage(mock_post):
+    """Test /get-grade endpoint with no issues processed."""
+    mock_response = MagicMock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {"detail": "No issues have been processed yet."}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/get-grade/")
+    assert response.status_code == 400
+    assert response.json() == {"detail": "No issues have been processed yet."}
+
+@patch("httpx.post")
+def test_recommend_app_empty_query(mock_post):
+    """Test /recommend endpoint with an empty query."""
+    mock_response = MagicMock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {"detail": "Query cannot be empty"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/recommend", json={"query": ""})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Query cannot be empty"}
+
+@patch("httpx.post")
+def test_recommend_app_invalid_json(mock_post):
+    """Test /recommend endpoint with malformed JSON."""
+    mock_response = MagicMock()
+    mock_response.status_code = 422
+    mock_response.json.return_value = {"detail": "Invalid JSON payload"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/recommend", data="Invalid JSON")
+    assert response.status_code == 422
+    assert response.json() == {"detail": "Invalid JSON payload"}
+
+@patch("httpx.post")
+def test_recommend_app_partial_match(mock_post):
+    """Test /recommend endpoint with partial matching criteria."""
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"recommendation": "Partial match app"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/recommend", json={"query": "social app with ads"})
+    assert response.status_code == 200
+    assert response.json() == {"recommendation": "Partial match app"}
+
+@patch("httpx.post")
+def test_recommend_app_large_dataset(mock_post):
+    """Test /recommend endpoint with a large dataset."""
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"recommendation": "Best app from large dataset"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/recommend", json={"query": "app for students"})
+    assert response.status_code == 200
+    assert response.json() == {"recommendation": "Best app from large dataset"}
+
+# from fastapi.testclient import TestClient
+# from main import app
+
+# client = TestClient(app)
+
+# def test_integration_process_pdf_and_get_grade():
+#     # Step 1: Upload a valid PDF
+#     with open("test.pdf", "rb") as f:
+#         response = client.post("/process-pdf/", files={"pdf_file": f})
+#         assert response.status_code == 200
+#         assert "found_issues" in response.json()
+
+#     # Step 2: Get the grade
+#     response = client.post("/get-grade/")
+#     assert response.status_code == 200
+#     assert "overall_grade" in response.json()
+
+# def test_integration_recommend_app():
+#     response = client.post("/recommend", json={"query": "app with high privacy rating"})
+#     assert response.status_code == 200
+#     assert "recommendation" in response.json()
