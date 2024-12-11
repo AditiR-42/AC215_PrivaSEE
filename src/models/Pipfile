@@ -18,6 +18,7 @@ google-cloud-aiplatform = "*"
 pymupdf = "*"
 pdfplumber = "*"
 fitz = "*"
+fastapi = "*"
 
 [dev-packages]
 pytest = "*"

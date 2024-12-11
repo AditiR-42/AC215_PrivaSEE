@@ -42,8 +42,6 @@ jobs:
 
       # Step 4: Run pytest with coverage and generate HTML report
       - name: Run tests with coverage
-        env:
-          PYTHONPATH: ./src
         run: |
           pytest --cov=. --cov-report=html
               # Step: Run API integration tests
