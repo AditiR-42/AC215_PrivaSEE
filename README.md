@@ -1,5 +1,6 @@
 # AC215 2024 PrivaSee 
 [App Link](http://34.138.235.192.sslip.io/) [Medium Article](https://medium.com/institute-for-applied-computational-science/privasee-the-ml-architecture-transforming-privacy-policy-understanding-a64e6bb40097) [Video Walkthrough](https://drive.google.com/file/d/1xhDB6TqIIWHjfAjVfUn1ziyXZJW_Igo1/view)
+
 **Team Members** Glo Umutoni, Shira Aronson, Aditi Raju, Sammi Zhu, Yeabsira Mohammed
 
 **Group Name** PrivaSee
