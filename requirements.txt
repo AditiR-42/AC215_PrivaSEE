@@ -10,3 +10,4 @@ transformers==4.34.0
 gcsfs==2023.10.0
 httpx==0.24.0
 reportlab==4.0.4
+fastapi==0.78.0 
