@@ -50,7 +50,7 @@ RUN ls -la /app
 WORKDIR /app
 ADD --chown=app:app . /app
 RUN ls -la /app
-RUN chmod +x /app/docker-entrypoint.sh
+RUN chmod +rx /app/docker-entrypoint.sh
 
 
 
@@ -59,4 +59,4 @@ RUN set -ex; \
     ansible-galaxy collection install community.general community.kubernetes
 
 # Start a new shell to use the installed SDK
-ENTRYPOINT ["/bin/bash","/app/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/app/docker-entrypoint.sh"]
