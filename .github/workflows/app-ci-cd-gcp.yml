@@ -47,4 +47,4 @@ jobs:
             -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             -e GCP_PROJECT=ac215-privasee \
             -e GCP_ZONE=us-central1-a \
-            privasee-deployment sh -c "ls -l && ./deploy-k8s-update.sh"
+            privasee-deployment sh deploy-k8s-update.sh

@@ -26,7 +26,8 @@ RUN echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/d
 RUN apt-get update && \
     apt-get install -y google-cloud-sdk google-cloud-sdk-gke-gcloud-auth-plugin jq docker-ce && \
     apt-get install -y build-essential libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev librsvg2-dev pkg-config && \
-    apt-get install -y python-is-python3
+    apt-get install -y python-is-python3 && \
+    pip install openshift ansible docker apache-libcloud pipenv
 
 # Set Python path for node-gyp
 ENV PYTHON=/usr/bin/python3
@@ -48,7 +49,9 @@ RUN useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 passw
 RUN ls -la /app
 # Set the working directory
 WORKDIR /app
-ADD --chown=app:app . /app
+# Install python packages
+ADD --chown=app:app Pipfile Pipfile.lock /app/
+RUN pipenv sync
 RUN chmod +rx /app/docker-entrypoint.sh
 RUN chmod +x /app/*
 RUN ls -la /app
