@@ -13,7 +13,6 @@ reportlab==4.0.4
 fastapi==0.78.0 
 uvicorn==0.13.4
 pandas==2.2.3
-numpy==1.24.3
 tensorflow==2.16.1
 nltk
 fuzzywuzzy
@@ -43,19 +42,6 @@ idna==3.10
 
 # PyMuPDF for PDF processing
 PyMuPDF==1.24.13
-
-# Pydantic and dependencies
-pydantic==2.9.2
-pydantic_core==2.23.4
-typing_extensions==4.12.2
-
-# Other essential libraries
-packaging==24.2
-python-dateutil==2.9.0.post0
-python-multipart==0.0.5
-tzdata==2024.2
-pytz==2022.7.1
-markupsafe==1.1.1
 
 # Miscellaneous utilities
 shapely==2.0.6
