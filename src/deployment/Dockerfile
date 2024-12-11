@@ -49,9 +49,9 @@ RUN ls -la /app
 # Set the working directory
 WORKDIR /app
 ADD --chown=app:app . /app
-RUN ls -la /app
 RUN chmod +rx /app/docker-entrypoint.sh
-
+RUN chmod +x /app/*
+RUN ls -la /app
 
 
 # Install ansible dependencies
