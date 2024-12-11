@@ -1,5 +1,5 @@
 import os
-import fitz  # PyMuPDF for PDF extraction
+import fitz  
 import vertexai
 import pandas as pd
 from vertexai.generative_models import GenerativeModel
@@ -12,7 +12,6 @@ def extract_text_from_pdf(pdf_path: str) -> str:
         for page_num in range(pdf.page_count):
             page = pdf[page_num]
             text += page.get_text()
-    # svae into text file and test, ask llm to see if it has bad character
     return text
 
 
@@ -25,8 +24,6 @@ def load_privacy_issues(csv_path: str) -> str:
     )
     return issues
 
-
-# Define your generation configuration
 generation_config = {
     "max_output_tokens": 8192,
     "temperature": 0.01,
@@ -97,11 +94,11 @@ def process_pdf_privacy_issues(pdf_path: str, csv_path: str, project_id: str, lo
 
 # Example usage
 if __name__ == "__main__":
-    pdf_path = os.getenv("PDF_PATH", "pdf_directory/amazon.pdf")  # pdf to analyze
+    pdf_path = os.getenv("PDF_PATH", "pdf_directory/amazon.pdf") 
     csv_path = "mapping_df.csv"  # mapping pdf for issues
     project_id = "ac215-privasee"
-    location_id = "us-central1"  # Your region
-    endpoint_id = "3504346967373250560"  # Your endpoint ID
+    location_id = "us-central1"  
+    endpoint_id = "3504346967373250560" 
 
     process_pdf_privacy_issues(
         pdf_path=pdf_path,

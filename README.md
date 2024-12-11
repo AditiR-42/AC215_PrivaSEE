@@ -1,40 +1,73 @@
-# AC215 - Milestone4 - PrivaSee
-
+# AC215 2024 PrivaSee
 **Team Members** Glo Umutoni, Shira Aronson, Aditi Raju, Sammi Zhu, Yeabsira Mohammed
 
 **Group Name** PrivaSee
 
-------------------------
-### Milestone4
-In this milestone, we have the components for frontend, API service, and components from previous milestones for data management, versioning, and language models.
+**Project** Project When deciding on a messaging app, for example, the average consumer is unlikely to read or understand the terms and conditions of multiple apps and decide which one to use accordingly. This project aims to bridge consumers’ knowledge gaps around their data privacy by building an app that reviews terms and conditions agreements and informs users about the aspects of the privacy they cede by using a certain app or website. PrivaSEE would allow users to understand the implications to their data privacy, and compare options in a way that aligns with their personal privacy priorities.
 
-After building a ML Pipeline in our previous milestone, we have built a backend api service and frontend app. This will be our user-facing application that ties together the various components built in previous milestones.
+## Project Organization
+See below for the organizational structure of the project. Containerizations are elaborted upon (note that Dockerfiles and additional bashscripts and pyenv files exist but have been omitted from overview for brevity). Additional files can be found in the codebase directory. 
+```
+├── midterm_presentation
+├── notebooks
+├── reports
+└── src
+    ├── api-service/
+    │   ├── api/
+    │   │   ├── routers
+    │   │   ├── utils
+    │   ├── service.py
+    ├── datapipeline/
+    │   ├── clean_data_for_recommendations.py
+    │   ├── clean_data.py
+    │   ├── create_gemini_tuning_datasets.py
+    │   ├── create_vertexai_datasets.py
+    │   ├── get_data_for_recommendations.py
+    │   └── scraping_prototype.py
+    ├── deployment/
+    ├── frontend-react/
+        │   ├── public/
+        │   ├── src/
+        │   │   ├── app/
+        │   │   │   ├── about/
+        │   │   │   ├── recommend/
+        │   │   │   ├── summarize/
+        │   │   │   ├── auth.js
+        │   │   │   ├── global.css
+        │   │   │   ├── layout.jsx
+        │   │   │   ├── page.jsx
+        │   │   ├── components/
+        │   │   │   ├── auth/
+        │   │   │   ├── chat/
+        │   │   │   ├── home/
+        │   │   │   ├── layout/
+        │   │   ├── services/
+        │   │   │   ├── Common.js/
+        │   │   │   ├── DataService.js/
+    ├── models
+    │   ├── tests/
+    │   ├── category_weights.csv
+    │   ├── get_issues.py
+    │   ├── modeling_functions.py
+    │   ├── multi_class_model.py
+    │   └── privacy_grader.py
+    └── workflow
+├── LICENSE
+├── README.md
+```
 
-**Application Design** 
+## Prerequisites and Setup Instructions
+Please see below on different methods to set up and run the application. General packages used are also listed as in `requirements.txt` for ease of comparison with user's local package versions. However, this step is truly optional as the Dockerfile is configured via Pipfile to install the same dependices. 
 
-We designed both a Solution Architecture and a Technical architecture to ensure all components of our app work together. 
+### Running Docker
+To run Dockerfile in either container, make sure to be in `/src/desired-container`:
 
-Here is our Solution Architecture:
+1. Run the command `bash docker-shell.sh`
+2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
+![Image](reports/images/docker-screenshot.png)
 
-<img src="images/solution-arch.png"  width="800">
-
-Here is our Technical Architecture:
-
-<img src="images/technical-arch.png"  width="800">
-
-**Backend API** 
-
-We used fast API to build the backend service. This exposes the model functionality to the frontend.
-
-**Frontend** 
-
-A React app was built to identify privacy issues in terms and conditions using a trained Gemini model on the backend. On the app, a user can upload terms and conditions and receive a summary of key issues and a privacy grade: the app sends the pdf to the backend api to get classification results. Additionally, a user can request app recommendations using natural language. The application components consist of the home page, authorization, pdf summarization, and app recommendation. On the backend, there are routes for both the pdf summarization/grading API as well as the app recommendation API (using a chat interface). 
-
-For now, running the React app locally requires installing modules listed in `requirements.txt` and `npm-requirements.txt`. These setup requirements will be containerized and abstracted away from the user once the website is deployed.
-
-To actually run the React app locally, there are two steps: 
-
-1. In `src`:
+### Running Project Locally
+1. In `src`: (optional depending on local configuration):
    ```
    pip install -r requirements.txt
 2. In `src/frontend-react`: 
@@ -46,48 +79,112 @@ To actually run the React app locally, there are two steps:
    uvicorn api.service:app --reload --host 0.0.0.0 --port 9000
 If issues arise, check that `npm --version = 10.8.3` and `nvm --version = 22.9.0`
 
-Here are some screenshots of our app:
-<img width="800" alt="Screenshot 2024-11-19 at 5 47 33 AM" src="https://github.com/user-attachments/assets/b1aa8eb9-1fd7-49f7-8b13-c49ca58d7bbc">
-<img width="800" alt="Screenshot 2024-11-19 at 5 06 51 PM" src="https://github.com/user-attachments/assets/bea04d22-947d-4f4c-90e3-ecc8ae6033bb">
-<img width="800" alt="Screenshot 2024-11-19 at 5 47 47 AM" src="https://github.com/user-attachments/assets/1f19a728-64ef-46ca-a237-71316927b903">
-<img width="800" alt="Screenshot 2024-11-19 at 5 08 15 PM" src="https://github.com/user-attachments/assets/39be97bc-891e-4855-9fc9-06c5d561c666">
-<img width="800" alt="Screenshot 2024-11-19 at 5 47 57 AM" src="https://github.com/user-attachments/assets/0cea299c-3a5d-4600-b647-d963aba55265">
-<img width="800" alt="Screenshot 2024-11-19 at 5 09 12 PM" src="https://github.com/user-attachments/assets/3777277a-b74b-4898-9445-1dc6a522ffb0">
+### TESTING!!!!!!! [YEAB FINISH BRO]
 
-**Automated Testing** 
+## Deployment Instructions
 
-Our project uses a combination of unit and integration tests to validate individual functions and the interaction between components. External dependencies, such as Google Cloud Storage and Vertex AI, are mocked to ensure tests are isolated and do not rely on external systems. Test coverage is measured using `pytest-cov` to ensure critical code paths are adequately tested. 
+### Deployment with Ansible (GCP Virtual Machine)
 
-Testing Tools Used:
-- **PyTest**: Used for writing and running test cases.
-- **PyTest-Cov**: used for measuring test coverage.
-- **Unittest.mock**: used for mocking library for isolating code during tests.
+#### Prerequisites
+1. **Docker Images**:
+   - Verify `api-service` at `http://0.0.0.0:9000`
+   - Verify `frontend-react` at `http://localhost:3000`
 
-To Test Locally:
-1. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-2. **Run all tests**:
-    ```bash
-    pytest --cov=. --cov-report=html
-3. **Run specific tests**:
-    ```bash
-    pytest src/models/tests/test_issues.py
+2. **Push Docker Images to a Registry**:
+   - Log in to Docker Hub or Google Container Registry (GCR)
+   - Build, tag, and push Docker images
 
-#### Running Docker
-To run Dockerfile in either container, make sure to be in `/src/desired-container`:
+#### Steps 
+Note: The following provides an overview of the setup steps. `.yml` and `Dockerfiles` files can be found in `src/deployment`. For exact steps on what code to run, please visit [here](https://github.com/dlops-io/cheese-app-v3/blob/main/README.md).
+1. **Create GCP Virtual Machine**:
+   - Enable HTTP/HTTPS traffic during VM setup
+   - Choose N2D machine type
 
-1. Run the command `bash docker-shell.sh`
-2. When set ran correctly, you should expect to see the following as demonstrated in the screenshot.
-![Image](reports/docker-screenshot.png)
+2. **Install Docker on VM**:
+   - SSH into the VM
+   - Install Docker
+
+3. **Set Up Environment on VM**:
+   - Create folders for persistence, secrets, and Nginx config
+
+4. **Run Docker Containers**:
+   - Create a Docker network
+   - Run `api-service` and `frontend-react` containers
+
+5. **Configure Nginx**:
+   - Add an Nginx config file for routing and start the container
+
+6. **Access Application**:
+   - Visit `http://<VM External IP>/` to view the app
+
+---
+
+### Deployment with Scaling (Kubernetes)
+
+#### Prerequisites
+1. **Enable GCP APIs**:
+   - Compute Engine, Kubernetes Engine, and Container Registry APIs
+
+2. **Push Docker Images to GCR**:
+   - Use Ansible to build and push images
+
+#### Steps
+1. **Create Kubernetes Cluster**:
+    - View `src/deployment/inventory.yml`
+
+2. **Deploy Application to Kubernetes**:
+   - Kubernetes handles container orchestration, scaling, and ingress routing
+
+3. **Access Application**:
+   - Retrieve the Nginx ingress IP
+   - For reference, the team has deployed the application [here](http://34.138.235.192.sslip.io)
+
+See screenshots below for reference of what scaling verfication should look like on GCP after completion:
+![Image](reports/images/scaling%20screenshot%201.png)
+![Image](reports/images/scaling%20screenshot%202.png)
 
 
-### Notebooks/Reports
-Both folders here contains code that is not part of the container. Notebooks contains the original `.ipynb` files used to run the code, however, are also converted into `.py` files in the containers. Reports contains the write up from previous milestones. 
+## Usage Details and Examples
+A React app was built to identify privacy issues in terms and conditions using a trained Gemini model on the backend. The Homepage (shown below) showcases the functionalities of the application and serves as the guide to other pages. 
 
-### Midterm Presentation
-Filename: midterm_presentation/PrivaSee_Midterm.pdf
+![Image](reports/images/homepage.png)
 
-### Deployment
-[insert writeup if we need one]
-As part of our scaling using Kubernetes, we used the script at src/deployment/scaling-test.py to ensure that autoscaling was effective. While the small size of each request made it difficult to increase memory to the point where new clusters were needed. However, the test nevertheless showed that scaling was enabled and that the site was able to accommodate significant request traffic. (see the screenshots in the images folder for these results)
+
+There are two core functionalities:
+### `Summarize:` 
+1. Users choose any file from their laptop to upload. 
+![Image](reports/images/summarize.png)
+
+2. Once loaded, users are given the option to upload their file to the web-application. 
+![Image](reports/images/file_loaded.png)
+
+3. A loading bar indicates to users the status of their file loading. Once successfully loaded, users can fetch for a grade.
+![Image](reports/images/file_load_bar.png)
+
+4. The retrieved data returned maps the privacy issues to one of 22 privacy components (i.e. privacy, governance, etc) along with the overall privacy grade. Bars highlight the counts of various privacy components and the tables provide more description of the specific violations.
+![Image](reports/images/summarize_results.png)
+
+### `Recommend:` 
+1. Users can use the chatbox to ask for a genre or an app similar to another app, along with the privacy concerns they want the app to be aware of. 
+![Image](reports/images/recommend.png)
+![Image](reports/images/user_prompt.png)
+
+2. A load spin appears while the backend retrieves the output response from the model.
+![Image](reports/images/rec_load.png)
+
+3. The final results are outputed in a chat div format for readers to see what app the model recommended. 
+![Image](reports/images/recommend_results.png)
+
+Additionally, there is also an `About` page that further describes the goals of our web application. 
+![Image](reports/images/about.png)
+
+## Known Issues and Limitations
+
+### Model Robustness
+Despite setting a consistent temperature parameter to control the randomness of outputs, the model’s responses occasionally lack robustness. This can result in less robust outputs. Further fine-tuning or additional constraints might be required to enhance reliability across all use cases.
+
+### File Upload Time
+The time required to upload a file is directly proportional to its size. Larger files, especially those exceeding several megabytes, can result in noticeable delays, potentially impacting user experience. Optimizations in file handling or upload infrastructure could help mitigate this issue in future iterations.
+
+### Variable Model Response Time
+The response time for generating outputs from the model can vary depending on the complexity of the input query and server load. While most queries are resolved in a few seconds, users may occasionally experience delays (up to 15 seconds or more).
