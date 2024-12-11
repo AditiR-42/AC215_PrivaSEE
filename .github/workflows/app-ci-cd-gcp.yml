@@ -22,7 +22,7 @@ jobs:
       - name: Configure Google Cloud S
         uses: google-github-actions/setup-gcloud@v1
       - name: Configure Docker Client
-        run: |
+        run: |-
           gcloud auth configure-docker
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
@@ -30,18 +30,20 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - name: Build Deployment Container 
-        run: |
+        run: |-
           cd ${{ github.workspace }}/src/deployment/
-          docker build -t privasee-deployment --platform=linux/amd64 -f Dockerfile .
+          docker build -t privasee-deployment -f Dockerfile .
       - name: Run Deploy App
-        run: |
+        run: |-
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v $HOME/.ssh:/home/app/.ssh \
             -v ${{ github.workspace }}/src/api_service:/api-service \
             -v ${{ github.workspace }}/src/frontend-react:/frontend-react \
+            --volume $GITHUB_WORKSPACE:/workspace \
+            --mount type=bind,source=$GOOGLE_APPLICATION_CREDENTIALS,target=/secrets/deployment.json \
             --env GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json \
-            --env USE_GKE_GCLOUD_AUTH_PLUGIN=True \
-            --env GCP_PROJECT=ac215-privasee \
-            --env GCP_ZONE=us-central1-a \
+            -e USE_GKE_GCLOUD_AUTH_PLUGIN=True \
+            -e GCP_PROJECT=ac215-privasee \
+            -e GCP_ZONE=us-central1-a \
             privasee-deployment sh deploy-k8s-update.sh
