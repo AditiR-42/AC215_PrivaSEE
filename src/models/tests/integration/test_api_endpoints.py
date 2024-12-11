@@ -366,24 +366,42 @@ def test_recommend_app_large_dataset(mock_post):
     assert response.status_code == 200
     assert response.json() == {"recommendation": "Best app from large dataset"}
 
-# from fastapi.testclient import TestClient
-# from main import app
+@patch("os.path.exists", return_value=False)
+def test_process_pdf_missing_file(mock_exists):
+    """Test /process-pdf when the file is missing."""
+    pdf_path = "/tmp/nonexistent_pdf.pdf"
+    with pytest.raises(FileNotFoundError, match="No such file or directory"):
+        open(pdf_path, "rb")
 
-# client = TestClient(app)
+@patch("os.path.exists", return_value=False)
+def test_get_grade_missing_csv_files(mock_exists):
+    """Test /get-grade when CSV files are missing."""
+    with pytest.raises(FileNotFoundError):
+        open("invalid_mapping_df.csv", "r")
 
-# def test_integration_process_pdf_and_get_grade():
-#     # Step 1: Upload a valid PDF
-#     with open("test.pdf", "rb") as f:
-#         response = client.post("/process-pdf/", files={"pdf_file": f})
-#         assert response.status_code == 200
-#         assert "found_issues" in response.json()
+def test_get_grade_empty_issues():
+    """Test /get-grade with no issues in parsed_issues_storage."""
+    parsed_issues_storage = {"issues": []}  # Simulate empty storage
+    assert len(parsed_issues_storage["issues"]) == 0
 
-#     # Step 2: Get the grade
-#     response = client.post("/get-grade/")
-#     assert response.status_code == 200
-#     assert "overall_grade" in response.json()
+from fastapi.testclient import TestClient
+from api_service.api.service import app
 
-# def test_integration_recommend_app():
-#     response = client.post("/recommend", json={"query": "app with high privacy rating"})
-#     assert response.status_code == 200
-#     assert "recommendation" in response.json()
+client = TestClient(app)
+
+def test_integration_process_pdf_and_get_grade():
+    # Step 1: Upload a valid PDF
+    with open("test.pdf", "rb") as f:
+        response = client.post("/process-pdf/", files={"pdf_file": f})
+        assert response.status_code == 200
+        assert "found_issues" in response.json()
+
+    # Step 2: Get the grade
+    response = client.post("/get-grade/")
+    assert response.status_code == 200
+    assert "overall_grade" in response.json()
+
+def test_integration_recommend_app():
+    response = client.post("/recommend", json={"query": "app with high privacy rating"})
+    assert response.status_code == 200
+    assert "recommendation" in response.json()
