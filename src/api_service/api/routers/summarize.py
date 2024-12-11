@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG)
 # In-memory storage for extracted issues
 parsed_issues_storage = {"issues": []}
 
-@router.post("/process-pdf/")
+@router.post("/summarize/process-pdf/")
 async def process_pdf(
     pdf_file: UploadFile = File(...),
     project_id: str = "473358048261",
@@ -58,7 +58,7 @@ async def process_pdf(
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
 
 
-@router.post("/get-grade/")
+@router.post("/summarize/get-grade/")
 async def get_grade():
     """
     Grade the parsed privacy issues.
