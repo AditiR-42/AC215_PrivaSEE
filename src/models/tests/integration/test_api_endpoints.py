@@ -387,17 +387,25 @@ def test_get_grade_empty_issues():
 @patch("api_service.api.routers.recommend.load_dataset")
 def test_load_dataset(mock_load_dataset):
     """Test lazy loading of dataset with mocked data."""
+    # Mock the load_dataset function to return a fake DataFrame
     mock_load_dataset.return_value = pd.DataFrame(
         {"formatted": ["mock_data"], "privacy_rating": ["A"], "Genre": ["Social Media"]}
     )
 
+    # Import initialize_dataset and relevant globals from recommend.py
     from api_service.api.routers.recommend import initialize_dataset, df, formatted_data
 
-    assert df is None  # Dataset should not be initialized
-    initialize_dataset()
-    assert df is not None  # Dataset should be initialized
-    assert "mock_data" in formatted_data
+    # Ensure the dataset is not initialized yet
+    assert df is None
 
+    # Call initialize_dataset, which should now use the mocked load_dataset
+    initialize_dataset()
+
+    # Verify that df and formatted_data are properly initialized
+    assert df is not None
+    assert not df.empty
+    assert df.iloc[0]["formatted"] == "mock_data"
+    assert formatted_data == ["mock_data"]
 
 @patch("api_service.api.routers.recommend.storage.Client")
 def test_load_dataset_mock_storage(mock_storage_client):
