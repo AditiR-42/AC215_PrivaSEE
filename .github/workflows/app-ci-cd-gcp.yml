@@ -37,8 +37,6 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            -v ${{ github.workspace }}:/src \
-            -v ${{ github.workspace }}/secrets:/secrets \
             -v $HOME/.ssh:/home/app/.ssh \
             -v ${{ github.workspace }}/src/api_service:/api-service \
             -v ${{ github.workspace }}/src/frontend-react:/frontend-react \
@@ -46,4 +44,4 @@ jobs:
             --env USE_GKE_GCLOUD_AUTH_PLUGIN=True \
             --env GCP_PROJECT=ac215-privasee \
             --env GCP_ZONE=us-central1-a \
-            privasee-deployment /bin/bash
+            privasee-deployment sh deploy-k8s-update.sh
