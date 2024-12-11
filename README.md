@@ -79,65 +79,44 @@ To run Dockerfile in either container, make sure to be in `/src/desired-containe
    uvicorn api.service:app --reload --host 0.0.0.0 --port 9000
 If issues arise, check that `npm --version = 10.8.3` and `nvm --version = 22.9.0`
 
-### TESTING!!!!!!! [YEAB FINISH BRO]
+### Testing and CI/CD Integration
+We implemented Testing and CI/CD integration through Github Actions. Tests can be found in `src/models/tests`. Please see the following screenshot for testing verification.
+
+1. Github Actions Overview
+![Image](reports/images/deploy_overview.JPG)
+
+2. Testing Coverage
+![Image](reports/images/coverage.JPG)
+
+3. Testing Deployment
+![Image](reports/images/deployment%201.JPG)
+![Image](reports/images/deployment%202.JPG)
+
+4. Testing Success
+![Image](reports/images/successful_deploy.JPG)
+
 
 ## Deployment Instructions
+Note: The following provides an overview of the setup steps. `.yml` and `Dockerfiles` files can be found in `src/deployment`. For exact steps on what code to run, please visit [here](https://github.com/dlops-io/cheese-app-v3/blob/main/README.md).
 
 ### Deployment with Ansible (GCP Virtual Machine)
+Run these commands:
 
-#### Prerequisites
-1. **Docker Images**:
-   - Verify `api-service` at `http://0.0.0.0:9000`
-   - Verify `frontend-react` at `http://localhost:3000`
-
-2. **Push Docker Images to a Registry**:
-   - Log in to Docker Hub or Google Container Registry (GCR)
-   - Build, tag, and push Docker images
-
-#### Steps 
-Note: The following provides an overview of the setup steps. `.yml` and `Dockerfiles` files can be found in `src/deployment`. For exact steps on what code to run, please visit [here](https://github.com/dlops-io/cheese-app-v3/blob/main/README.md).
-1. **Create GCP Virtual Machine**:
-   - Enable HTTP/HTTPS traffic during VM setup
-   - Choose N2D machine type
-
-2. **Install Docker on VM**:
-   - SSH into the VM
-   - Install Docker
-
-3. **Set Up Environment on VM**:
-   - Create folders for persistence, secrets, and Nginx config
-
-4. **Run Docker Containers**:
-   - Create a Docker network
-   - Run `api-service` and `frontend-react` containers
-
-5. **Configure Nginx**:
-   - Add an Nginx config file for routing and start the container
-
-6. **Access Application**:
-   - Visit `http://<VM External IP>/` to view the app
+1. ansible-playbook deploy-docker-images.yml -i inventory.yml
+2. ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
+3. ansible-playbook deploy-provision-instance.yml -i inventory.yml
+4. ansible-playbook deploy-setup-containers.yml -i inventory.yml
+5. ansible-playbook deploy-setup-webserver.yml -i inventory.yml
+6. ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=absent
 
 ---
 
 ### Deployment with Scaling (Kubernetes)
+Run these commands:
 
-#### Prerequisites
-1. **Enable GCP APIs**:
-   - Compute Engine, Kubernetes Engine, and Container Registry APIs
+1. ansible-playbook deploy-docker-images.yml -i inventory.yml
+2. ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=present
 
-2. **Push Docker Images to GCR**:
-   - Use Ansible to build and push images
-
-#### Steps
-1. **Create Kubernetes Cluster**:
-    - View `src/deployment/inventory.yml`
-
-2. **Deploy Application to Kubernetes**:
-   - Kubernetes handles container orchestration, scaling, and ingress routing
-
-3. **Access Application**:
-   - Retrieve the Nginx ingress IP
-   - For reference, the team has deployed the application [here](http://34.138.235.192.sslip.io)
 
 See screenshots below for reference of what scaling verfication should look like on GCP after completion:
 ![Image](reports/images/scaling%20screenshot%201.png)
