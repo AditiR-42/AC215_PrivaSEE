@@ -49,7 +49,10 @@ RUN useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 passw
 # Set the working directory
 WORKDIR /app
 ADD --chown=app:app . /app
+COPY AC215_PrivaSEE/src/api_service/docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
+
+
 
 # Install ansible dependencies
 RUN set -ex; \
