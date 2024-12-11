@@ -159,3 +159,123 @@ def test_recommend_pagination_out_of_range(mock_get):
     assert response.status_code == 404
     assert response.json() == {"error": "Page not found"}
 
+@patch("httpx.post")
+def test_process_pdf_invalid_project_id(mock_post):
+    """Test /process-pdf endpoint with an invalid project_id."""
+    mock_response = MagicMock()
+    mock_response.status_code = 500
+    mock_response.json.return_value = {"detail": "Error processing file: Invalid project_id"}
+    mock_post.return_value = mock_response
+
+    files = {"pdf_file": ("mock.pdf", b"PDF content", "application/pdf")}
+    response = httpx.post(
+        f"{BASE_URL}/process-pdf/",
+        files=files,
+        data={"project_id": "invalid_project", "location_id": "us-central1", "endpoint_id": "3504346967373250560"}
+    )
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Error processing file: Invalid project_id"}
+
+@patch("httpx.post")
+def test_process_pdf_empty_file(mock_post):
+    """Test /process-pdf endpoint with an empty PDF file."""
+    mock_response = MagicMock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {"detail": "A valid PDF file is required."}
+    mock_post.return_value = mock_response
+
+    files = {"pdf_file": ("empty.pdf", b"", "application/pdf")}
+    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "A valid PDF file is required."}
+
+@patch("httpx.post")
+def test_get_grade_missing_issues(mock_post):
+    """Test /get-grade endpoint with no issues processed."""
+    mock_response = MagicMock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {
+        "detail": "No issues have been processed yet. Please process a PDF first."
+    }
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/get-grade/")
+    assert response.status_code == 400
+    assert response.json() == {
+        "detail": "No issues have been processed yet. Please process a PDF first."
+    }
+
+@patch("httpx.post")
+def test_get_grade_invalid_grading_logic(mock_post):
+    """Test /get-grade endpoint with an error in grading logic."""
+    mock_response = MagicMock()
+    mock_response.status_code = 500
+    mock_response.json.return_value = {"detail": "Error grading issues: Invalid data"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/get-grade/")
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Error grading issues: Invalid data"}
+
+@patch("httpx.post")
+def test_recommend_app_malformed_input(mock_post):
+    """Test /recommend endpoint with malformed input."""
+    mock_response = MagicMock()
+    mock_response.status_code = 400
+    mock_response.json.return_value = {"detail": "Invalid input"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/recommend", json={"invalid_key": "value"})
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Invalid input"}
+
+@patch("httpx.post")
+def test_recommend_app_no_matches(mock_post):
+    """Test /recommend endpoint with no matching criteria."""
+    mock_response = MagicMock()
+    mock_response.status_code = 404
+    mock_response.json.return_value = {"detail": "No recommendations found"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/recommend", json={"query": "nonexistent criteria"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "No recommendations found"}
+
+@patch("httpx.post")
+def test_recommend_invalid_genre(mock_post):
+    """Test /recommend endpoint when genre does not match."""
+    mock_response = MagicMock()
+    mock_response.status_code = 404
+    mock_response.json.return_value = {"detail": "No recommendations found"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/recommend", json={"query": "unknown genre"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "No recommendations found"}
+
+@patch("httpx.post")
+def test_recommend_missing_values(mock_post):
+    """Test /recommend endpoint with missing values in the DataFrame."""
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"recommendation": "Recommendation without full data"}
+    mock_post.return_value = mock_response
+
+    response = httpx.post(f"{BASE_URL}/recommend", json={"query": "partial data"})
+    assert response.status_code == 200
+    assert response.json() == {"recommendation": "Recommendation without full data"}
+
+@patch("httpx.post")
+def test_process_pdf_processing_error(mock_post):
+    """Test /process-pdf endpoint when process_pdf_privacy_issues raises an error."""
+    mock_response = MagicMock()
+    mock_response.status_code = 500
+    mock_response.json.return_value = {"detail": "Error processing file: Unexpected error"}
+    mock_post.return_value = mock_response
+
+    files = {"pdf_file": ("mock.pdf", b"PDF content", "application/pdf")}
+    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Error processing file: Unexpected error"}
