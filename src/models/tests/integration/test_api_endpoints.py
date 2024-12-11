@@ -415,7 +415,7 @@ def test_summarize_endpoint_valid_payload(mock_post):
     # Mock the HTTP response
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"summary": "This is a summarized text."}
+    mock_response.json.return_value = {"summary": "This is a summarized text"}
     mock_post.return_value = mock_response
 
     # Send a valid request to the /summarize endpoint
