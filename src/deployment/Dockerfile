@@ -49,6 +49,7 @@ RUN ls -la /app
 # Set the working directory
 WORKDIR /app
 ADD --chown=app:app . /app
+RUN ls -la /app
 RUN chmod +x /app/docker-entrypoint.sh
 
 
