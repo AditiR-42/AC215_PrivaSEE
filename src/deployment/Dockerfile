@@ -22,12 +22,15 @@ RUN echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/d
     "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
     tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# Install packages
+RUN apt-get update && \
+    apt-get install -y python3-pip
+
 RUN apt-get update && \
     apt-get install -y google-cloud-sdk google-cloud-sdk-gke-gcloud-auth-plugin jq docker-ce && \
     apt-get install -y build-essential libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev librsvg2-dev pkg-config && \
-    apt-get install -y python-is-python3 && \
-    pip install openshift ansible docker apache-libcloud pipenv
+    apt-get install -y python-is-python3 python3-pip && \
+    pip3 install openshift ansible docker apache-libcloud pipenv
+
 
 # Set Python path for node-gyp
 ENV PYTHON=/usr/bin/python3
