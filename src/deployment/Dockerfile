@@ -57,7 +57,6 @@ RUN ls -la /app
 WORKDIR /app
 # Install python packages
 ADD --chown=app:app . /app
-ADD --chown=app:app Pipfile Pipfile.lock /app/
 RUN pipenv sync
 RUN ls -la /app
 RUN chmod +x /app/*

@@ -1,0 +1,15 @@
+---
+- name: "Build docker images and push them to GCR"
+  hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: "Get timestamp for docker tag"
+    shell: "(date +%Y%m%d%H%M%S)"
+    register: tag
+  - name: Print tag
+    debug:
+      var: tag
+  - name: "Save docker tag"
+    shell: echo {{ tag.stdout}} > .docker-tag-ml
+  # - name: "Remove all unused containers"
+  #   shell: docker system prune -a
