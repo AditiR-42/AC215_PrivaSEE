@@ -41,7 +41,7 @@ def test_process_pdf_endpoint(mock_post):
 
     # Simulate a file upload
     files = {"pdf_file": ("mock.pdf", b"PDF content", "application/pdf")}
-    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf", files=files)
 
     # Assertions
     assert response.status_code == 200
@@ -57,7 +57,7 @@ def test_get_grade_endpoint(mock_post):
     mock_response.json.return_value = {"grade": "A"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/summarize/get-grade/", json={"input": "test data"})
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade", json={"input": "test data"})
 
     assert response.status_code == 200
     assert response.json() == {"grade": "A"}
@@ -91,7 +91,7 @@ def test_get_grade_invalid_payload(mock_post):
     mock_response.json.return_value = {"error": "Invalid data format"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/summarize/get-grade/", json={"invalid": "data"})
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade", json={"invalid": "data"})
     assert response.status_code == 422
     assert response.json() == {"error": "Invalid data format"}
 
@@ -103,20 +103,20 @@ def test_get_grade_invalid_payload(mock_post):
     mock_response.json.return_value = {"error": "Invalid data format"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/summarize/get-grade/", json={"invalid": "data"})
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade", json={"invalid": "data"})
     assert response.status_code == 422
     assert response.json() == {"error": "Invalid data format"}
 
 @patch("httpx.post")
 def test_process_pdf_invalid_file(mock_post):
-    """Test /process-pdf/ endpoint with invalid file format."""
+    """Test /process-pdf endpoint with invalid file format."""
     mock_response = MagicMock()
     mock_response.status_code = 400
     mock_response.json.return_value = {"error": "Invalid file type"}
     mock_post.return_value = mock_response
 
     files = {"pdf_file": ("invalid.txt", b"Text content", "text/plain")}
-    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf", files=files)
 
     assert response.status_code == 400
     assert response.json() == {"error": "Invalid file type"}
@@ -169,7 +169,7 @@ def test_process_pdf_invalid_project_id(mock_post):
 
     files = {"pdf_file": ("mock.pdf", b"PDF content", "application/pdf")}
     response = httpx.post(
-        f"{BASE_URL}/summarize/process-pdf/",
+        f"{BASE_URL}/summarize/process-pdf",
         files=files,
         data={"project_id": "invalid_project", "location_id": "us-central1", "endpoint_id": "3504346967373250560"}
     )
@@ -186,7 +186,7 @@ def test_process_pdf_empty_file(mock_post):
     mock_post.return_value = mock_response
 
     files = {"pdf_file": ("empty.pdf", b"", "application/pdf")}
-    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf", files=files)
 
     assert response.status_code == 400
     assert response.json() == {"detail": "A valid PDF file is required."}
@@ -201,7 +201,7 @@ def test_get_grade_missing_issues(mock_post):
     }
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/summarize/get-grade/")
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade")
     assert response.status_code == 400
     assert response.json() == {
         "detail": "No issues have been processed yet. Please process a PDF first."
@@ -215,7 +215,7 @@ def test_get_grade_invalid_grading_logic(mock_post):
     mock_response.json.return_value = {"detail": "Error grading issues: Invalid data"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/summarize/get-grade/")
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade")
     assert response.status_code == 500
     assert response.json() == {"detail": "Error grading issues: Invalid data"}
 
@@ -276,7 +276,7 @@ def test_process_pdf_processing_error(mock_post):
     mock_post.return_value = mock_response
 
     files = {"pdf_file": ("mock.pdf", b"PDF content", "application/pdf")}
-    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf", files=files)
     assert response.status_code == 500
     assert response.json() == {"detail": "Error processing file: Unexpected error"}
 
@@ -289,7 +289,7 @@ def test_process_pdf_invalid_extension(mock_post):
     mock_post.return_value = mock_response
 
     files = {"pdf_file": ("invalid.txt", b"Not a PDF", "text/plain")}
-    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files=files)
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf", files=files)
 
     assert response.status_code == 400
     assert response.json() == {"detail": "A valid PDF file is required."}
@@ -302,7 +302,7 @@ def test_process_pdf_no_file(mock_post):
     mock_response.json.return_value = {"detail": "Missing file"}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/summarize/process-pdf/", files={})
+    response = httpx.post(f"{BASE_URL}/summarize/process-pdf", files={})
     assert response.status_code == 422
     assert response.json() == {"detail": "Missing file"}
 
@@ -314,7 +314,7 @@ def test_get_grade_empty_storage(mock_post):
     mock_response.json.return_value = {"detail": "No issues have been processed yet."}
     mock_post.return_value = mock_response
 
-    response = httpx.post(f"{BASE_URL}/summarize/get-grade/")
+    response = httpx.post(f"{BASE_URL}/summarize/get-grade")
     assert response.status_code == 400
     assert response.json() == {"detail": "No issues have been processed yet."}
 
