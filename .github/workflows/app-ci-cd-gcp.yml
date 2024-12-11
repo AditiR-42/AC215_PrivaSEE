@@ -35,7 +35,7 @@ jobs:
           docker build -t privasee-deployment --platform=linux/amd64 -f Dockerfile .
       - name: Run Deploy App
         run: |
-          docker run --rm -it \
+          docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v ${{ github.workspace }}:/app \
             -v ${{ github.workspace }}/secrets:/secrets \
