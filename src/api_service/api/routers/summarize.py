@@ -1,8 +1,8 @@
 import os
 from fastapi import APIRouter, UploadFile, HTTPException, Form, File
 import logging
-from api.utils.process_pdf import process_pdf_privacy_issues
-from api.utils.privacy_grader import PrivacyGrader
+from api_service.api.utils.process_pdf import process_pdf_privacy_issues
+from api_service.api.utils.privacy_grader import PrivacyGrader
 import traceback
 
 # Initialize the FastAPI router

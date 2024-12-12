@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from api.routers import summarize, recommend
+from api_service.api.routers import summarize, recommend
 
 # Dynamically set GOOGLE_APPLICATION_CREDENTIALS to the secrets folder
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -39,5 +39,6 @@ async def get_api_status():
 # Additional routers here
 app.include_router(recommend.router)
 app.include_router(summarize.router)
+
 
 
