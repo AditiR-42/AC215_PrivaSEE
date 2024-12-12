@@ -81,22 +81,20 @@ To run Dockerfile in either container, make sure to be in `/src/desired-containe
    uvicorn api.service:app --reload --host 0.0.0.0 --port 9000
 If issues arise, check that `npm --version = 10.8.3` and `nvm --version = 22.9.0`
 
-### Testing and CI/CD Integration
-We implemented Testing and CI/CD integration through Github Actions. Tests can be found in `src/models/tests`. Please see the following screenshot for testing verification.
+### CI/CD Pipeline Implementation and Testing:
+We implemented CI/CD Pipeline and Testing through Github Actions. The workflow files for automated deployment can be found in `.github/workflows` and `src/deployment`. Please see the following screenshots for automated deployment verification.
 
 1. Github Actions Overview
 ![Image](reports/images/deploy_overview.JPG)
 
-2. Testing Coverage
-![Image](reports/images/coverage.JPG)
-
-3. Testing Deployment
+2. Deployment In Progress
 ![Image](reports/images/deployment%201.JPG)
 ![Image](reports/images/deployment%202.JPG)
 
-4. Testing Success
+3. Deployment Success
 ![Image](reports/images/successful_deploy.JPG)
 
+We wrote tests to cover model logic in `src/models` as well as API endpoints for summarize and recommend functionalites in `src/api_service`. Tests can be found in `src/models/tests`. Please see the following screenshots for testing verification.
 
 ## Deployment Instructions
 Note: The following provides an overview of the setup steps. `.yml` and `Dockerfiles` files can be found in `src/deployment`. For exact steps on what code to run, please visit [here](https://github.com/dlops-io/cheese-app-v3/blob/main/README.md).
