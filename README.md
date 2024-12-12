@@ -96,6 +96,18 @@ We implemented CI/CD Pipeline and Testing through Github Actions. The workflow f
 
 We wrote tests to cover model logic in `src/models` as well as API endpoints for summarize and recommend functionalites in `src/api_service`. Tests can be found in `src/models/tests`. Please see the following screenshots for testing verification.
 
+1. Running Tests
+<img width="1497" alt="Screenshot 2024-12-11 at 10 21 48 PM" src="https://github.com/user-attachments/assets/52494948-8ba9-40ff-a4d3-e6e27d4913c3" />
+
+2. Uploading Test Coverage
+<img width="1497" alt="Screenshot 2024-12-11 at 10 22 07 PM" src="https://github.com/user-attachments/assets/22acbb65-0381-4ef7-88fb-3c48dc343aed" />
+
+3. Test Coverage (71%)
+<img width="1497" alt="Screenshot 2024-12-11 at 10 26 26 PM" src="https://github.com/user-attachments/assets/91363a6d-2dee-438c-a46d-79556f005285" />
+<img width="1497" alt="Screenshot 2024-12-11 at 10 27 02 PM" src="https://github.com/user-attachments/assets/3431baa9-257f-4fd8-a7c0-11d3f7358845" />
+
+As shown above, our tests cover 71% of our code, including every file related to model logic and every file related to API services. However, we can still increase testing for specific functions. In `recommend.py`, we can increase testing for `find_best_genre_match_with_gemini`. In `summarize.py`, we can increase testing for `get_grade`. In `privacy_grader.py`, we can increase testing for `create_case_mappings` and `create_category_mappings`. In `process_pdf.py`, we can increase testing for `extract_text_from_pdf`. Besides these functions, our tests cover the main functionality of `recommend`, `summarize`, `privacy_grader`, and `process_pdf`, in addition to model logic.
+
 ## Deployment Instructions
 Note: The following provides an overview of the setup steps. `.yml` and `Dockerfiles` files can be found in `src/deployment`. For exact steps on what code to run, please visit [here](https://github.com/dlops-io/cheese-app-v3/blob/main/README.md).
 
