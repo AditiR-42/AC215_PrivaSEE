@@ -25,8 +25,6 @@ async def process_pdf(
     Process a PDF file to extract and analyze privacy issues.
     """
     try:
-        logging.info("Received PDF for processing.")
-
         # Validate uploaded file
         if not pdf_file.filename.endswith(".pdf"):
             raise HTTPException(status_code=400, detail="A valid PDF file is required.")
@@ -36,8 +34,6 @@ async def process_pdf(
         with open(pdf_path, "wb") as pdf_out:
             pdf_out.write(await pdf_file.read())
 
-        logging.info("PDF saved to temporary storage. Starting processing.")
-
         # Process the PDF to extract privacy issues
         found_issues = process_pdf_privacy_issues(
             pdf_path, project_id, location_id, endpoint_id
@@ -45,8 +41,6 @@ async def process_pdf(
 
         # Store extracted issues in memory
         parsed_issues_storage["issues"] = found_issues
-
-        # logging.info(f"Processing completed. Found issues: {found_issues}")
 
         return {
             "message": "Processing completed successfully.",
@@ -64,8 +58,6 @@ async def get_grade():
     Grade the parsed privacy issues.
     """
     try:
-        logging.info("Grading issues...")
-
         # Check if issues have been extracted
         if not parsed_issues_storage["issues"]:
             raise HTTPException(
@@ -84,8 +76,6 @@ async def get_grade():
 
         # Grade the issues
         report = grader.grade_privacy_issues(parsed_issues_storage["issues"])
-
-        # logging.info(f"Grading completed. Report: {report}")
 
         return {
             "overall_grade": report.overall_grade,

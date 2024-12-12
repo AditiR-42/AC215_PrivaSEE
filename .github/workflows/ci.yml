@@ -6,6 +6,7 @@ on:
       - main  # Triggers when code is pushed to the main branch
       - ms4
       - ms5
+      - testing
 
 jobs:
   test:

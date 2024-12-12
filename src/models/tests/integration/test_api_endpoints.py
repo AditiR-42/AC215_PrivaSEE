@@ -2,7 +2,10 @@ import httpx
 import pytest
 import io
 from unittest.mock import patch, MagicMock
+from api_service.api.routers.summarize import process_pdf, get_grade
 import pandas as pd
+from fastapi import UploadFile
+from io import BytesIO
 
 BASE_URL = "http://localhost:9000" 
 
@@ -469,3 +472,46 @@ def test_summarize_endpoint_large_payload(mock_post):
     # Assertions
     assert response.status_code == 200
     assert response.json() == {"summary": "This is a summarized version of a long text."}
+
+@pytest.fixture
+def mock_process_pdf_privacy_issues():
+    with patch("api_service.api.utils.process_pdf.process_pdf_privacy_issues") as mock:
+        yield mock
+
+@pytest.fixture
+def mock_privacy_grader():
+    with patch("api_service.api.utils.privacy_grader.PrivacyGrader") as mock:
+        yield mock
+
+@pytest.mark.asyncio
+async def test_process_pdf_success(mock_process_pdf_privacy_issues):
+    mock_process_pdf_privacy_issues.return_value = ["Issue 1", "Issue 2"]
+    
+    pdf_file = UploadFile(filename="test.pdf", file=BytesIO(b"fake pdf content"))
+    result = process_pdf(pdf_file)
+    
+    assert result == {
+        "message": "Processing completed successfully.",
+        "found_issues": ["Issue 1", "Issue 2"]
+    }
+
+@pytest.mark.asyncio
+async def test_get_grade_success(mock_privacy_grader):
+    mock_grader_instance = MagicMock()
+    mock_grader_instance.grade_privacy_issues.return_value = MagicMock(
+        overall_grade="A",
+        overall_score=95,
+        parent_category_grades={"Category1": 90, "Category2": 100}
+    )
+    mock_privacy_grader.return_value = mock_grader_instance
+    
+    # Simulate that issues have been processed
+    parsed_issues_storage = {"issues": ["Issue 1", "Issue 2"]}
+    
+    result = get_grade()
+    
+    assert result == {
+        "overall_grade": "A",
+        "overall_score": 95,
+        "category_scores": {"Category1": 90, "Category2": 100}
+    }
