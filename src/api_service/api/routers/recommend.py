@@ -354,5 +354,4 @@ def recommend_app(request: QueryRequest):
         print(e)
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-
-
+        

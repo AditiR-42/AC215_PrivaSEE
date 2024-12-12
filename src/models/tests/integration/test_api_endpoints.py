@@ -539,71 +539,71 @@ def mock_model():
     return mock
 
 def test_filter_by_genre(sample_df, mock_model):
-    with patch('your_module.df', sample_df), \
-         patch('your_module.model', mock_model):
+    with patch('recommend.df', sample_df), \
+         patch('recommend.model', mock_model):
         criteria = {'Genre': 'Social Media'}
         result = filter_dataframe(criteria)
         assert len(result) == 1
         assert result.iloc[0]['Service'] == 'App1'
 
 def test_filter_by_privacy_rating(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'privacy_rating': 'B'}
         result = filter_dataframe(criteria)
         assert len(result) == 2
         assert set(result['Service']) == {'App1', 'App2'}
 
 def test_filter_by_content_rating(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'Content Rating': 'Teen'}
         result = filter_dataframe(criteria)
         assert len(result) == 1
         assert result.iloc[0]['Service'] == 'App2'
 
 def test_filter_by_app_score(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'app_score': 4.0}
         result = filter_dataframe(criteria)
         assert len(result) == 2
         assert set(result['Service']) == {'App1', 'App2'}
 
 def test_filter_by_installs(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'Installs': 500000}
         result = filter_dataframe(criteria)
         assert len(result) == 2
         assert set(result['Service']) == {'App1', 'App2'}
 
 def test_filter_by_num_ratings(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'num_ratings': 5000}
         result = filter_dataframe(criteria)
         assert len(result) == 2
         assert set(result['Service']) == {'App1', 'App2'}
 
 def test_filter_by_num_reviews(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'num_reviews': 2500}
         result = filter_dataframe(criteria)
         assert len(result) == 2
         assert set(result['Service']) == {'App1', 'App2'}
 
 def test_filter_by_free(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'Free': 'True'}
         result = filter_dataframe(criteria)
         assert len(result) == 2
         assert set(result['Service']) == {'App1', 'App3'}
 
 def test_filter_by_contains_ads(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'Contains Ads': 'False'}
         result = filter_dataframe(criteria)
         assert len(result) == 1
         assert result.iloc[0]['Service'] == 'App2'
 
 def test_multiple_criteria(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {
             'privacy_rating': 'B',
             'Free': 'False',
@@ -614,13 +614,13 @@ def test_multiple_criteria(sample_df):
         assert result.iloc[0]['Service'] == 'App2'
 
 def test_no_matching_results(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'privacy_rating': 'D'}
         result = filter_dataframe(criteria)
         assert len(result) == 0
 
 def test_service_criterion_updates_genre_and_privacy_rating(sample_df):
-    with patch('your_module.df', sample_df):
+    with patch('recommend.df', sample_df):
         criteria = {'Service': 'App2'}
         result = filter_dataframe(criteria)
         assert len(result) == 1
