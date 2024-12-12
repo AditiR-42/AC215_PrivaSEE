@@ -2,7 +2,10 @@ import httpx
 import pytest
 import io
 from unittest.mock import patch, MagicMock
+from api_service.api.routers.summarize import process_pdf, get_grade
 import pandas as pd
+from fastapi import UploadFile, HTTPException
+from io import BytesIO
 
 BASE_URL = "http://localhost:9000" 
 
@@ -470,110 +473,87 @@ def test_summarize_endpoint_large_payload(mock_post):
     assert response.status_code == 200
     assert response.json() == {"summary": "This is a summarized version of a long text."}
 
-@patch("httpx.post")
-def test_process_pdf_endpoint_success(mock_post):
-    # Mock the HTTP response
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {
+@pytest.fixture
+def mock_process_pdf_privacy_issues():
+    with patch("api_service.api.utils.process_pdf.process_pdf_privacy_issues") as mock:
+        yield mock
+
+@pytest.fixture
+def mock_privacy_grader():
+    with patch("api_service.api.utils.privacy_grader.PrivacyGrader") as mock:
+        yield mock
+
+def test_process_pdf_success(mock_process_pdf_privacy_issues):
+    mock_process_pdf_privacy_issues.return_value = ["Issue 1", "Issue 2"]
+    
+    pdf_file = UploadFile(filename="test.pdf", file=BytesIO(b"fake pdf content"))
+    result = process_pdf(pdf_file)
+    
+    assert result == {
         "message": "Processing completed successfully.",
         "found_issues": ["Issue 1", "Issue 2"]
     }
-    mock_post.return_value = mock_response
 
-    # Simulate a file upload
-    files = {"pdf_file": ("test.pdf", b"PDF content", "application/pdf")}
-    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
+def test_process_pdf_invalid_file():
+    pdf_file = UploadFile(filename="test.txt", file=BytesIO(b"not a pdf"))
+    
+    with pytest.raises(HTTPException) as exc_info:
+        process_pdf(pdf_file)
+    
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "A valid PDF file is required."
 
-    # Assertions
-    assert response.status_code == 200
-    assert response.json() == {
-        "message": "Processing completed successfully.",
-        "found_issues": ["Issue 1", "Issue 2"]
-    }
+def test_process_pdf_exception(mock_process_pdf_privacy_issues):
+    mock_process_pdf_privacy_issues.side_effect = Exception("Processing error")
+    
+    pdf_file = UploadFile(filename="test.pdf", file=BytesIO(b"fake pdf content"))
+    
+    with pytest.raises(HTTPException) as exc_info:
+        process_pdf(pdf_file)
+    
+    assert exc_info.value.status_code == 500
+    assert exc_info.value.detail.startswith("Error processing file:")
 
-@patch("httpx.post")
-def test_process_pdf_endpoint_invalid_file(mock_post):
-    # Mock the HTTP response for an error
-    mock_response = MagicMock()
-    mock_response.status_code = 400
-    mock_response.json.return_value = {"detail": "A valid PDF file is required."}
-    mock_post.return_value = mock_response
-
-    # Simulate an invalid file upload
-    files = {"pdf_file": ("test.txt", b"Not a PDF", "text/plain")}
-    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
-
-    # Assertions
-    assert response.status_code == 400
-    assert response.json() == {"detail": "A valid PDF file is required."}
-
-@patch("httpx.post")
-def test_process_pdf_endpoint_server_error(mock_post):
-    # Mock the HTTP response for a server error
-    mock_response = MagicMock()
-    mock_response.status_code = 500
-    mock_response.json.return_value = {"detail": "Error processing file: Internal server error"}
-    mock_post.return_value = mock_response
-
-    # Simulate a file upload
-    files = {"pdf_file": ("test.pdf", b"PDF content", "application/pdf")}
-    response = httpx.post(f"{BASE_URL}/process-pdf/", files=files)
-
-    # Assertions
-    assert response.status_code == 500
-    assert response.json()["detail"].startswith("Error processing file:")
-
-@patch("httpx.post")
-def test_get_grade_endpoint_success(mock_post):
-    # Mock the HTTP response
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {
-        "overall_grade": "A",
-        "overall_score": 95,
-        "category_scores": {"Category1": 90, "Category2": 100}
-    }
-    mock_post.return_value = mock_response
-
-    # Make the request
-    response = httpx.post(f"{BASE_URL}/get-grade/")
-
-    # Assertions
-    assert response.status_code == 200
-    assert response.json() == {
+def test_get_grade_success(mock_privacy_grader):
+    mock_grader_instance = MagicMock()
+    mock_grader_instance.grade_privacy_issues.return_value = MagicMock(
+        overall_grade="A",
+        overall_score=95,
+        parent_category_grades={"Category1": 90, "Category2": 100}
+    )
+    mock_privacy_grader.return_value = mock_grader_instance
+    
+    # Simulate that issues have been processed
+    parsed_issues_storage = {"issues": ["Issue 1", "Issue 2"]}
+    
+    result = get_grade()
+    
+    assert result == {
         "overall_grade": "A",
         "overall_score": 95,
         "category_scores": {"Category1": 90, "Category2": 100}
     }
 
-@patch("httpx.post")
-def test_get_grade_endpoint_no_issues(mock_post):
-    # Mock the HTTP response for no issues
-    mock_response = MagicMock()
-    mock_response.status_code = 400
-    mock_response.json.return_value = {"detail": "No issues have been processed yet. Please process a PDF first."}
-    mock_post.return_value = mock_response
+def test_get_grade_no_issues():
+    # Simulate that no issues have been processed
+    parsed_issues_storage = {"issues": []}
+    
+    with pytest.raises(HTTPException) as exc_info:
+        get_grade()
+    
+    assert exc_info.value.status_code == 400
+    assert exc_info.value.detail == "No issues have been processed yet. Please process a PDF first."
 
-    # Make the request
-    response = httpx.post(f"{BASE_URL}/get-grade/")
-
-    # Assertions
-    assert response.status_code == 400
-    assert response.json() == {"detail": "No issues have been processed yet. Please process a PDF first."}
-
-@patch("httpx.post")
-def test_get_grade_endpoint_server_error(mock_post):
-    # Mock the HTTP response for a server error
-    mock_response = MagicMock()
-    mock_response.status_code = 500
-    mock_response.json.return_value = {"detail": "Error grading issues: Internal server error"}
-    mock_post.return_value = mock_response
-
-    # Make the request
-    response = httpx.post(f"{BASE_URL}/get-grade/")
-
-    # Assertions
-    assert response.status_code == 500
-    assert response.json()["detail"].startswith("Error grading issues:")
-
+def test_get_grade_exception(mock_privacy_grader):
+    mock_grader_instance = MagicMock()
+    mock_grader_instance.grade_privacy_issues.side_effect = Exception("Grading error")
+    mock_privacy_grader.return_value = mock_grader_instance
+    
+    # Simulate that issues have been processed
+    parsed_issues_storage = {"issues": ["Issue 1", "Issue 2"]}
+    
+    with pytest.raises(HTTPException) as exc_info:
+        get_grade()
+    
+    assert exc_info.value.status_code == 500
+    assert exc_info.value.detail.startswith("Error grading issues:")
