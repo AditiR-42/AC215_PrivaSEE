@@ -415,17 +415,14 @@ def test_summarize_endpoint_valid_payload(mock_post):
     # Mock the HTTP response
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"summary": "This is a summarized text"}
+    mock_response.json.return_value = {"summary": "This is a summarized text."}
     mock_post.return_value = mock_response
-
     # Send a valid request to the /summarize endpoint
     payload = {"text": "This is a long text that needs summarization."}
     response = httpx.post(f"{BASE_URL}/summarize", json=payload)
-
     # Assertions
     assert response.status_code == 200
     assert response.json() == {"summary": "This is a summarized text"}
-
 
 @patch("httpx.post")
 def test_summarize_endpoint_empty_payload(mock_post):
@@ -435,16 +432,13 @@ def test_summarize_endpoint_empty_payload(mock_post):
     mock_response.status_code = 400
     mock_response.json.return_value = {"detail": "Text field is required."}
     mock_post.return_value = mock_response
-
     # Send an empty request to the /summarize endpoint
     payload = {}
     response = httpx.post(f"{BASE_URL}/summarize", json=payload)
-
     # Assertions
     assert response.status_code == 400
     assert response.json() == {"detail": "Text field is required."}
-
-
+    
 @patch("httpx.post")
 def test_summarize_endpoint_invalid_payload(mock_post):
     """Test /summarize endpoint with invalid payload."""
@@ -453,15 +447,12 @@ def test_summarize_endpoint_invalid_payload(mock_post):
     mock_response.status_code = 422
     mock_response.json.return_value = {"detail": "Invalid input format."}
     mock_post.return_value = mock_response
-
     # Send an invalid request to the /summarize endpoint
     payload = {"invalid_key": "value"}
     response = httpx.post(f"{BASE_URL}/summarize", json=payload)
-
     # Assertions
     assert response.status_code == 422
     assert response.json() == {"detail": "Invalid input format."}
-
 
 @patch("httpx.post")
 def test_summarize_endpoint_large_payload(mock_post):
@@ -471,12 +462,10 @@ def test_summarize_endpoint_large_payload(mock_post):
     mock_response.status_code = 200
     mock_response.json.return_value = {"summary": "This is a summarized version of a long text."}
     mock_post.return_value = mock_response
-
     # Generate a large payload
     large_text = "This is a long text. " * 1000  # Repeat to make it large
     payload = {"text": large_text}
     response = httpx.post(f"{BASE_URL}/summarize", json=payload)
-
     # Assertions
     assert response.status_code == 200
     assert response.json() == {"summary": "This is a summarized version of a long text."}
